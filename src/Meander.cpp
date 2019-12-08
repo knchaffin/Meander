@@ -328,10 +328,10 @@ struct BassParms
 
 struct MeanderState
 {
-	HarmonyParms  HarmonyParms;
-	MelodyParms MelodyParms;
-	BassParms BassParms;
-	ArpParms ArpParms;
+	HarmonyParms  theHarmonyParms;
+	MelodyParms theMelodyParms;
+	BassParms theBassParms;
+	ArpParms theArpParms;
 	bool userControllingHarmonyFromCircle=false;
 	int last_harmony_chord_root_note=0;
 	int last_harmony_step=0;
@@ -415,7 +415,7 @@ void init_vars()
 {
 	DEBUG("init_vars()");
 
-//	theMeanderState. HarmonyParms.note_avg=(double)theMeanderState. HarmonyParms.target_octave/10.;
+//	theMeanderState. theHarmonyParms.note_avg=(double)theMeanderState. theHarmonyParms.target_octave/10.;
 
 	circle_of_fifths[0]=0;
 	circle_of_fifths[1]=7;
@@ -1341,7 +1341,7 @@ struct Meander : Module
 		CONTROL_BASS_PATTERN_PARAM,
 
 		CONTROL_FBM_OCTAVES_PARAM,
-		CONTROL_FBM_INVPERSISTENCE_PARAM,
+		CONTROL_FBM_INVPERSISTANCE_PARAM,
 		CONTROL_FBM_LACUNARITY_PARAM,
 
 
@@ -1507,7 +1507,7 @@ struct Meander : Module
 		int root_key_note=circle_of_fifths[circle_position]; 
 		DEBUG("root_key_note=%d %s", root_key_note, note_desig[root_key_note%12]); 
 		int circle_chord_type= theCircleOf5ths.Circle5ths[circle_position].chordType;
-		theMeanderState.HarmonyParms.last_chord_type=circle_chord_type;
+		theMeanderState.theHarmonyParms.last_chord_type=circle_chord_type;
 		DEBUG("circle_chord_type=%d", circle_chord_type);
 		int num_chord_members=chord_type_num_notes[circle_chord_type];
 		DEBUG("num_chord_members=%d", num_chord_members);
@@ -1521,7 +1521,7 @@ struct Meander : Module
 			if (!running)
 			{
 				outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-1.0+octaveOffset,j);  // (note, channel)  sift down 1 ocatve/v
-				outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState.HarmonyParms.volume);
+				outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState.theHarmonyParms.volume);
 				outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage(CV_MAX10);  // this should trigger ADSR, but should be a pulse rather than stay high
 				harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 				//outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage( barGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 );  // drops the volume way too much
@@ -1529,13 +1529,13 @@ struct Meander : Module
 		
 			if (j<4)
 			{
-				theMeanderState.HarmonyParms.last[j].note=note_to_play;
-				theMeanderState.HarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
-				theMeanderState.HarmonyParms.last[j].length=1;  // whole  note for now
-				theMeanderState.HarmonyParms.last[j].time32s=barts_count;
-				theMeanderState.HarmonyParms.last[j].countInBar=bar_note_count;
+				theMeanderState.theHarmonyParms.last[j].note=note_to_play;
+				theMeanderState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
+				theMeanderState.theHarmonyParms.last[j].length=1;  // whole  note for now
+				theMeanderState.theHarmonyParms.last[j].time32s=barts_count;
+				theMeanderState.theHarmonyParms.last[j].countInBar=bar_note_count;
 				if (bar_note_count<256)
-				played_notes_circular_buffer[bar_note_count++]=theMeanderState. HarmonyParms.last[j];
+				played_notes_circular_buffer[bar_note_count++]=theMeanderState. theHarmonyParms.last[j];
 			}
             
 		}
@@ -1572,18 +1572,18 @@ struct Meander : Module
 		}
 		else  // theMeanderState.userControllingHarmonyFromCircle
 		{
-			DEBUG("doHarmony() theMeanderState.userControllingHarmonyFromCircle %d", theMeanderState. HarmonyParms.last[0]);
+			DEBUG("doHarmony() theMeanderState.userControllingHarmonyFromCircle %d", theMeanderState. theHarmonyParms.last[0]);
 			outputs[OUT_HARMONY_CV_OUTPUT].setChannels(3);  // set polyphony
 			for (int j=0;j<3;++j) 
 			{
 				int note_to_play=1;
 		
-				note_to_play=theMeanderState. HarmonyParms.last[j].note;
+				note_to_play=theMeanderState. theHarmonyParms.last[j].note;
 
 				outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-1.0,j);  // (note, channel)	
 					
 			}
-			outputs	[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. HarmonyParms.volume);
+			outputs	[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
 			harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 			//return;
 		}
@@ -1644,18 +1644,18 @@ struct Meander : Module
 		lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].value=1.0f;
 		
 		
-		double fBmarg=theMeanderState.HarmonyParms.seed + (double)current_cpu_time_double; 
-		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.HarmonyParms.inverse_persistance, theMeanderState.HarmonyParms.lacunarity,theMeanderState.HarmonyParms.noctaves)+1.)/2; 
+		double fBmarg=theMeanderState.theHarmonyParms.seed + (double)current_cpu_time_double; 
+		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theHarmonyParms.inverse_persistance, theMeanderState.theHarmonyParms.lacunarity,theMeanderState.theHarmonyParms.noctaves)+1.)/2; 
 		//DEBUG("fBmrand=%f",(float)fBmrand);
 		
-		theMeanderState.HarmonyParms.note_avg = 
-			(1.0-theMeanderState.HarmonyParms.alpha)*theMeanderState.HarmonyParms.note_avg + 
-			theMeanderState.HarmonyParms.alpha*(theMeanderState.HarmonyParms.range_bottom + (fBmrand*theMeanderState.HarmonyParms.r1));
+		theMeanderState.theHarmonyParms.note_avg = 
+			(1.0-theMeanderState.theHarmonyParms.alpha)*theMeanderState.theHarmonyParms.note_avg + 
+			theMeanderState.theHarmonyParms.alpha*(theMeanderState.theHarmonyParms.range_bottom + (fBmrand*theMeanderState.theHarmonyParms.r1));
 					
-		if (theMeanderState.HarmonyParms.note_avg>theMeanderState.HarmonyParms.range_top)
-		theMeanderState.HarmonyParms.note_avg=theMeanderState.HarmonyParms.range_top;
-		if (theMeanderState.HarmonyParms.note_avg<theMeanderState.HarmonyParms.range_bottom)
-		theMeanderState.HarmonyParms.note_avg=theMeanderState.HarmonyParms.range_bottom;
+		if (theMeanderState.theHarmonyParms.note_avg>theMeanderState.theHarmonyParms.range_top)
+		theMeanderState.theHarmonyParms.note_avg=theMeanderState.theHarmonyParms.range_top;
+		if (theMeanderState.theHarmonyParms.note_avg<theMeanderState.theHarmonyParms.range_bottom)
+		theMeanderState.theHarmonyParms.note_avg=theMeanderState.theHarmonyParms.range_bottom;
 							
 	
 		int step_chord_type= theCircleOf5ths.Circle5ths[current_circle_position].chordType;
@@ -1666,7 +1666,7 @@ struct Meander : Module
 		
 		if (!theMeanderState.userControllingHarmonyFromCircle) // otherwise let these be set by usercontrolsharmony..
 		{
-			theMeanderState.HarmonyParms.last_chord_type=step_chord_type;
+			theMeanderState.theHarmonyParms.last_chord_type=step_chord_type;
 			theMeanderState.last_harmony_chord_root_note=circle_of_fifths[current_circle_position];
 			theMeanderState.last_harmony_step=step;
 		//	theMeanderState.last_harmony_circle_position=current_circle_position;
@@ -1680,24 +1680,24 @@ struct Meander : Module
 		{
 				DEBUG("num_step_chord_notes[%d]=%d", step, num_step_chord_notes[step]);
 				// the following line is getting the notes from the next step. how?
-				current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState. HarmonyParms.note_avg*num_step_chord_notes[step])+j]; // do not create inversion
-				//current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState. HarmonyParms.note_avg*num_step_chord_notes[step])+j-5]; // do create inversion
+				current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState. theHarmonyParms.note_avg*num_step_chord_notes[step])+j]; // do not create inversion
+				//current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState. theHarmonyParms.note_avg*num_step_chord_notes[step])+j-5]; // do create inversion
 				DEBUG("current_chord_notes[%d]=%d %s", j, current_chord_notes[j], note_desig[current_chord_notes[j]%MAX_NOTES]);
 				
 				int note_to_play=current_chord_notes[j];
 				DEBUG("    h_note_to_play=%d %s", note_to_play, note_desig[note_to_play%MAX_NOTES]);
 				
-				if (theMeanderState.HarmonyParms.enabled) 
+				if (theMeanderState.theHarmonyParms.enabled) 
 				{
 					if (j<4)
 					{
-						theMeanderState.HarmonyParms.last[j].note=note_to_play;
-						theMeanderState.HarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
-						theMeanderState.HarmonyParms.last[j].length=1;  // need chords per measure
-						theMeanderState.HarmonyParms.last[j].time32s=barts_count;
-						theMeanderState.HarmonyParms.last[j].countInBar=bar_note_count;
+						theMeanderState.theHarmonyParms.last[j].note=note_to_play;
+						theMeanderState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
+						theMeanderState.theHarmonyParms.last[j].length=1;  // need chords per measure
+						theMeanderState.theHarmonyParms.last[j].time32s=barts_count;
+						theMeanderState.theHarmonyParms.last[j].countInBar=bar_note_count;
 						if (bar_note_count<256)
-						played_notes_circular_buffer[bar_note_count++]=theMeanderState.HarmonyParms.last[j];
+						played_notes_circular_buffer[bar_note_count++]=theMeanderState.theHarmonyParms.last[j];
 					}
 
 				//	outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-6.0,j);  // (note, channel)
@@ -1705,9 +1705,9 @@ struct Meander : Module
 					harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output	
 				}
 		}
-		if (theMeanderState.HarmonyParms.enabled)
+		if (theMeanderState.theHarmonyParms.enabled)
 		{ 
-			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. HarmonyParms.volume);
+			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
 		    harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 		}
 
@@ -1740,34 +1740,34 @@ struct Meander : Module
 
 		DEBUG("Melody: Time=%.3lf",  (double)current_cpu_time_double);
 
-		++theMeanderState.MelodyParms.bar_melody_counted_note;
+		++theMeanderState.theMelodyParms.bar_melody_counted_note;
 
-		theMeanderState.ArpParms.note_count=0;  // where does this really go, at the begining of a melody note
+		theMeanderState.theArpParms.note_count=0;  // where does this really go, at the begining of a melody note
 				
-		double fBmarg=theMeanderState.MelodyParms.seed + (double)current_cpu_time_double; 
-		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.MelodyParms.inverse_persistance, theMeanderState.MelodyParms.lacunarity,theMeanderState.MelodyParms.noctaves)+1.)/2; 
+		double fBmarg=theMeanderState.theMelodyParms.seed + (double)current_cpu_time_double; 
+		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theMelodyParms.inverse_persistance, theMeanderState.theMelodyParms.lacunarity,theMeanderState.theMelodyParms.noctaves)+1.)/2; 
 		//DEBUG("fBmrand=%f",(float)fBmrand);
 		
-		theMeanderState.MelodyParms.note_avg = 
-			(1.0-theMeanderState.MelodyParms.alpha)*theMeanderState.MelodyParms.note_avg + 
-			theMeanderState.MelodyParms.alpha*(theMeanderState.MelodyParms.range_bottom + (fBmrand*theMeanderState.MelodyParms.r1));
+		theMeanderState.theMelodyParms.note_avg = 
+			(1.0-theMeanderState.theMelodyParms.alpha)*theMeanderState.theMelodyParms.note_avg + 
+			theMeanderState.theMelodyParms.alpha*(theMeanderState.theMelodyParms.range_bottom + (fBmrand*theMeanderState.theMelodyParms.r1));
 					
-		if (theMeanderState.MelodyParms.note_avg>theMeanderState.MelodyParms.range_top)
-		theMeanderState.MelodyParms.note_avg=theMeanderState.MelodyParms.range_top;
-		if (theMeanderState.MelodyParms.note_avg<theMeanderState.MelodyParms.range_bottom)
-		theMeanderState.MelodyParms.note_avg=theMeanderState.MelodyParms.range_bottom;
+		if (theMeanderState.theMelodyParms.note_avg>theMeanderState.theMelodyParms.range_top)
+		theMeanderState.theMelodyParms.note_avg=theMeanderState.theMelodyParms.range_top;
+		if (theMeanderState.theMelodyParms.note_avg<theMeanderState.theMelodyParms.range_bottom)
+		theMeanderState.theMelodyParms.note_avg=theMeanderState.theMelodyParms.range_bottom;
 		
 		int step=theMeanderState.last_harmony_step;	
-		theMeanderState.MelodyParms.last_step= step;
-		int note_index=	(int)(theMeanderState.MelodyParms.note_avg*num_step_chord_notes[step]);		
-	//	int note_to_play=step_chord_notes[step][(int)(theMeanderState.MelodyParms.note_avg*num_step_chord_notes[step])]; // do not create inversion
-		theMeanderState.MelodyParms.last_chord_note_index= note_index;
+		theMeanderState.theMelodyParms.last_step= step;
+		int note_index=	(int)(theMeanderState.theMelodyParms.note_avg*num_step_chord_notes[step]);		
+	//	int note_to_play=step_chord_notes[step][(int)(theMeanderState.theMelodyParms.note_avg*num_step_chord_notes[step])]; // do not create inversion
+		theMeanderState.theMelodyParms.last_chord_note_index= note_index;
 		int note_to_play=step_chord_notes[step][note_index]; // do not create inversion
 
         if (false) // accidentals seldom sound good
 		{
-		//	if ((theMeanderState.MelodyParms.bar_melody_counted_note!=1)&&(theMeanderState.MelodyParms.bar_melody_counted_note!=theMeanderState.MelodyParms.note_length_divisor)) // allow accidentals, but not on first or last melody note in bar
-			if ((theMeanderState.MelodyParms.bar_melody_counted_note!=1)&&(theMeanderState.MelodyParms.bar_melody_counted_note==(theMeanderState.MelodyParms.note_length_divisor-1))) // allow accidentals, but not on first or last melody note in bar
+		//	if ((theMeanderState.theMelodyParms.bar_melody_counted_note!=1)&&(theMeanderState.theMelodyParms.bar_melody_counted_note!=theMeanderState.theMelodyParms.note_length_divisor)) // allow accidentals, but not on first or last melody note in bar
+			if ((theMeanderState.theMelodyParms.bar_melody_counted_note!=1)&&(theMeanderState.theMelodyParms.bar_melody_counted_note==(theMeanderState.theMelodyParms.note_length_divisor-1))) // allow accidentals, but not on first or last melody note in bar
 			{
 				float rnd = ((float) rand()/RAND_MAX);
 				if (rnd<.1)
@@ -1780,30 +1780,30 @@ struct Meander : Module
 				
 		DEBUG("    melody note_to_play=%d %s", note_to_play, note_desig[note_to_play%MAX_NOTES]);
 				
-		if (theMeanderState.MelodyParms.enabled)
+		if (theMeanderState.theMelodyParms.enabled)
 		{   
-			if ((theMeanderState.MelodyParms.destutter) && (note_to_play==theMeanderState.MelodyParms.last[0].note) && (theMeanderState.MelodyParms.last_stutter_step==step))   // seems like gate always fires
+			if ((theMeanderState.theMelodyParms.destutter) && (note_to_play==theMeanderState.theMelodyParms.last[0].note) && (theMeanderState.theMelodyParms.last_stutter_step==step))   // seems like gate always fires
 			{
-				theMeanderState.MelodyParms.stutter_detected=true;
-				theMeanderState.MelodyParms.last_stutter_step=step;
+				theMeanderState.theMelodyParms.stutter_detected=true;
+				theMeanderState.theMelodyParms.last_stutter_step=step;
 			}
 			else
 			{
-				theMeanderState.MelodyParms.last_stutter_step=step;
-				theMeanderState.MelodyParms.stutter_detected=false;
+				theMeanderState.theMelodyParms.last_stutter_step=step;
+				theMeanderState.theMelodyParms.stutter_detected=false;
 										
-				theMeanderState.MelodyParms.last[0].note=note_to_play;
-				theMeanderState.MelodyParms.last[0].noteType=NOTE_TYPE_MELODY;
-				theMeanderState.MelodyParms.last[0].length=theMeanderState.MelodyParms.note_length_divisor;
-				theMeanderState.MelodyParms.last[0].time32s=barts_count;
-				theMeanderState.MelodyParms.last[0].countInBar=bar_note_count;
+				theMeanderState.theMelodyParms.last[0].note=note_to_play;
+				theMeanderState.theMelodyParms.last[0].noteType=NOTE_TYPE_MELODY;
+				theMeanderState.theMelodyParms.last[0].length=theMeanderState.theMelodyParms.note_length_divisor;
+				theMeanderState.theMelodyParms.last[0].time32s=barts_count;
+				theMeanderState.theMelodyParms.last[0].countInBar=bar_note_count;
 				if (bar_note_count<256)
-				played_notes_circular_buffer[bar_note_count++]=theMeanderState.MelodyParms.last[0];
+				played_notes_circular_buffer[bar_note_count++]=theMeanderState.theMelodyParms.last[0];
 			
 											
 				outputs[OUT_MELODY_CV_OUTPUT].setChannels(1);  // set polyphony  may need to deal with unset channel voltages
-				outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,0);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.MelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
-				outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(theMeanderState.MelodyParms.volume);
+				outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,0);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.theMelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
+				outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
 				melodyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 			}
 		}
@@ -1813,66 +1813,66 @@ struct Meander : Module
 	{
 		DEBUG("doArp()");
 	
-	    if (theMeanderState.ArpParms.note_count>=theMeanderState.ArpParms.count)
+	    if (theMeanderState.theArpParms.note_count>=theMeanderState.theArpParms.count)
 	  		return;
 
 		int arp_note=0;
 
 		
-		if ((theMeanderState.ArpParms.pattern>=-1)&&(theMeanderState.ArpParms.pattern<=1))
-			arp_note=theMeanderState.ArpParms.note_count*theMeanderState.ArpParms.pattern;
+		if ((theMeanderState.theArpParms.pattern>=-1)&&(theMeanderState.theArpParms.pattern<=1))
+			arp_note=theMeanderState.theArpParms.note_count*theMeanderState.theArpParms.pattern;
 		else
-		if (theMeanderState.ArpParms.pattern==2)
+		if (theMeanderState.theArpParms.pattern==2)
 		{
-			if (theMeanderState.ArpParms.note_count<=((theMeanderState.ArpParms.count)/2))
-			arp_note=theMeanderState.ArpParms.note_count;
+			if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count)/2))
+			arp_note=theMeanderState.theArpParms.note_count;
 			else
-			arp_note=theMeanderState.ArpParms.count-theMeanderState.ArpParms.note_count-1;
+			arp_note=theMeanderState.theArpParms.count-theMeanderState.theArpParms.note_count-1;
 		}
 		else
-		if (theMeanderState.ArpParms.pattern==-2)
+		if (theMeanderState.theArpParms.pattern==-2)
 		{
-		/*	if (theMeanderState.ArpParms.note_count<=((theMeanderState.ArpParms.count+1)/2))
-			arp_note=-theMeanderState.ArpParms.note_count;
+		/*	if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count+1)/2))
+			arp_note=-theMeanderState.theArpParms.note_count;
 			else
-			arp_note=(-theMeanderState.ArpParms.count-1+theMeanderState.ArpParms.note_count);
+			arp_note=(-theMeanderState.theArpParms.count-1+theMeanderState.theArpParms.note_count);
 		*/
-			if (theMeanderState.ArpParms.note_count<=((theMeanderState.ArpParms.count)/2))
-			arp_note-=theMeanderState.ArpParms.note_count;
+			if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count)/2))
+			arp_note-=theMeanderState.theArpParms.note_count;
 			else
-			arp_note=-theMeanderState.ArpParms.count+theMeanderState.ArpParms.note_count-1;
+			arp_note=-theMeanderState.theArpParms.count+theMeanderState.theArpParms.note_count-1;
 		}
 		else
-			arp_note=theMeanderState.ArpParms.note_count*theMeanderState.ArpParms.pattern;
+			arp_note=theMeanderState.theArpParms.note_count*theMeanderState.theArpParms.pattern;
 
-		if (theMeanderState.ArpParms.pattern!=0)
+		if (theMeanderState.theArpParms.pattern!=0)
 		++arp_note; // above the melody note
 
-		++theMeanderState.ArpParms.note_count;
+		++theMeanderState.theArpParms.note_count;
 
-		float volume=theMeanderState.MelodyParms.volume;
-		float volume_factor=pow((1.0-theMeanderState.ArpParms.decay), theMeanderState.ArpParms.note_count);
+		float volume=theMeanderState.theMelodyParms.volume;
+		float volume_factor=pow((1.0-theMeanderState.theArpParms.decay), theMeanderState.theArpParms.note_count);
 		volume *= volume_factor;
 
 		//note_to_play += arp_note;
 
-		DEBUG("theMeanderState.MelodyParms.last_chord_note_index=%d", theMeanderState.MelodyParms.last_chord_note_index);
-		DEBUG("num_step_chord_notes[%d]=%d", theMeanderState.MelodyParms.last_step, num_step_chord_notes[theMeanderState.MelodyParms.last_step]);
+		DEBUG("theMeanderState.theMelodyParms.last_chord_note_index=%d", theMeanderState.theMelodyParms.last_chord_note_index);
+		DEBUG("num_step_chord_notes[%d]=%d", theMeanderState.theMelodyParms.last_step, num_step_chord_notes[theMeanderState.theMelodyParms.last_step]);
 				
 		int note_to_play=100; // bogus
 
-		if (theMeanderState.ArpParms.chordal) // use step_chord_notes
+		if (theMeanderState.theArpParms.chordal) // use step_chord_notes
 		{
-           note_to_play=step_chord_notes[theMeanderState.MelodyParms.last_step][(theMeanderState.MelodyParms.last_chord_note_index + arp_note)% num_step_chord_notes[theMeanderState.MelodyParms.last_step]];
+           note_to_play=step_chord_notes[theMeanderState.theMelodyParms.last_step][(theMeanderState.theMelodyParms.last_chord_note_index + arp_note)% num_step_chord_notes[theMeanderState.theMelodyParms.last_step]];
 		}
 		else 
-		if (theMeanderState.ArpParms.scaler) // use root_key_notes rather than step_chord_notes.  This is slower since scale note index has to be looked up
+		if (theMeanderState.theArpParms.scaler) // use root_key_notes rather than step_chord_notes.  This is slower since scale note index has to be looked up
 		{   
 			if (false)  // old brute force search from beginning
 			{
 				for (int x=0; x<num_root_key_notes[root_key]; ++x)
 				{
-					if (root_key_notes[root_key][x]==theMeanderState.MelodyParms.last[0].note)
+					if (root_key_notes[root_key][x]==theMeanderState.theMelodyParms.last[0].note)
 					{
 						note_to_play=root_key_notes[root_key][x+arp_note];
 						DEBUG("note fount at index=%d root_key_notes[root_key][x]=%d", x, root_key_notes[root_key][x]);
@@ -1883,7 +1883,7 @@ struct Meander : Module
 		
 			if (true)  // new // BSP search
 			{
-				int note_to_search_for=theMeanderState.MelodyParms.last[0].note;
+				int note_to_search_for=theMeanderState.theMelodyParms.last[0].note;
 				DEBUG("BSP  note_to_search_for=%d",  note_to_search_for);
 				int num_to_search=num_root_key_notes[root_key];
 				DEBUG("BSP num_to_search=%d", num_to_search);
@@ -1925,22 +1925,22 @@ struct Meander : Module
 		
 		
 	
-		if ((theMeanderState.MelodyParms.enabled)&&(theMeanderState.ArpParms.enabled)&&theMeanderState.ArpParms.note_count<32)
+		if ((theMeanderState.theMelodyParms.enabled)&&(theMeanderState.theArpParms.enabled)&&theMeanderState.theArpParms.note_count<32)
 		{
-			theMeanderState.ArpParms.last[theMeanderState.ArpParms.note_count].note=note_to_play;
-			theMeanderState.ArpParms.last[theMeanderState.ArpParms.note_count].noteType=NOTE_TYPE_ARP;
-			theMeanderState.ArpParms.last[theMeanderState.ArpParms.note_count].length=theMeanderState.ArpParms.increment;
-			theMeanderState.ArpParms.last[theMeanderState.ArpParms.note_count].time32s=barts_count;
-			theMeanderState.ArpParms.last[theMeanderState.ArpParms.note_count].countInBar=bar_note_count;
+			theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].note=note_to_play;
+			theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].noteType=NOTE_TYPE_ARP;
+			theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].length=theMeanderState.theArpParms.increment;
+			theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].time32s=barts_count;
+			theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].countInBar=bar_note_count;
 			if (bar_note_count<256)
-			played_notes_circular_buffer[bar_note_count++]=theMeanderState.ArpParms.last[theMeanderState.ArpParms.note_count];
+			played_notes_circular_buffer[bar_note_count++]=theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count];
 		}
 	
 	//	outputs[OUT_MELODY_CV_OUTPUT].setChannels(2);  // set polyphony  may need to deal with unset channel voltages
-	//	outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,1);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.MelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
+	//	outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,1);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.theMelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
 		outputs[OUT_MELODY_CV_OUTPUT].setChannels(1);  // set polyphony  may need to deal with unset channel voltages
-		outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,0);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.MelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
-	//	outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(theMeanderState.MelodyParms.volume);
+		outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,0);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.theMelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
+	//	outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
 		outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(volume);
 		melodyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output			
 	}
@@ -1956,38 +1956,38 @@ struct Meander : Module
 
 		DEBUG("Bass: Time=%.3lf",  (double)current_cpu_time_double);
 		
-		if (theMeanderState.BassParms.enabled) 
+		if (theMeanderState.theBassParms.enabled) 
 		{
-			if (theMeanderState.BassParms.octave_enabled)
+			if (theMeanderState.theBassParms.octave_enabled)
 				outputs[OUT_BASS_CV_OUTPUT].setChannels(2);  // set polyphony  may need to deal with unset channel voltages
 			else
 				outputs[OUT_BASS_CV_OUTPUT].setChannels(1);  // set polyphony  may need to deal with unset channel voltages
 			DEBUG("    bass note to play=%d %s", theMeanderState.last_harmony_chord_root_note, note_desig[theMeanderState.last_harmony_chord_root_note%MAX_NOTES]);
 				
-			theMeanderState.BassParms.last[0].note=theMeanderState.last_harmony_chord_root_note+ (theMeanderState.BassParms.target_octave*12);  
-			theMeanderState.BassParms.last[0].noteType=NOTE_TYPE_BASS;
-			theMeanderState.BassParms.last[0].length=1;  // need bass notes per measure
-			theMeanderState.BassParms.last[0].time32s=barts_count;
-			theMeanderState.BassParms.last[0].countInBar=bar_note_count;
+			theMeanderState.theBassParms.last[0].note=theMeanderState.last_harmony_chord_root_note+ (theMeanderState.theBassParms.target_octave*12);  
+			theMeanderState.theBassParms.last[0].noteType=NOTE_TYPE_BASS;
+			theMeanderState.theBassParms.last[0].length=1;  // need bass notes per measure
+			theMeanderState.theBassParms.last[0].time32s=barts_count;
+			theMeanderState.theBassParms.last[0].countInBar=bar_note_count;
 			if (bar_note_count<256)
-			played_notes_circular_buffer[bar_note_count++]=theMeanderState.BassParms.last[0];
+			played_notes_circular_buffer[bar_note_count++]=theMeanderState.theBassParms.last[0];
 
-			outputs[OUT_BASS_CV_OUTPUT].setVoltage((theMeanderState.last_harmony_chord_root_note/12.0)-4.0 +theMeanderState.BassParms.target_octave ,0);  //(note, channel)	
+			outputs[OUT_BASS_CV_OUTPUT].setVoltage((theMeanderState.last_harmony_chord_root_note/12.0)-4.0 +theMeanderState.theBassParms.target_octave ,0);  //(note, channel)	
 				
-			if (theMeanderState.BassParms.octave_enabled)
+			if (theMeanderState.theBassParms.octave_enabled)
 			{
 		
-				theMeanderState.BassParms.last[1].note=theMeanderState.BassParms.last[0].note+12; 
-				theMeanderState.BassParms.last[1].noteType=NOTE_TYPE_BASS;
-				theMeanderState.BassParms.last[1].length=1;  // need bass notes per measure
-				theMeanderState.BassParms.last[1].time32s=barts_count;
-				theMeanderState.BassParms.last[1].countInBar=bar_note_count;
+				theMeanderState.theBassParms.last[1].note=theMeanderState.theBassParms.last[0].note+12; 
+				theMeanderState.theBassParms.last[1].noteType=NOTE_TYPE_BASS;
+				theMeanderState.theBassParms.last[1].length=1;  // need bass notes per measure
+				theMeanderState.theBassParms.last[1].time32s=barts_count;
+				theMeanderState.theBassParms.last[1].countInBar=bar_note_count;
 				if (bar_note_count<256)
-				played_notes_circular_buffer[bar_note_count++]=theMeanderState.BassParms.last[1];
+				played_notes_circular_buffer[bar_note_count++]=theMeanderState.theBassParms.last[1];
 
-			 	outputs[OUT_BASS_CV_OUTPUT].setVoltage((theMeanderState.last_harmony_chord_root_note/12.0)-3.0 +theMeanderState.BassParms.target_octave ,1);
+			 	outputs[OUT_BASS_CV_OUTPUT].setVoltage((theMeanderState.last_harmony_chord_root_note/12.0)-3.0 +theMeanderState.theBassParms.target_octave ,1);
 			}
-			outputs[OUT_BASS_GATE_OUTPUT].setVoltage(theMeanderState.BassParms.volume);
+			outputs[OUT_BASS_GATE_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
 			
 			bassGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 		}
@@ -2236,7 +2236,7 @@ struct Meander : Module
 				{
 					doHarmony();
 					doBass();
-					if (theMeanderState.MelodyParms.note_length_divisor==1)
+					if (theMeanderState.theMelodyParms.note_length_divisor==1)
 						doMelody();
 					clockPulse1ts.trigger(trigger_length);
 					// Pulse the output gate 
@@ -2248,7 +2248,7 @@ struct Meander : Module
 				else
 				{
 					barts_count = 0;  
-					theMeanderState.MelodyParms.bar_melody_counted_note=0;
+					theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 					bar_note_count=0;
 				}
 			}
@@ -2260,9 +2260,9 @@ struct Meander : Module
 				i32ts_count++;
 			}
 			if (i32ts_count >= i32ts_count_limit){
-				if (theMeanderState.MelodyParms.note_length_divisor==32)
+				if (theMeanderState.theMelodyParms.note_length_divisor==32)
 			     	doMelody();    
-				if ((theMeanderState.ArpParms.enabled)&&(theMeanderState.ArpParms.increment==32))
+				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==32))
 					doArp(); 
 				
 				i32ts_count = 0;
@@ -2276,9 +2276,9 @@ struct Meander : Module
 			}
 			if (i16ts_count >= i16ts_count_limit){
 				i16ts_count = 0;
-				if (theMeanderState.MelodyParms.note_length_divisor==16)
+				if (theMeanderState.theMelodyParms.note_length_divisor==16)
 			     	doMelody();    
-				if ((theMeanderState.ArpParms.enabled)&&(theMeanderState.ArpParms.increment==16))
+				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==16))
 					doArp();
 			}
 			if(i16ts_count==0)
@@ -2295,9 +2295,9 @@ struct Meander : Module
 			{
 				i8ts_count = 0;  
 				// do per eighth note stuff here
-			    if (theMeanderState.MelodyParms.note_length_divisor==8)
+			    if (theMeanderState.theMelodyParms.note_length_divisor==8)
 			    doMelody();
-				if ((theMeanderState.ArpParms.enabled)&&(theMeanderState.ArpParms.increment==8))
+				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==8))
 				doArp();
 			}
 			if(i8ts_count == 0)
@@ -2315,9 +2315,9 @@ struct Meander : Module
 				i4ts_count = 0;    
 				// do beat stuff here like bass
 				//*******************************
-				if (theMeanderState.MelodyParms.note_length_divisor==4)
+				if (theMeanderState.theMelodyParms.note_length_divisor==4)
 					doMelody();
-				if ((theMeanderState.ArpParms.enabled)&&(theMeanderState.ArpParms.increment==4))
+				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==4))
 					doArp();
 			//	doBass();
 			}
@@ -2333,7 +2333,7 @@ struct Meander : Module
 				i2ts_count = 0;    
 				// do beat stuff here like bass
 				//*******************************
-				if (theMeanderState.MelodyParms.note_length_divisor==2)
+				if (theMeanderState.theMelodyParms.note_length_divisor==2)
 					doMelody();
 			//	doBass();
 			}
@@ -2351,7 +2351,7 @@ struct Meander : Module
 
 		// end the gate if pulse timer has expired
 		outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage( harmonyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
-		if (theMeanderState.MelodyParms.enabled && !theMeanderState.MelodyParms.stutter_detected)
+		if (theMeanderState.theMelodyParms.enabled && !theMeanderState.theMelodyParms.stutter_detected)
 		outputs[OUT_MELODY_TRIGGER_OUTPUT].setVoltage( melodyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
 		outputs[OUT_BASS_TRIGGER_OUTPUT].setVoltage( bassGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
 		
@@ -2365,49 +2365,49 @@ struct Meander : Module
 	        
 		if (HarmonyEnableToggle.process(params[BUTTON_ENABLE_HARMONY_PARAM].getValue())) 
 		{
-			theMeanderState. HarmonyParms.enabled = !theMeanderState. HarmonyParms.enabled;
-		//	if  (theMeanderState. HarmonyParms.enabled)
+			theMeanderState. theHarmonyParms.enabled = !theMeanderState. theHarmonyParms.enabled;
+		//	if  (theMeanderState. theHarmonyParms.enabled)
 		  		theMeanderState.userControllingHarmonyFromCircle=false;
 		}
-		lights[LIGHT_LEDBUTTON_HARMONY_ENABLE].value = theMeanderState. HarmonyParms.enabled ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_HARMONY_ENABLE].value = theMeanderState. theHarmonyParms.enabled ? 1.0f : 0.0f; 
 
 		if (BassEnableToggle.process(params[BUTTON_ENABLE_BASS_PARAM].getValue())) 
 		{
-			theMeanderState.BassParms.enabled = !theMeanderState.BassParms.enabled;
+			theMeanderState.theBassParms.enabled = !theMeanderState.theBassParms.enabled;
 		}
-		lights[LIGHT_LEDBUTTON_BASS_ENABLE].value = theMeanderState.BassParms.enabled ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_BASS_ENABLE].value = theMeanderState.theBassParms.enabled ? 1.0f : 0.0f; 
 
 		if (MelodyEnableToggle.process(params[BUTTON_ENABLE_MELODY_PARAM].getValue())) 
 		{
-			theMeanderState.MelodyParms.enabled = !theMeanderState.MelodyParms.enabled;
+			theMeanderState.theMelodyParms.enabled = !theMeanderState.theMelodyParms.enabled;
 		}
-		lights[LIGHT_LEDBUTTON_MELODY_ENABLE].value = theMeanderState.MelodyParms.enabled ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_MELODY_ENABLE].value = theMeanderState.theMelodyParms.enabled ? 1.0f : 0.0f; 
 
 		if (MelodyDestutterToggle.process(params[BUTTON_MELODY_DESTUTTER_PARAM].getValue())) 
 		{
-			theMeanderState.MelodyParms.destutter = !theMeanderState.MelodyParms.destutter;
+			theMeanderState.theMelodyParms.destutter = !theMeanderState.theMelodyParms.destutter;
 		}
-		lights[LIGHT_LEDBUTTON_MELODY_DESTUTTER].value = theMeanderState.MelodyParms.destutter ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_MELODY_DESTUTTER].value = theMeanderState.theMelodyParms.destutter ? 1.0f : 0.0f; 
 
 		if (ArpEnableToggle.process(params[BUTTON_ENABLE_ARP_PARAM].getValue())) 
 		{
-			theMeanderState.ArpParms.enabled = !theMeanderState.ArpParms.enabled;
+			theMeanderState.theArpParms.enabled = !theMeanderState.theArpParms.enabled;
 		}
-		lights[LIGHT_LEDBUTTON_ARP_ENABLE].value = theMeanderState.ArpParms.enabled ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_ARP_ENABLE].value = theMeanderState.theArpParms.enabled ? 1.0f : 0.0f; 
 
 		if (ArpEnableChordalToggle.process(params[BUTTON_ENABLE_ARP_CHORDAL_PARAM].getValue())) 
 		{
-			theMeanderState.ArpParms.chordal = !theMeanderState.ArpParms.chordal;
-			theMeanderState.ArpParms.scaler = !theMeanderState.ArpParms.scaler;
+			theMeanderState.theArpParms.chordal = !theMeanderState.theArpParms.chordal;
+			theMeanderState.theArpParms.scaler = !theMeanderState.theArpParms.scaler;
 		}
-		lights[LIGHT_LEDBUTTON_ARP_ENABLE_CHORDAL].value = theMeanderState.ArpParms.chordal ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_ARP_ENABLE_CHORDAL].value = theMeanderState.theArpParms.chordal ? 1.0f : 0.0f; 
 
 		if (ArpEnableScalerToggle.process(params[BUTTON_ENABLE_ARP_SCALER_PARAM].getValue())) 
 		{
-			theMeanderState.ArpParms.scaler = !theMeanderState.ArpParms.scaler;
-			theMeanderState.ArpParms.chordal = !theMeanderState.ArpParms.chordal;
+			theMeanderState.theArpParms.scaler = !theMeanderState.theArpParms.scaler;
+			theMeanderState.theArpParms.chordal = !theMeanderState.theArpParms.chordal;
 		}
-		lights[LIGHT_LEDBUTTON_ARP_ENABLE_SCALER].value = theMeanderState.ArpParms.scaler ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_ARP_ENABLE_SCALER].value = theMeanderState.theArpParms.scaler ? 1.0f : 0.0f; 
 
 		
 				
@@ -2418,8 +2418,8 @@ struct Meander : Module
 			
 				userPlaysCircleDegree(i, 0); 
 				theMeanderState.userControllingHarmonyFromCircle=true;
-				theMeanderState. HarmonyParms.enabled=false;
-				lights[LIGHT_LEDBUTTON_HARMONY_ENABLE].value = theMeanderState. HarmonyParms.enabled ? 1.0f : 0.0f; 
+				theMeanderState. theHarmonyParms.enabled=false;
+				lights[LIGHT_LEDBUTTON_HARMONY_ENABLE].value = theMeanderState. theHarmonyParms.enabled ? 1.0f : 0.0f; 
 
 				for (int j=0; j<12; ++j) {
 					if (j!=i) {
@@ -2508,10 +2508,10 @@ struct Meander : Module
 
 			
 			theMeanderState.userControllingHarmonyFromCircle=true;
-			theMeanderState. HarmonyParms.enabled=false;
+			theMeanderState. theHarmonyParms.enabled=false;
 
 			
-		//	lights[LIGHT_LEDBUTTON_HARMONY_ENABLE].value = theMeanderState. HarmonyParms.enabled ? 1.0f : 0.0f; 
+		//	lights[LIGHT_LEDBUTTON_HARMONY_ENABLE].value = theMeanderState. theHarmonyParms.enabled ? 1.0f : 0.0f; 
 
 			for (int i=0; i<12; ++i) 
 			{
@@ -2583,35 +2583,35 @@ struct Meander : Module
 			// harmony params
 
 			fvalue=(params[CONTROL_HARMONY_VOLUME_PARAM].getValue());
-			if (fvalue!=theMeanderState.HarmonyParms.volume)
+			if (fvalue!=theMeanderState.theHarmonyParms.volume)
 			{
-				theMeanderState.HarmonyParms.volume=fvalue;  
+				theMeanderState.theHarmonyParms.volume=fvalue;  
 			}
 
 			fvalue=std::round(params[CONTROL_HARMONY_TARGETOCTAVE_PARAM].getValue());
-			if (fvalue!=theMeanderState.HarmonyParms.target_octave)
+			if (fvalue!=theMeanderState.theHarmonyParms.target_octave)
 			{
-				theMeanderState.HarmonyParms.target_octave=fvalue;  
-				theMeanderState.HarmonyParms.note_avg_target=theMeanderState.HarmonyParms.target_octave/10.0;
-				theMeanderState.HarmonyParms.range_top=    theMeanderState.HarmonyParms.note_avg_target + (theMeanderState.HarmonyParms.note_octave_range/10.0);
-				theMeanderState.HarmonyParms.range_bottom= theMeanderState.HarmonyParms.note_avg_target - (theMeanderState.HarmonyParms.note_octave_range/10.0);
-				theMeanderState.HarmonyParms.r1=(theMeanderState.HarmonyParms.range_top-theMeanderState.HarmonyParms.range_bottom); 
+				theMeanderState.theHarmonyParms.target_octave=fvalue;  
+				theMeanderState.theHarmonyParms.note_avg_target=theMeanderState.theHarmonyParms.target_octave/10.0;
+				theMeanderState.theHarmonyParms.range_top=    theMeanderState.theHarmonyParms.note_avg_target + (theMeanderState.theHarmonyParms.note_octave_range/10.0);
+				theMeanderState.theHarmonyParms.range_bottom= theMeanderState.theHarmonyParms.note_avg_target - (theMeanderState.theHarmonyParms.note_octave_range/10.0);
+				theMeanderState.theHarmonyParms.r1=(theMeanderState.theHarmonyParms.range_top-theMeanderState.theHarmonyParms.range_bottom); 
 			}
 
 			fvalue=(params[CONTROL_HARMONY_RANGE_PARAM].getValue());
-			if (fvalue!=theMeanderState.MelodyParms.note_octave_range)
+			if (fvalue!=theMeanderState.theMelodyParms.note_octave_range)
 			{
-				theMeanderState.HarmonyParms.note_octave_range=fvalue;  
-				theMeanderState.HarmonyParms.note_avg_target=theMeanderState.HarmonyParms.target_octave/10.0;
-				theMeanderState.HarmonyParms.range_top=    theMeanderState.HarmonyParms.note_avg_target + (theMeanderState.HarmonyParms.note_octave_range/10.0);
-				theMeanderState.HarmonyParms.range_bottom= theMeanderState.HarmonyParms.note_avg_target - (theMeanderState.HarmonyParms.note_octave_range/10.0);
-				theMeanderState.HarmonyParms.r1=(theMeanderState.HarmonyParms.range_top-theMeanderState.HarmonyParms.range_bottom); 
+				theMeanderState.theHarmonyParms.note_octave_range=fvalue;  
+				theMeanderState.theHarmonyParms.note_avg_target=theMeanderState.theHarmonyParms.target_octave/10.0;
+				theMeanderState.theHarmonyParms.range_top=    theMeanderState.theHarmonyParms.note_avg_target + (theMeanderState.theHarmonyParms.note_octave_range/10.0);
+				theMeanderState.theHarmonyParms.range_bottom= theMeanderState.theHarmonyParms.note_avg_target - (theMeanderState.theHarmonyParms.note_octave_range/10.0);
+				theMeanderState.theHarmonyParms.r1=(theMeanderState.theHarmonyParms.range_top-theMeanderState.theHarmonyParms.range_bottom); 
 			}
 
 			fvalue=(params[CONTROL_HARMONY_ALPHA_PARAM].getValue());
-			if ((fvalue)!=theMeanderState.HarmonyParms.alpha)
+			if ((fvalue)!=theMeanderState.theHarmonyParms.alpha)
 			{
-				theMeanderState.HarmonyParms.alpha=fvalue;  
+				theMeanderState.theHarmonyParms.alpha=fvalue;  
 			}
 			//*********
 
@@ -2634,57 +2634,57 @@ struct Meander : Module
 			// Melody Params
 
 			fvalue=(params[CONTROL_MELODY_VOLUME_PARAM].getValue());
-			if (fvalue!=theMeanderState.MelodyParms.volume)
+			if (fvalue!=theMeanderState.theMelodyParms.volume)
 			{
-				theMeanderState.MelodyParms.volume=fvalue;  
+				theMeanderState.theMelodyParms.volume=fvalue;  
 			}
 			
 			fvalue=std::round(params[CONTROL_MELODY_TARGETOCTAVE_PARAM].getValue());
-			if (fvalue!=theMeanderState.MelodyParms.target_octave)
+			if (fvalue!=theMeanderState.theMelodyParms.target_octave)
 			{
-				theMeanderState.MelodyParms.target_octave=fvalue;  
-				theMeanderState.MelodyParms.note_avg_target=theMeanderState.MelodyParms.target_octave/10.0;
-				theMeanderState.MelodyParms.range_top=    theMeanderState.MelodyParms.note_avg_target + (theMeanderState.MelodyParms.note_octave_range/10.0);
-				theMeanderState.MelodyParms.range_bottom= theMeanderState.MelodyParms.note_avg_target - (theMeanderState.MelodyParms.note_octave_range/10.0);
-				theMeanderState.MelodyParms.r1=(theMeanderState.MelodyParms.range_top-theMeanderState.MelodyParms.range_bottom); 
+				theMeanderState.theMelodyParms.target_octave=fvalue;  
+				theMeanderState.theMelodyParms.note_avg_target=theMeanderState.theMelodyParms.target_octave/10.0;
+				theMeanderState.theMelodyParms.range_top=    theMeanderState.theMelodyParms.note_avg_target + (theMeanderState.theMelodyParms.note_octave_range/10.0);
+				theMeanderState.theMelodyParms.range_bottom= theMeanderState.theMelodyParms.note_avg_target - (theMeanderState.theMelodyParms.note_octave_range/10.0);
+				theMeanderState.theMelodyParms.r1=(theMeanderState.theMelodyParms.range_top-theMeanderState.theMelodyParms.range_bottom); 
 			}
 
 			fvalue=(params[CONTROL_MELODY_RANGE_PARAM].getValue());
-			if (fvalue!=theMeanderState.MelodyParms.note_octave_range)
+			if (fvalue!=theMeanderState.theMelodyParms.note_octave_range)
 			{
-				theMeanderState.MelodyParms.note_octave_range=fvalue;  
-				theMeanderState.MelodyParms.note_avg_target=theMeanderState.MelodyParms.target_octave/10.0;
-				theMeanderState.MelodyParms.range_top=    theMeanderState.MelodyParms.note_avg_target + (theMeanderState.MelodyParms.note_octave_range/10.0);
-				theMeanderState.MelodyParms.range_bottom= theMeanderState.MelodyParms.note_avg_target - (theMeanderState.MelodyParms.note_octave_range/10.0);
-				theMeanderState.MelodyParms.r1=(theMeanderState.MelodyParms.range_top-theMeanderState.MelodyParms.range_bottom); 
+				theMeanderState.theMelodyParms.note_octave_range=fvalue;  
+				theMeanderState.theMelodyParms.note_avg_target=theMeanderState.theMelodyParms.target_octave/10.0;
+				theMeanderState.theMelodyParms.range_top=    theMeanderState.theMelodyParms.note_avg_target + (theMeanderState.theMelodyParms.note_octave_range/10.0);
+				theMeanderState.theMelodyParms.range_bottom= theMeanderState.theMelodyParms.note_avg_target - (theMeanderState.theMelodyParms.note_octave_range/10.0);
+				theMeanderState.theMelodyParms.r1=(theMeanderState.theMelodyParms.range_top-theMeanderState.theMelodyParms.range_bottom); 
 			}
 
 			fvalue=(params[CONTROL_MELODY_ALPHA_PARAM].getValue());
-			if ((fvalue)!=theMeanderState.MelodyParms.alpha)
+			if ((fvalue)!=theMeanderState.theMelodyParms.alpha)
 			{
-				theMeanderState.MelodyParms.alpha=fvalue;  
+				theMeanderState.theMelodyParms.alpha=fvalue;  
 			}
 			
 			fvalue=params[CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM].getValue();
 			int ivalue=(int)fvalue;
 			ivalue=pow(2,ivalue);
-			if ((ivalue)!=theMeanderState.MelodyParms.note_length_divisor)
+			if ((ivalue)!=theMeanderState.theMelodyParms.note_length_divisor)
 			{
-				theMeanderState.MelodyParms.note_length_divisor=ivalue;  
+				theMeanderState.theMelodyParms.note_length_divisor=ivalue;  
 			}
 
 			// bass params***********
 
 			fvalue=(params[CONTROL_BASS_VOLUME_PARAM].getValue());
-			if (fvalue!=theMeanderState.BassParms.volume)
+			if (fvalue!=theMeanderState.theBassParms.volume)
 			{
-				theMeanderState.BassParms.volume=fvalue;  
+				theMeanderState.theBassParms.volume=fvalue;  
 			}
 
 			fvalue=std::round(params[CONTROL_BASS_TARGETOCTAVE_PARAM].getValue());
-			if (fvalue!=theMeanderState.BassParms.target_octave)
+			if (fvalue!=theMeanderState.theBassParms.target_octave)
 			{
-				theMeanderState.BassParms.target_octave=fvalue;  
+				theMeanderState.theBassParms.target_octave=fvalue;  
 			}
 
 			//***************  Arp parms
@@ -2699,29 +2699,29 @@ struct Meander : Module
 			//	int pattern=0;
 
 			fvalue=std::round(params[CONTROL_ARP_COUNT_PARAM].getValue());
-			if (fvalue!=theMeanderState.ArpParms.count)
+			if (fvalue!=theMeanderState.theArpParms.count)
 			{
-				theMeanderState.ArpParms.count=fvalue;  
+				theMeanderState.theArpParms.count=fvalue;  
 			}
 
 			fvalue=std::round(params[CONTROL_ARP_INCREMENT_PARAM].getValue());
 			ivalue=(int)fvalue;
 			ivalue=pow(2,ivalue);
-			if (ivalue!=theMeanderState.ArpParms.increment)
+			if (ivalue!=theMeanderState.theArpParms.increment)
 			{
-				theMeanderState.ArpParms.increment=ivalue;  
+				theMeanderState.theArpParms.increment=ivalue;  
 			}
 
 			fvalue=(params[	CONTROL_ARP_DECAY_PARAM].getValue());
-			if (fvalue!=theMeanderState.ArpParms.decay)
+			if (fvalue!=theMeanderState.theArpParms.decay)
 			{
-				theMeanderState.ArpParms.decay=fvalue;  
+				theMeanderState.theArpParms.decay=fvalue;  
 			}
 
 			fvalue=std::round(params[CONTROL_ARP_PATTERN_PARAM].getValue());
-			if (fvalue!=theMeanderState.ArpParms.pattern)
+			if (fvalue!=theMeanderState.theArpParms.pattern)
 			{
-				theMeanderState.ArpParms.pattern=fvalue;  
+				theMeanderState.theArpParms.pattern=fvalue;  
 			}
 
 			// **************************
@@ -2867,7 +2867,7 @@ struct Meander : Module
 		configParam(CONTROL_BASS_PATTERN_PARAM, 0.f, 1.f, 0.f, "");
 
 		configParam(CONTROL_FBM_OCTAVES_PARAM, 0.f, 12.f, 6.f, "");
-		configParam(CONTROL_FBM_INVPERSISTENCE_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(CONTROL_FBM_INVPERSISTANCE_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CONTROL_FBM_LACUNARITY_PARAM, 0.f, 1.f, 0.f, "");
 
 		configParam(BUTTON_HARMONY_SETSTEP_1_PARAM, 0.f, 1.f, 0.f, "");
@@ -3322,25 +3322,25 @@ struct MeanderWidget : ModuleWidget
 			pos=Vec(670, 61);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.HarmonyParms.volume);
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.volume);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(670, 152);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%d", (int)theMeanderState.HarmonyParms.target_octave);
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theHarmonyParms.target_octave);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
 			pos=Vec(670, 176);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.HarmonyParms.alpha);
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.alpha);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(670, 196);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.HarmonyParms.note_octave_range);
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.note_octave_range);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 
@@ -3348,40 +3348,40 @@ struct MeanderWidget : ModuleWidget
 
 			// Melody Params ********
 		/*	
-			theMeanderState.MelodyParms.volume
-			theMeanderState.MelodyParms.target_octave
-			theMeanderState.MelodyParms.melody_range
-			theMeanderState.MelodyParms.alpha
+			theMeanderState.theMelodyParms.volume
+			theMeanderState.theMelodyParms.target_octave
+			theMeanderState.theMelodyParms.melody_range
+			theMeanderState.theMelodyParms.alpha
 		*/
 
 			pos=Vec(865, 63);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.MelodyParms.volume);
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.volume);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(873, 100);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%d", (int)theMeanderState.MelodyParms.note_length_divisor);
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theMelodyParms.note_length_divisor);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(872, 122);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%d", (int)theMeanderState.MelodyParms.target_octave);
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theMelodyParms.target_octave);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
 			pos=Vec(865, 146);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.MelodyParms.alpha);
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.alpha);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(865, 166);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.MelodyParms.note_octave_range);
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.note_octave_range);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			// bass params**********
@@ -3389,14 +3389,14 @@ struct MeanderWidget : ModuleWidget
 			pos=Vec(1020, 63);  
 			nvgFontSize(args.vg, 16);
 		//	nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.BassParms.volume);
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theBassParms.volume);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(1035, 85);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 		//	nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0F, 0xFF));
-			snprintf(text, sizeof(text), "%d", (int)theMeanderState.BassParms.target_octave);
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theBassParms.target_octave);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			// Arp************************
@@ -3414,44 +3414,44 @@ struct MeanderWidget : ModuleWidget
 			pos=Vec(865, 203);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%d", theMeanderState.ArpParms.count);
+			snprintf(text, sizeof(text), "%d", theMeanderState.theArpParms.count);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
  
 			pos=Vec(865, 249);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%d", theMeanderState.ArpParms.increment);
+			snprintf(text, sizeof(text), "%d", theMeanderState.theArpParms.increment);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(865, 271);  
 			nvgFontSize(args.vg, 17);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.2f", theMeanderState.ArpParms.decay);
+			snprintf(text, sizeof(text), "%.2f", theMeanderState.theArpParms.decay);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(845, 295);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			if (theMeanderState.ArpParms.pattern==0)
-				snprintf(text, sizeof(text), "%d: 0-echo", theMeanderState.ArpParms.pattern);
+			if (theMeanderState.theArpParms.pattern==0)
+				snprintf(text, sizeof(text), "%d: 0-echo", theMeanderState.theArpParms.pattern);
 			else
-			if (theMeanderState.ArpParms.pattern==1)
-				snprintf(text, sizeof(text), "%d: +1", theMeanderState.ArpParms.pattern);
+			if (theMeanderState.theArpParms.pattern==1)
+				snprintf(text, sizeof(text), "%d: +1", theMeanderState.theArpParms.pattern);
 			else
-			if (theMeanderState.ArpParms.pattern==2)
-				snprintf(text, sizeof(text), "%d: +1,-1", theMeanderState.ArpParms.pattern);
+			if (theMeanderState.theArpParms.pattern==2)
+				snprintf(text, sizeof(text), "%d: +1,-1", theMeanderState.theArpParms.pattern);
 			else
-			if (theMeanderState.ArpParms.pattern==3)
-				snprintf(text, sizeof(text), "%d: +2", theMeanderState.ArpParms.pattern);
+			if (theMeanderState.theArpParms.pattern==3)
+				snprintf(text, sizeof(text), "%d: +2", theMeanderState.theArpParms.pattern);
 			else
-			if (theMeanderState.ArpParms.pattern==-1)
-				snprintf(text, sizeof(text), "%d: -1", theMeanderState.ArpParms.pattern);
+			if (theMeanderState.theArpParms.pattern==-1)
+				snprintf(text, sizeof(text), "%d: -1", theMeanderState.theArpParms.pattern);
 			else
-			if (theMeanderState.ArpParms.pattern==-2)
-				snprintf(text, sizeof(text), "%d: -1,+1", theMeanderState.ArpParms.pattern);
+			if (theMeanderState.theArpParms.pattern==-2)
+				snprintf(text, sizeof(text), "%d: -1,+1", theMeanderState.theArpParms.pattern);
 			else
-			if (theMeanderState.ArpParms.pattern==-3)
-				snprintf(text, sizeof(text), "%d: -2", theMeanderState.ArpParms.pattern);
+			if (theMeanderState.theArpParms.pattern==-3)
+				snprintf(text, sizeof(text), "%d: -2", theMeanderState.theArpParms.pattern);
 			
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
@@ -3675,7 +3675,7 @@ struct MeanderWidget : ModuleWidget
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
 		
-			float display_note_position=0; //theMeanderState.MelodyParms.last[0].note%12;
+			float display_note_position=0; //theMeanderState.theMelodyParms.last[0].note%12;
 
 			for (int i=0; ((i<bar_note_count)&&(i<256)); ++i)
 			{
@@ -3793,55 +3793,55 @@ struct MeanderWidget : ModuleWidget
 			 
 			// write last melody note played 
 			pos=convertSVGtoNVG(261.4, 120.3, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.MelodyParms.last[0].note%12)], (int)(theMeanderState.MelodyParms.last[0].note/12 ));
+			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theMelodyParms.last[0].note%12)], (int)(theMeanderState.theMelodyParms.last[0].note/12 ));
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			
 			// write last harmony note played 1
 			pos=convertSVGtoNVG(187.8, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. HarmonyParms.last[0].note%12)] , theMeanderState. HarmonyParms.last[0].note/12);
+			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. theHarmonyParms.last[0].note%12)] , theMeanderState. theHarmonyParms.last[0].note/12);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			// write last harmony note played 2
 			pos=convertSVGtoNVG(199.1, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. HarmonyParms.last[1].note%12)], theMeanderState. HarmonyParms.last[1].note/12);
+			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. theHarmonyParms.last[1].note%12)], theMeanderState. theHarmonyParms.last[1].note/12);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			// write last harmony note played 3
 			pos=convertSVGtoNVG(210.4, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. HarmonyParms.last[2].note%12)], theMeanderState. HarmonyParms.last[2].note/12);
+			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. theHarmonyParms.last[2].note%12)], theMeanderState. theHarmonyParms.last[2].note/12);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			// write last harmony note played 4
 			pos=convertSVGtoNVG(221.7, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. HarmonyParms.last[3].note%12)], theMeanderState. HarmonyParms.last[3].note/12);
+			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. theHarmonyParms.last[3].note%12)], theMeanderState. theHarmonyParms.last[3].note/12);
 		//	nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
 			
 			// write last bass note played 
 			pos=convertSVGtoNVG(319.1, 121.0, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.BassParms.last[0].note%12)], (theMeanderState.BassParms.last[0].note/12));
+			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theBassParms.last[0].note%12)], (theMeanderState.theBassParms.last[0].note/12));
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			// write last octave bass note played 
-			if (theMeanderState.BassParms.octave_enabled)
+			if (theMeanderState.theBassParms.octave_enabled)
 			{
 				pos=convertSVGtoNVG(330.1, 121.0, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.BassParms.last[1].note%12)], (theMeanderState.BassParms.last[1].note/12));
+				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theBassParms.last[1].note%12)], (theMeanderState.theBassParms.last[1].note/12));
 				nvgText(args.vg, pos.x, pos.y, text, NULL);
 			}
 
 			int last_chord_root=theMeanderState.last_harmony_chord_root_note%12;
-			int last_chord_bass_note=theMeanderState.HarmonyParms.last[0].note%12;
+			int last_chord_bass_note=theMeanderState.theHarmonyParms.last[0].note%12;
 			pos=convertSVGtoNVG(110, 60, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
 			nvgFontSize(args.vg, 30);
 
 			char chord_type_desc[16];
-			if (theMeanderState.HarmonyParms.last_chord_type==0)
+			if (theMeanderState.theHarmonyParms.last_chord_type==0)
 				strcpy(chord_type_desc, "");
-			if (theMeanderState.HarmonyParms.last_chord_type==1)
+			if (theMeanderState.theHarmonyParms.last_chord_type==1)
 				strcpy(chord_type_desc, "m");
-			if (theMeanderState.HarmonyParms.last_chord_type==6)
+			if (theMeanderState.theHarmonyParms.last_chord_type==6)
 				strcpy(chord_type_desc, "dim");
 
 			if (last_chord_bass_note!=last_chord_root) 
@@ -4083,7 +4083,7 @@ struct MeanderWidget : ModuleWidget
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(305,  61.217)), module, Meander::CONTROL_BASS_PATTERN_PARAM));
 
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 20)), module, Meander::CONTROL_FBM_OCTAVES_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 28)), module, Meander::CONTROL_FBM_INVPERSISTENCE_PARAM));
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 28)), module, Meander::CONTROL_FBM_INVPERSISTANCE_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 36)), module, Meander::CONTROL_FBM_LACUNARITY_PARAM));
 
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(240.274, 62.01)), module, Meander::BUTTON_ENABLE_ARP_PARAM));
