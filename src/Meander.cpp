@@ -3156,7 +3156,7 @@ struct MeanderWidget : ModuleWidget
 
 		CircleOf5thsDisplay() 
 		{
-			textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/fonts/DejaVuSansMono.ttf"));
+			textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/DejaVuSansMono.ttf"));
 	    //	musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-qYy6.ttf"));
 		//	musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/MusiSync2.ttf"));
 		//	musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/MusiSync3.ttf"));
