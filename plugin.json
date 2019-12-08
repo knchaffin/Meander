@@ -2,7 +2,7 @@
   "slug": "PS-PurrSoftware",
   "name": "PS-PurrSoftware",
   "version": "1.0.0",
-  "license": "proprietary",
+  "license": "GPL-3.0-or-later",
   "brand": "PurrSoftware",
   "author": "Ken Chaffin",
   "authorEmail": "",
