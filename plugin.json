@@ -1,0 +1,24 @@
+{
+  "slug": "PS-PurrSoftware",
+  "name": "PS-PurrSoftware",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "brand": "PurrSoftware",
+  "author": "Ken Chaffin",
+  "authorEmail": "",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "",
+  "donateUrl": "",
+  "modules": [
+    {
+      "slug": "Meander",
+      "name": "Meander",
+      "description": "Algorithmic Composer",
+      "tags": []
+    }
+  ]
+ }
+
+
