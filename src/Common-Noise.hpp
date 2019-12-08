@@ -563,7 +563,7 @@ static void normalize2(double v[2])
 	v[0] = v[0] / s;
 	v[1] = v[1] / s;
 }
-
+/* to avoid unused warning
 static void normalize3(double v[3])
 {
         double s;
@@ -573,7 +573,7 @@ static void normalize3(double v[3])
 	v[1] = v[1] / s;
 	v[2] = v[2] / s;
 }
-
+*/
 //double pnoise1(double vec[]);
 
 /* Coherent Perlin noise function over 1, 2 or 3 dimensions */

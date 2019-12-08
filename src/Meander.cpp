@@ -1949,8 +1949,8 @@ struct Meander : Module
 	void doBass()
 	{
 		DEBUG("doBass()");
-		clock_t current_cpu_t= clock();  // cpu clock ticks since program began
-		double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
+	//	clock_t current_cpu_t= clock();  // cpu clock ticks since program began
+	//	double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
 		//	DEBUG("current_cpu_time=%ld", (long)current_cpu_t);
 		//	DEBUG("current_cpu_time_double=%.3lf", (double)current_cpu_time_double);
 
@@ -2785,17 +2785,17 @@ struct Meander : Module
 	Meander() 
 	{
 		DEBUG("");  // clear debug log file
-		time_t systime=time(NULL);
+	//	time_t systime=time(NULL);
 
 		time_t rawtime;
-  		struct tm *info;
+  	//	struct tm *info;
 		time( &rawtime );
-   		info = localtime( &rawtime );
+   		//info = localtime( &rawtime );
   		// printf("Current local time and date: %s", asctime(info));
 
-		clock_t start_t,  cpu_t;
-  		start_t = clock();  // cpu clock ticks since program began
-   		cpu_t = (double)(start_t) / CLOCKS_PER_SEC;
+		//clock_t start_t; //,  cpu_t;
+  		//start_t = clock();  // cpu clock ticks since program began
+   	//	cpu_t = (double)(start_t) / CLOCKS_PER_SEC;
 
 		lowFreqClock.setDivision(512);  // every 86 samples, 2ms
 		sec1Clock.setDivision(44000);
@@ -3162,8 +3162,8 @@ struct MeanderWidget : ModuleWidget
 		//	musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/MusiSync3.ttf"));
 			musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
 		}
-
-		
+ 
+		  
 
 		void DrawCircle5ths(const DrawArgs &args, int root_key) 
 		{
