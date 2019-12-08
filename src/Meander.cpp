@@ -1340,10 +1340,13 @@ struct Meander : Module
 		BUTTON_BASS_AGOGIC_PARAM,
 		CONTROL_BASS_PATTERN_PARAM,
 
-		CONTROL_FBM_OCTAVES_PARAM,
-		CONTROL_FBM_INVPERSISTANCE_PARAM,
-		CONTROL_FBM_LACUNARITY_PARAM,
+		CONTROL_HARMONY_FBM_OCTAVES_PARAM,
+		CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM,
+		CONTROL_HARMONY_FBM_LACUNARITY_PARAM,
 
+		CONTROL_MELODY_FBM_OCTAVES_PARAM,
+		CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM,
+		CONTROL_MELODY_FBM_LACUNARITY_PARAM,
 
 		NUM_PARAMS
 	};
@@ -2866,9 +2869,14 @@ struct Meander : Module
 		configParam(BUTTON_BASS_AGOGIC_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CONTROL_BASS_PATTERN_PARAM, 0.f, 1.f, 0.f, "");
 
-		configParam(CONTROL_FBM_OCTAVES_PARAM, 0.f, 12.f, 6.f, "");
-		configParam(CONTROL_FBM_INVPERSISTANCE_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(CONTROL_FBM_LACUNARITY_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 0.f, 12.f, 6.f, "");
+		configParam(CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(CONTROL_HARMONY_FBM_LACUNARITY_PARAM, 0.f, 1.f, 0.f, "");
+
+		configParam(CONTROL_MELODY_FBM_OCTAVES_PARAM, 0.f, 12.f, 6.f, "");
+		configParam(CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(CONTROL_MELODY_FBM_LACUNARITY_PARAM, 0.f, 1.f, 0.f, "");
+
 
 		configParam(BUTTON_HARMONY_SETSTEP_1_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_HARMONY_SETSTEP_2_PARAM, 0.f, 1.f, 0.f, "");
@@ -4081,10 +4089,14 @@ struct MeanderWidget : ModuleWidget
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  45.217)), module, Meander::BUTTON_BASS_SYNCOPATE__PARAM));
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  53.217)), module, Meander::BUTTON_BASS_AGOGIC_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(305,  61.217)), module, Meander::CONTROL_BASS_PATTERN_PARAM));
+ 
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 20)), module, Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM));
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 28)), module, Meander::CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM));
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 36)), module, Meander::CONTROL_HARMONY_FBM_LACUNARITY_PARAM));
 
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 20)), module, Meander::CONTROL_FBM_OCTAVES_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 28)), module, Meander::CONTROL_FBM_INVPERSISTANCE_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 36)), module, Meander::CONTROL_FBM_LACUNARITY_PARAM));
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 50)), module, Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM));
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 58)), module, Meander::CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM));
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 66)), module, Meander::CONTROL_MELODY_FBM_LACUNARITY_PARAM));
 
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(240.274, 62.01)), module, Meander::BUTTON_ENABLE_ARP_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE));
