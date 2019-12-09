@@ -2,7 +2,6 @@
    
 
 #include "plugin.hpp"  
-
 #include <sstream>
 #include <iomanip>
 #include <time.h>
@@ -1647,9 +1646,10 @@ struct Meander : Module
 		lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].value=1.0f;
 		
 		
+		DEBUG("fBmrand()");
 		double fBmarg=theMeanderState.theHarmonyParms.seed + (double)current_cpu_time_double; 
 		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theHarmonyParms.inverse_persistance, theMeanderState.theHarmonyParms.lacunarity,theMeanderState.theHarmonyParms.noctaves)+1.)/2; 
-		//DEBUG("fBmrand=%f",(float)fBmrand);
+		DEBUG("fBmrand=%f",(float)fBmrand);
 		
 		theMeanderState.theHarmonyParms.note_avg = 
 			(1.0-theMeanderState.theHarmonyParms.alpha)*theMeanderState.theHarmonyParms.note_avg + 
@@ -1746,10 +1746,12 @@ struct Meander : Module
 		++theMeanderState.theMelodyParms.bar_melody_counted_note;
 
 		theMeanderState.theArpParms.note_count=0;  // where does this really go, at the begining of a melody note
-				
+
+		DEBUG("fBmrand()");	
+		DEBUG("theMeanderState.theMelodyParms.inverse_persistance=%.2lf", theMeanderState.theMelodyParms.inverse_persistance);
 		double fBmarg=theMeanderState.theMelodyParms.seed + (double)current_cpu_time_double; 
 		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theMelodyParms.inverse_persistance, theMeanderState.theMelodyParms.lacunarity,theMeanderState.theMelodyParms.noctaves)+1.)/2; 
-		//DEBUG("fBmrand=%f",(float)fBmrand);
+		DEBUG("fBmrand=%f",(float)fBmrand);
 		
 		theMeanderState.theMelodyParms.note_avg = 
 			(1.0-theMeanderState.theMelodyParms.alpha)*theMeanderState.theMelodyParms.note_avg + 
@@ -1957,8 +1959,7 @@ struct Meander : Module
 		//	DEBUG("current_cpu_time=%ld", (long)current_cpu_t);
 		//	DEBUG("current_cpu_time_double=%.3lf", (double)current_cpu_time_double);
 
-		DEBUG("Bass: Time=%.3lf",  (double)current_cpu_time_double);
-		
+				
 		if (theMeanderState.theBassParms.enabled) 
 		{
 			if (theMeanderState.theBassParms.octave_enabled)
@@ -2634,6 +2635,24 @@ struct Meander : Module
 					theActiveHarmonyType.num_harmony_steps=(int)fvalue;  
 			}
 
+			fvalue=std::round(params[CONTROL_HARMONY_FBM_OCTAVES_PARAM].getValue());
+			if ((fvalue)!=theMeanderState.theHarmonyParms.noctaves)
+			{
+				theMeanderState.theHarmonyParms.noctaves=(int)fvalue;  
+			}
+
+			fvalue=(params[CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM].getValue());
+			if ((fvalue)!=theMeanderState.theHarmonyParms.inverse_persistance)
+			{
+				theMeanderState.theHarmonyParms.inverse_persistance=fvalue;  
+			}
+			
+			fvalue=(params[CONTROL_HARMONY_FBM_LACUNARITY_PARAM].getValue());
+			if ((fvalue)!=theMeanderState.theHarmonyParms.lacunarity)
+			{
+				theMeanderState.theHarmonyParms.lacunarity=fvalue;  
+			}
+
 			// Melody Params
 
 			fvalue=(params[CONTROL_MELODY_VOLUME_PARAM].getValue());
@@ -2676,6 +2695,24 @@ struct Meander : Module
 				theMeanderState.theMelodyParms.note_length_divisor=ivalue;  
 			}
 
+			fvalue=std::round(params[CONTROL_MELODY_FBM_OCTAVES_PARAM].getValue());
+			if ((fvalue)!=theMeanderState.theMelodyParms.noctaves)
+			{
+				theMeanderState.theMelodyParms.noctaves=(int)fvalue;  
+			} 
+		
+			fvalue=params[CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM].getValue();
+			if (fvalue!=theMeanderState.theMelodyParms.inverse_persistance)
+			{
+				theMeanderState.theMelodyParms.inverse_persistance=fvalue;  
+			}
+			
+			fvalue=params[CONTROL_MELODY_FBM_LACUNARITY_PARAM].getValue();
+			if ((fvalue)!=theMeanderState.theMelodyParms.lacunarity)
+			{
+				theMeanderState.theMelodyParms.lacunarity=fvalue; 
+			}
+						
 			// bass params***********
 
 			fvalue=(params[CONTROL_BASS_VOLUME_PARAM].getValue());
@@ -2804,9 +2841,7 @@ struct Meander : Module
 		sec1Clock.setDivision(44000);
 		lightDivider.setDivision(512);  // every 86 samples, 2ms
 		   		
-		DEBUG("Meander() - systime=%ld = %s CPUtime=%f CLOCKS_PER_SEC=%ld", (long)systime, asctime(info), cpu_t, CLOCKS_PER_SEC);  // seconds since Jan1, 1970
-
-
+		
 		initPerlin();
 		MeanderMusicStructuresInitialize();
 
@@ -2869,14 +2904,14 @@ struct Meander : Module
 		configParam(BUTTON_BASS_AGOGIC_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CONTROL_BASS_PATTERN_PARAM, 0.f, 1.f, 0.f, "");
 
-		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 0.f, 12.f, 6.f, "");
-		configParam(CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(CONTROL_HARMONY_FBM_LACUNARITY_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 1.f, 12.f, 6.f, "");
+		configParam(CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM, 1.f, 4.f, 2.f, "");
+		configParam(CONTROL_HARMONY_FBM_LACUNARITY_PARAM, 1.f, 4.f, 2.f, "");
 
-		configParam(CONTROL_MELODY_FBM_OCTAVES_PARAM, 0.f, 12.f, 6.f, "");
-		configParam(CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(CONTROL_MELODY_FBM_LACUNARITY_PARAM, 0.f, 1.f, 0.f, "");
-
+		configParam(CONTROL_MELODY_FBM_OCTAVES_PARAM, 1.f, 12.f, 6.f, "");
+		configParam(CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM, 1.0f, 4.0f, 2.0f, "");
+		configParam(CONTROL_MELODY_FBM_LACUNARITY_PARAM, 1.f, 4.f, 2.f, "");
+		
 
 		configParam(BUTTON_HARMONY_SETSTEP_1_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_HARMONY_SETSTEP_2_PARAM, 0.f, 1.f, 0.f, "");
@@ -3347,6 +3382,24 @@ struct MeanderWidget : ModuleWidget
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.note_octave_range);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
+    
+			pos=Vec(1175, 61);  
+			nvgFontSize(args.vg, 16);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theHarmonyParms.noctaves);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(1175, 85);  
+			nvgFontSize(args.vg, 16);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.inverse_persistance);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(1175, 108);  
+			nvgFontSize(args.vg, 16);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.lacunarity);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 
 			//********************
@@ -3388,6 +3441,25 @@ struct MeanderWidget : ModuleWidget
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.note_octave_range);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(1175, 137);  
+			nvgFontSize(args.vg, 16);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theMelodyParms.noctaves);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(1175, 161);  
+			nvgFontSize(args.vg, 16);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.inverse_persistance);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(1175, 185);  
+			nvgFontSize(args.vg, 16);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.lacunarity);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
 
 			// bass params**********
 
@@ -3857,7 +3929,7 @@ struct MeanderWidget : ModuleWidget
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 					
-			
+			DEBUG("UpdatePanel()-end");
 		}
 
 	
