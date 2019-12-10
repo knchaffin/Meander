@@ -1645,11 +1645,10 @@ struct Meander : Module
 		if (!theMeanderState.userControllingHarmonyFromCircle)
 		lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].value=1.0f;
 		
-		
-		DEBUG("fBmrand()");
+	
 		double fBmarg=theMeanderState.theHarmonyParms.seed + (double)current_cpu_time_double; 
 		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theHarmonyParms.inverse_persistance, theMeanderState.theHarmonyParms.lacunarity,theMeanderState.theHarmonyParms.noctaves)+1.)/2; 
-		DEBUG("fBmrand=%f",(float)fBmrand);
+	//	DEBUG("fBmrand=%f",(float)fBmrand);
 		
 		theMeanderState.theHarmonyParms.note_avg = 
 			(1.0-theMeanderState.theHarmonyParms.alpha)*theMeanderState.theHarmonyParms.note_avg + 
@@ -1711,6 +1710,11 @@ struct Meander : Module
 		if (theMeanderState.theHarmonyParms.enabled)
 		{ 
 			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
+
+			// output some fBm noise
+			outputs[OUT_FBM_GATE_OUTPUT].setChannels(1);  // set polyphony  
+			outputs[OUT_FBM_GATE_OUTPUT].setVoltage((float)fBmrand ,0); 
+
 		    harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 		}
 
@@ -1746,12 +1750,10 @@ struct Meander : Module
 		++theMeanderState.theMelodyParms.bar_melody_counted_note;
 
 		theMeanderState.theArpParms.note_count=0;  // where does this really go, at the begining of a melody note
-
-		DEBUG("fBmrand()");	
-		DEBUG("theMeanderState.theMelodyParms.inverse_persistance=%.2lf", theMeanderState.theMelodyParms.inverse_persistance);
+	
 		double fBmarg=theMeanderState.theMelodyParms.seed + (double)current_cpu_time_double; 
 		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theMelodyParms.inverse_persistance, theMeanderState.theMelodyParms.lacunarity,theMeanderState.theMelodyParms.noctaves)+1.)/2; 
-		DEBUG("fBmrand=%f",(float)fBmrand);
+	//	DEBUG("fBmrand=%f",(float)fBmrand);
 		
 		theMeanderState.theMelodyParms.note_avg = 
 			(1.0-theMeanderState.theMelodyParms.alpha)*theMeanderState.theMelodyParms.note_avg + 
@@ -1809,6 +1811,11 @@ struct Meander : Module
 				outputs[OUT_MELODY_CV_OUTPUT].setChannels(1);  // set polyphony  may need to deal with unset channel voltages
 				outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,0);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.theMelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
 				outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
+
+				// output some fBm noise
+				outputs[OUT_FBM_CV_OUTPUT].setChannels(1);  // set polyphony  
+				outputs[OUT_FBM_CV_OUTPUT].setVoltage((float)fBmrand ,0); 
+
 				melodyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 			}
 		}
@@ -2259,6 +2266,9 @@ struct Meander : Module
 							
 			 
 			//32nds  ***********************************
+
+			clock_t current_cpu_t= clock();  // cpu clock ticks since program began
+			double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
 		
 			if (ST_32ts_trig.process(LFOclock.sqr()) && i32ts_count <= i32ts_count_limit){
 				i32ts_count++;
@@ -2271,6 +2281,12 @@ struct Meander : Module
 				
 				i32ts_count = 0;
 				clockPulse32ts.trigger(trigger_length);
+
+				// output some fBm noise
+				double fBmarg=theMeanderState.theMelodyParms.seed + (double)current_cpu_time_double; 
+				double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theMelodyParms.inverse_persistance, theMeanderState.theMelodyParms.lacunarity,theMeanderState.theMelodyParms.noctaves)+1.)/2; 
+				outputs[OUT_FBM_TRIGGER_OUTPUT].setChannels(1);  // set polyphony  
+				outputs[OUT_FBM_TRIGGER_OUTPUT].setVoltage((float)fBmrand ,0); 
 			}
 				    									
 			//16ths  ***********************************
@@ -2904,12 +2920,12 @@ struct Meander : Module
 		configParam(BUTTON_BASS_AGOGIC_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CONTROL_BASS_PATTERN_PARAM, 0.f, 1.f, 0.f, "");
 
-		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 1.f, 12.f, 6.f, "");
-		configParam(CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM, 1.f, 4.f, 2.f, "");
+		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
+		configParam(CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM, 0.5f, 4.f, 2.f, "");
 		configParam(CONTROL_HARMONY_FBM_LACUNARITY_PARAM, 1.f, 4.f, 2.f, "");
-
-		configParam(CONTROL_MELODY_FBM_OCTAVES_PARAM, 1.f, 12.f, 6.f, "");
-		configParam(CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM, 1.0f, 4.0f, 2.0f, "");
+ 
+		configParam(CONTROL_MELODY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
+		configParam(CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM, 0.5f, 4.0f, 2.0f, "");
 		configParam(CONTROL_MELODY_FBM_LACUNARITY_PARAM, 1.f, 4.f, 2.f, "");
 		
 
@@ -4127,43 +4143,93 @@ struct MeanderWidget : ModuleWidget
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(8.12, 35.4)), module, Meander::CONTROL_TEMPOBPM_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(8.12, 47.322+3.0)), module, Meander::CONTROL_TIMESIGNATURETOP_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(8.12, 54.84+3.0)), module, Meander::CONTROL_TIMESIGNATUREBOTTOM_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(8.12, 68.179)), module, Meander::CONTROL_ROOT_KEY_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(8.12, 78.675)), module, Meander::CONTROL_SCALE_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(8.12, 68.179)), module, Meander::CONTROL_ROOT_KEY_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
+			
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(8.12, 78.675)), module, Meander::CONTROL_SCALE_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
 
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(173.849, 12.622)), module, Meander::BUTTON_ENABLE_HARMONY_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(173.849, 12.622)), module, Meander::LIGHT_LEDBUTTON_HARMONY_ENABLE));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(173.849, 22.384)), module, Meander::CONTROL_HARMONY_VOLUME_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(174.028, 40.81)), module, Meander::CONTROL_HARMONY_STEPS_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(174.01, 49.396)), module, Meander::CONTROL_HARMONY_TARGETOCTAVE_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(174.028, 40.81)), module, Meander::CONTROL_HARMONY_STEPS_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
+	
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(174.01, 49.396)), module, Meander::CONTROL_HARMONY_TARGETOCTAVE_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(174.27, 57.982)), module, Meander::CONTROL_HARMONY_ALPHA_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(173.991, 65.788)), module, Meander::CONTROL_HARMONY_RANGE_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(173.953, 74.114)), module, Meander::CONTROL_HARMONY_PATTERN_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(174.027, 81.524)), module, Meander::CONTROL_HARMONYPRESETS_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(174.027, 81.524)), module, Meander::CONTROL_HARMONYPRESETS_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
  
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(240.353, 10.986)), module, Meander::BUTTON_ENABLE_MELODY_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.353, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE));
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(240.409, 25.524)), module, Meander::BUTTON_MELODY_DESTUTTER_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.409, 25.524)), module, Meander::LIGHT_LEDBUTTON_MELODY_DESTUTTER));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.353, 19.217)), module, Meander::CONTROL_MELODY_VOLUME_PARAM));
- 			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.353, 32.217)), module, Meander::CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.353, 39.217)), module, Meander::CONTROL_MELODY_TARGETOCTAVE_PARAM));
+ 		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(240.353, 32.217)), module, Meander::CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(240.353, 39.217)), module, Meander::CONTROL_MELODY_TARGETOCTAVE_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.334, 47.803)), module, Meander::CONTROL_MELODY_ALPHA_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.334, 55.33)), module, Meander::CONTROL_MELODY_RANGE_PARAM));
 
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305, 10.378)), module, Meander::BUTTON_ENABLE_BASS_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305, 10.378)), module, Meander::LIGHT_LEDBUTTON_BASS_ENABLE));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(305, 21.217)), module, Meander::CONTROL_BASS_VOLUME_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(305,  29.217)), module, Meander::CONTROL_BASS_TARGETOCTAVE_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(305,  29.217)), module, Meander::CONTROL_BASS_TARGETOCTAVE_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  37.217)), module, Meander::BUTTON_BASS_ACCENT_PARAM));
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  45.217)), module, Meander::BUTTON_BASS_SYNCOPATE__PARAM));
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  53.217)), module, Meander::BUTTON_BASS_AGOGIC_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(305,  61.217)), module, Meander::CONTROL_BASS_PATTERN_PARAM));
  
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 20)), module, Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(358.86, 20)), module, Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 28)), module, Meander::CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 36)), module, Meander::CONTROL_HARMONY_FBM_LACUNARITY_PARAM));
 
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 50)), module, Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM));
+		    {
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(358.86, 50)), module, Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
+
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 58)), module, Meander::CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 66)), module, Meander::CONTROL_MELODY_FBM_LACUNARITY_PARAM));
 
@@ -4173,10 +4239,25 @@ struct MeanderWidget : ModuleWidget
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(265.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE_CHORDAL));
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(283.274, 62.01)), module, Meander::BUTTON_ENABLE_ARP_SCALER_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(283.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE_SCALER));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.274, 68.014)), module, Meander::CONTROL_ARP_COUNT_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.256, 82.807)), module, Meander::CONTROL_ARP_INCREMENT_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(240.274, 68.014)), module, Meander::CONTROL_ARP_COUNT_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(240.256, 82.807)), module, Meander::CONTROL_ARP_INCREMENT_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.237, 91.691)), module, Meander::CONTROL_ARP_DECAY_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.757, 99.497)), module, Meander::CONTROL_ARP_PATTERN_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(240.757, 99.497)), module, Meander::CONTROL_ARP_PATTERN_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
 
 
 			

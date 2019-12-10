@@ -1,5 +1,10 @@
 #include "math.hpp"
 
+//double InversePersistence=NoiseFactor.a;    // for fBms. Persistence indicates how the frequencies are scaled when adding.  Normally a value of 2.0 is used for InversePersistance so that scale goes as 1/pow(invpersistence,i) or 1/pow(2,i). if ip=1->equal low and high noise.  if ip<1,more high noise.
+//double Lacunarity=(INT)(NoiseFactor.b);     // for fBms. Lacunarity indicates how the frequency is changed for each iteration.  Normally a value of 2.0xxxx is used so frequency ~doubles at each iteration.  A value of 1 is the same as 1 octave since no harmonics.
+//int n_octaves=(INT)(NoiseFactor.c);         // for fBms. number of octaves should be no more than log2(texturewidth) due to nyquist limit
+
+
 ///////////Perlin Noise setup
 
 #define B 0x100
@@ -687,6 +692,14 @@ static double pnoise3(double vec[])
 double fBm1DNoise(double x,double InversePersistence,double Lacunarity,int n_octaves)
 {
  //DEBUG("fBm1DNoise()");
+  
+   if (n_octaves<1) n_octaves=1;
+   if (n_octaves>6) n_octaves=6;
+   if (InversePersistence<.5) InversePersistence=.5;
+   if (InversePersistence>4.0) InversePersistence=4.0;
+   if (Lacunarity<1.0) Lacunarity=1.0;
+   if (Lacunarity>4.0) Lacunarity=4.0;
+
    int i;
    double val,sum = 0;
    double p[1],scale = 1;
@@ -705,6 +718,9 @@ double fBm1DNoise(double x,double InversePersistence,double Lacunarity,int n_oct
 
 double FastfBm1DNoise(double x,int n_octaves)  // fixed invpersistence=2. and lacunarity=2.
 {
+   if (n_octaves<1) n_octaves=1;
+   if (n_octaves>6) n_octaves=6;
+   
    int i;
    double val,sum = 0;
    double p[1],scale = 1;
@@ -723,6 +739,13 @@ double FastfBm1DNoise(double x,int n_octaves)  // fixed invpersistence=2. and la
 // -1 to +1 noise
 double fBm2DNoise(double x,double y,double InversePersistence,double Lacunarity,int n_octaves,bool *NoiseResetFlag)
 {
+   if (n_octaves<1) n_octaves=1;
+   if (n_octaves>6) n_octaves=6;
+   if (InversePersistence<.5) InversePersistence=.5;
+   if (InversePersistence>4.0) InversePersistence=4.0;
+   if (Lacunarity<1.0) Lacunarity=1.0;
+   if (Lacunarity>4.0) Lacunarity=4.0;
+
    int i;
    double val,sum = 0;
    double p[2],scale = 1;
@@ -768,6 +791,9 @@ double fBm2DNoise(double x,double y,double InversePersistence,double Lacunarity,
 
 double FastfBm2DNoise(double x,double y,int n_octaves,bool *NoiseResetFlag) // fixed invpersistence=2. and lacunarity=2.
 {
+   if (n_octaves<1) n_octaves=1;
+   if (n_octaves>6) n_octaves=6;
+   
    int i;
    double val,sum = 0;
    double p[2],scale = 1;
@@ -928,6 +954,13 @@ double npnoise4(double vec[])
 // -1 to +1 noise
 double fBm3DNoise(double x,double y,double z,double InversePersistence,double Lacunarity,int n_octaves, bool *NoiseResetFlag)
 {
+   if (n_octaves<1) n_octaves=1;
+   if (n_octaves>6) n_octaves=6;
+   if (InversePersistence<.5) InversePersistence=.5;
+   if (InversePersistence>4.0) InversePersistence=4.0;
+   if (Lacunarity<1.0) Lacunarity=1.0;
+   if (Lacunarity>4.0) Lacunarity=4.0;
+
    int i;
    double val,sum = 0;
    double p[3],scale = 1;
@@ -975,6 +1008,9 @@ double fBm3DNoise(double x,double y,double z,double InversePersistence,double La
 
 double FastfBm3DNoise(double x,double y,double z,int n_octaves,bool *NoiseResetFlag) // fixed invpersistence=2. and lacunarity=2.
 {
+   if (n_octaves<1) n_octaves=1;
+   if (n_octaves>6) n_octaves=6;
+   
    int i;
    double val,sum = 0;
    double p[3],scale = 1;
@@ -1019,6 +1055,13 @@ double FastfBm3DNoise(double x,double y,double z,int n_octaves,bool *NoiseResetF
 // -1 to +1 noise
 double fBm4DNoise(double x,double y,double z,double w,double InversePersistence,double Lacunarity,int n_octaves, bool *NoiseResetFlag)
 {
+   if (n_octaves<1) n_octaves=1;
+   if (n_octaves>6) n_octaves=6;
+   if (InversePersistence<.5) InversePersistence=.5;
+   if (InversePersistence>4.0) InversePersistence=4.0;
+   if (Lacunarity<1.0) Lacunarity=1.0;
+   if (Lacunarity>4.0) Lacunarity=4.0;
+
    int i;
    double val,sum = 0;
    double p[4],scale = 1;
@@ -1068,6 +1111,9 @@ double fBm4DNoise(double x,double y,double z,double w,double InversePersistence,
 
 double FastfBm4DNoise(double x,double y,double z,double w,int n_octaves, bool *NoiseResetFlag)
 {
+   if (n_octaves<1) n_octaves=1;
+   if (n_octaves>6) n_octaves=6;
+  
    int i;
    double val,sum = 0;
    double p[4],scale = 1;
