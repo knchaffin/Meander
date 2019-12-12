@@ -263,9 +263,8 @@ struct HarmonyParms
 
 	double alpha=.1;
 	double seed=1234;
-	double lacunarity=2.;
-	double inverse_persistance=2.;
-	int noctaves=6;
+	int noctaves=3;
+	float period=100.0;
 	int last_chord_type=0;
 	struct note last[4];
 };  
@@ -286,9 +285,8 @@ struct MelodyParms
 	double alpha=.9;
 //	double alpha=0.;  // to check for target
 	double seed=12345;
-	double lacunarity=2.;
-	double inverse_persistance=2.;
-	int noctaves=6;
+	int noctaves=4;
+	float period=10.0;
 	bool destutter=true;
 	bool stutter_detected=false;
 	int last_stutter_step=0;
@@ -300,10 +298,6 @@ struct MelodyParms
 
 struct ArpParms
 {
-//	CONTROL_ARP_COUNT_PARAM,
-//	CONTROL_ARP_INCREMENT_PARAM,
-//	CONTROL_ARP_DECAY_PARAM,
-//	CONTROL_ARP_PATTERN_PARAM,
 	bool enabled=false;
 	bool chordal=true;
 	bool scaler=false;
@@ -312,6 +306,9 @@ struct ArpParms
 	float decay=0;
 	int pattern=0;
 	int note_count=0;  // number of arp notes played per current melody note
+	double seed=123344;
+	int noctaves=5;
+	float period=1.0;
 	struct note last[32];  // may not need this if arp is considered melody
 }; 
 
@@ -1339,14 +1336,16 @@ struct Meander : Module
 		BUTTON_BASS_AGOGIC_PARAM,
 		CONTROL_BASS_PATTERN_PARAM,
 
+				
 		CONTROL_HARMONY_FBM_OCTAVES_PARAM,
-		CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM,
-		CONTROL_HARMONY_FBM_LACUNARITY_PARAM,
-
 		CONTROL_MELODY_FBM_OCTAVES_PARAM,
-		CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM,
-		CONTROL_MELODY_FBM_LACUNARITY_PARAM,
+		CONTROL_ARP_FBM_OCTAVES_PARAM,
 
+		CONTROL_HARMONY_FBM_PERIOD_PARAM,
+		CONTROL_MELODY_FBM_PERIOD_PARAM,
+		CONTROL_ARP_FBM_PERIOD_PARAM,
+		
+		
 		NUM_PARAMS
 	};
 
@@ -1442,6 +1441,8 @@ struct Meander : Module
 		LIGHT_LEDBUTTON_CIRCLESETSTEP_15,
 		LIGHT_LEDBUTTON_CIRCLESETSTEP_16,
 		LIGHT_CLOCK_IN_LIGHT,
+
+				
 		NUM_LIGHTS
 	};
 
@@ -1646,8 +1647,11 @@ struct Meander : Module
 		lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].value=1.0f;
 		
 	
-		double fBmarg=theMeanderState.theHarmonyParms.seed + (double)current_cpu_time_double; 
-		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theHarmonyParms.inverse_persistance, theMeanderState.theHarmonyParms.lacunarity,theMeanderState.theHarmonyParms.noctaves)+1.)/2; 
+	//	double fBmarg=theMeanderState.theHarmonyParms.seed + (double)current_cpu_time_double; 
+	//	double period=.010; // the number of notes per period
+		double period=1.0/theMeanderState.theHarmonyParms.period; // 1/seconds
+		double fBmarg=theMeanderState.theHarmonyParms.seed + (double)(period*current_cpu_time_double); 
+	    double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theHarmonyParms.noctaves) +1.)/2; 
 	//	DEBUG("fBmrand=%f",(float)fBmrand);
 		
 		theMeanderState.theHarmonyParms.note_avg = 
@@ -1732,7 +1736,7 @@ struct Meander : Module
 		else
 			++bar_count; 
 			
-		current_cpu_t= clock();  // cpu clock ticks since program began
+	//	current_cpu_t= clock();  // cpu clock ticks since program began
 	//	double current_cpu_time_double2= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
 	//	DEBUG("harmony processing time=%.3lf",current_cpu_time_double2-current_cpu_time_double);
 	}
@@ -1751,8 +1755,11 @@ struct Meander : Module
 
 		theMeanderState.theArpParms.note_count=0;  // where does this really go, at the begining of a melody note
 	
-		double fBmarg=theMeanderState.theMelodyParms.seed + (double)current_cpu_time_double; 
-		double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theMelodyParms.inverse_persistance, theMeanderState.theMelodyParms.lacunarity,theMeanderState.theMelodyParms.noctaves)+1.)/2; 
+	//	double fBmarg=theMeanderState.theMelodyParms.seed + (double)current_cpu_time_double; 
+	//	double period=.10; // the number of notes per period
+		double period=1.0/theMeanderState.theMelodyParms.period; // 1/seconds
+		double fBmarg=theMeanderState.theMelodyParms.seed + (double)(period*current_cpu_time_double); 
+		double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theMelodyParms.noctaves) +1.)/2; 
 	//	DEBUG("fBmrand=%f",(float)fBmrand);
 		
 		theMeanderState.theMelodyParms.note_avg = 
@@ -2093,6 +2100,7 @@ struct Meander : Module
 	dsp::SchmittTrigger ArpEnableChordalToggle;
 	dsp::SchmittTrigger ArpEnableScalerToggle;
 
+	
 	dsp::SchmittTrigger MelodyDestutterToggle;
 	
 	dsp::SchmittTrigger RunToggle;
@@ -2283,8 +2291,11 @@ struct Meander : Module
 				clockPulse32ts.trigger(trigger_length);
 
 				// output some fBm noise
-				double fBmarg=theMeanderState.theMelodyParms.seed + (double)current_cpu_time_double; 
-				double fBmrand=(fBm1DNoise(fBmarg, theMeanderState.theMelodyParms.inverse_persistance, theMeanderState.theMelodyParms.lacunarity,theMeanderState.theMelodyParms.noctaves)+1.)/2; 
+			//	double fBmarg=theMeanderState.theArpParms.seed + (double)current_cpu_time_double; 
+			//	double period=1.0; // the number of notes per period
+				double period=1.0/theMeanderState.theArpParms.period; // 1/seconds
+				double fBmarg=theMeanderState.theArpParms.seed + (double)(period*current_cpu_time_double); 
+				double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theArpParms.noctaves) +1.)/2; 
 				outputs[OUT_FBM_TRIGGER_OUTPUT].setChannels(1);  // set polyphony  
 				outputs[OUT_FBM_TRIGGER_OUTPUT].setVoltage((float)fBmrand ,0); 
 			}
@@ -2429,8 +2440,14 @@ struct Meander : Module
 		}
 		lights[LIGHT_LEDBUTTON_ARP_ENABLE_SCALER].value = theMeanderState.theArpParms.scaler ? 1.0f : 0.0f; 
 
+		//***********
+
 		
-				
+		
+		//***************
+			 
+		
+
 		for (int i=0; i<12; ++i) {
 			if (CircleStepToggles[i].process(params[BUTTON_CIRCLESTEP_C_PARAM+i].getValue())) {
 				CircleStepStates[i] = !CircleStepStates[i];
@@ -2633,6 +2650,18 @@ struct Meander : Module
 			{
 				theMeanderState.theHarmonyParms.alpha=fvalue;  
 			}
+
+			fvalue=params[CONTROL_HARMONY_FBM_OCTAVES_PARAM].getValue();
+			if (fvalue!=theMeanderState.theHarmonyParms.noctaves)
+			{
+				theMeanderState.theHarmonyParms.noctaves=fvalue;  
+			}
+
+			fvalue=params[CONTROL_HARMONY_FBM_PERIOD_PARAM].getValue();
+			if (fvalue!=theMeanderState.theHarmonyParms.period)
+			{
+				theMeanderState.theHarmonyParms.period=fvalue;  
+			}
 			//*********
 
 			if ((fvalue=std::round(params[CONTROL_HARMONYPRESETS_PARAM].getValue()))!=harmony_type)
@@ -2649,24 +2678,6 @@ struct Meander : Module
 				DEBUG("theActiveHarmonyType.num_harmony_steps changed to %d %s", (int)fvalue, "test");  // need actual descriptor
 				if ((fvalue>=theActiveHarmonyType.min_steps)&&(fvalue<=theActiveHarmonyType.max_steps))
 					theActiveHarmonyType.num_harmony_steps=(int)fvalue;  
-			}
-
-			fvalue=std::round(params[CONTROL_HARMONY_FBM_OCTAVES_PARAM].getValue());
-			if ((fvalue)!=theMeanderState.theHarmonyParms.noctaves)
-			{
-				theMeanderState.theHarmonyParms.noctaves=(int)fvalue;  
-			}
-
-			fvalue=(params[CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM].getValue());
-			if ((fvalue)!=theMeanderState.theHarmonyParms.inverse_persistance)
-			{
-				theMeanderState.theHarmonyParms.inverse_persistance=fvalue;  
-			}
-			
-			fvalue=(params[CONTROL_HARMONY_FBM_LACUNARITY_PARAM].getValue());
-			if ((fvalue)!=theMeanderState.theHarmonyParms.lacunarity)
-			{
-				theMeanderState.theHarmonyParms.lacunarity=fvalue;  
 			}
 
 			// Melody Params
@@ -2711,24 +2722,19 @@ struct Meander : Module
 				theMeanderState.theMelodyParms.note_length_divisor=ivalue;  
 			}
 
-			fvalue=std::round(params[CONTROL_MELODY_FBM_OCTAVES_PARAM].getValue());
-			if ((fvalue)!=theMeanderState.theMelodyParms.noctaves)
+			fvalue=params[CONTROL_MELODY_FBM_OCTAVES_PARAM].getValue();
+			if (fvalue!=theMeanderState.theMelodyParms.noctaves)
 			{
-				theMeanderState.theMelodyParms.noctaves=(int)fvalue;  
-			} 
-		
-			fvalue=params[CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM].getValue();
-			if (fvalue!=theMeanderState.theMelodyParms.inverse_persistance)
-			{
-				theMeanderState.theMelodyParms.inverse_persistance=fvalue;  
+				theMeanderState.theMelodyParms.noctaves=fvalue;  
 			}
-			
-			fvalue=params[CONTROL_MELODY_FBM_LACUNARITY_PARAM].getValue();
-			if ((fvalue)!=theMeanderState.theMelodyParms.lacunarity)
+
+			fvalue=params[CONTROL_MELODY_FBM_PERIOD_PARAM].getValue();
+			if (fvalue!=theMeanderState.theMelodyParms.period)
 			{
-				theMeanderState.theMelodyParms.lacunarity=fvalue; 
+				theMeanderState.theMelodyParms.period=fvalue;  
 			}
-						
+
+           														
 			// bass params***********
 
 			fvalue=(params[CONTROL_BASS_VOLUME_PARAM].getValue());
@@ -2743,17 +2749,7 @@ struct Meander : Module
 				theMeanderState.theBassParms.target_octave=fvalue;  
 			}
 
-			//***************  Arp parms
-			//	CONTROL_ARP_COUNT_PARAM,
-			//	CONTROL_ARP_INCREMENT_PARAM,
-			//	CONTROL_ARP_DECAY_PARAM,
-			//	CONTROL_ARP_PATTERN_PARAM,
-			//	bool enabled=true;
-			//	int count=3;
-			//	int increment=32;  // 8, 16, 32
-			//	float decay=0;
-			//	int pattern=0;
-
+			
 			fvalue=std::round(params[CONTROL_ARP_COUNT_PARAM].getValue());
 			if (fvalue!=theMeanderState.theArpParms.count)
 			{
@@ -2778,6 +2774,18 @@ struct Meander : Module
 			if (fvalue!=theMeanderState.theArpParms.pattern)
 			{
 				theMeanderState.theArpParms.pattern=fvalue;  
+			}
+
+			fvalue=params[CONTROL_ARP_FBM_OCTAVES_PARAM].getValue();
+			if (fvalue!=theMeanderState.theArpParms.noctaves)
+			{
+				theMeanderState.theArpParms.noctaves=fvalue;  
+			}
+
+			fvalue=params[CONTROL_ARP_FBM_PERIOD_PARAM].getValue();
+			if (fvalue!=theMeanderState.theArpParms.period)
+			{
+				theMeanderState.theArpParms.period=fvalue;  
 			}
 
 			// **************************
@@ -2920,14 +2928,15 @@ struct Meander : Module
 		configParam(BUTTON_BASS_AGOGIC_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CONTROL_BASS_PATTERN_PARAM, 0.f, 1.f, 0.f, "");
 
+				
 		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
-		configParam(CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM, 0.5f, 4.f, 2.f, "");
-		configParam(CONTROL_HARMONY_FBM_LACUNARITY_PARAM, 1.f, 4.f, 2.f, "");
- 
 		configParam(CONTROL_MELODY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
-		configParam(CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM, 0.5f, 4.0f, 2.0f, "");
-		configParam(CONTROL_MELODY_FBM_LACUNARITY_PARAM, 1.f, 4.f, 2.f, "");
-		
+		configParam(CONTROL_ARP_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
+
+		configParam(CONTROL_HARMONY_FBM_PERIOD_PARAM, 1.f, 100.f, 60.f, "");
+		configParam(CONTROL_MELODY_FBM_PERIOD_PARAM, 1.f, 100.f, 10.f, "");
+		configParam(CONTROL_ARP_FBM_PERIOD_PARAM, 1.f, 100.f, 1.f, "");
+       	
 
 		configParam(BUTTON_HARMONY_SETSTEP_1_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_HARMONY_SETSTEP_2_PARAM, 0.f, 1.f, 0.f, "");
@@ -3398,35 +3407,48 @@ struct MeanderWidget : ModuleWidget
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.note_octave_range);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
-    
-			pos=Vec(1175, 61);  
-			nvgFontSize(args.vg, 16);
+
+			//**************
+
+			pos=Vec(1177, 58);    
+			nvgFontSize(args.vg, 15);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theHarmonyParms.noctaves);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-			pos=Vec(1175, 85);  
-			nvgFontSize(args.vg, 16);
+			pos=Vec(1177, 80);    
+			nvgFontSize(args.vg, 14);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.inverse_persistance);
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theHarmonyParms.period);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-			pos=Vec(1175, 108);  
-			nvgFontSize(args.vg, 16);
+			pos=Vec(1177, 104);    
+			nvgFontSize(args.vg, 15);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.lacunarity);
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theMelodyParms.noctaves);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
+			pos=Vec(1177, 126);    
+			nvgFontSize(args.vg, 14);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theMelodyParms.period);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-			//********************
+			pos=Vec(1177, 150);    
+			nvgFontSize(args.vg, 15);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theArpParms.noctaves);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-			// Melody Params ********
-		/*	
-			theMeanderState.theMelodyParms.volume
-			theMeanderState.theMelodyParms.target_octave
-			theMeanderState.theMelodyParms.melody_range
-			theMeanderState.theMelodyParms.alpha
-		*/
+			pos=Vec(1177, 172);    
+			nvgFontSize(args.vg, 14);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theArpParms.period);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+    
+			//*************
+
+				
 
 			pos=Vec(865, 63);  
 			nvgFontSize(args.vg, 16);
@@ -3457,25 +3479,7 @@ struct MeanderWidget : ModuleWidget
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.note_octave_range);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
-
-			pos=Vec(1175, 137);  
-			nvgFontSize(args.vg, 16);
-			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theMelodyParms.noctaves);
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-
-			pos=Vec(1175, 161);  
-			nvgFontSize(args.vg, 16);
-			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.inverse_persistance);
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-
-			pos=Vec(1175, 185);  
-			nvgFontSize(args.vg, 16);
-			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
-			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theMelodyParms.lacunarity);
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-
+   
 
 			// bass params**********
 
@@ -3492,18 +3496,7 @@ struct MeanderWidget : ModuleWidget
 			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theBassParms.target_octave);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-			// Arp************************
-			//***************  Arp parms
-		//	CONTROL_ARP_COUNT_PARAM,
-		//	CONTROL_ARP_INCREMENT_PARAM,
-		//	CONTROL_ARP_DECAY_PARAM,
-		//	CONTROL_ARP_PATTERN_PARAM,
-		//	bool enabled=true;
-		//	int count=3;
-		//	int increment=32;  // 8, 16, 32
-		//	float decay=0;
-		//	int pattern=0;
-
+			
 			pos=Vec(865, 203);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
@@ -4214,24 +4207,28 @@ struct MeanderWidget : ModuleWidget
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  45.217)), module, Meander::BUTTON_BASS_SYNCOPATE__PARAM));
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  53.217)), module, Meander::BUTTON_BASS_AGOGIC_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(305,  61.217)), module, Meander::CONTROL_BASS_PATTERN_PARAM));
- 
+
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(358, 19)), module, Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM);
+				w->snap=true;
+				addParam(w); 
+			}
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358, 25)), module, Meander::CONTROL_HARMONY_FBM_PERIOD_PARAM));
 		
 			{
-				auto w= createParamCentered<Trimpot>(mm2px(Vec(358.86, 20)), module, Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM);
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(358, 34)), module, Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM);
 				w->snap=true;
 				addParam(w); 
 			}
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 28)), module, Meander::CONTROL_HARMONY_FBM_INVPERSISTANCE_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 36)), module, Meander::CONTROL_HARMONY_FBM_LACUNARITY_PARAM));
-
-		    {
-				auto w= createParamCentered<Trimpot>(mm2px(Vec(358.86, 50)), module, Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM);
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358, 43)), module, Meander::CONTROL_MELODY_FBM_PERIOD_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(358, 51)), module, Meander::CONTROL_ARP_FBM_OCTAVES_PARAM);
 				w->snap=true;
 				addParam(w); 
 			}
-
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 58)), module, Meander::CONTROL_MELODY_FBM_INVPERSISTANCE_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(358.86, 66)), module, Meander::CONTROL_MELODY_FBM_LACUNARITY_PARAM));
+			addParam(createParamCentered<Trimpot>(mm2px(Vec(358, 59)), module, Meander::CONTROL_ARP_FBM_PERIOD_PARAM));
+					 
 
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(240.274, 62.01)), module, Meander::BUTTON_ENABLE_ARP_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE));
@@ -4361,9 +4358,9 @@ struct MeanderWidget : ModuleWidget
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(266.982, 107.333)), module, Meander::OUT_MELODY_GATE_OUTPUT));
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(201.789, 107.616)), module, Meander::OUT_HARMONY_GATE_OUTPUT));
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(325.12, 107.616)), module, Meander::OUT_BASS_GATE_OUTPUT));
-			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(380.153, 107.616)), module, Meander::OUT_FBM_GATE_OUTPUT));
+			
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(266.899, 115.813)), module, Meander::OUT_MELODY_CV_OUTPUT));
-			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(380.421, 115.815)), module, Meander::OUT_FBM_CV_OUTPUT));
+			
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(325.266, 115.817)), module, Meander::OUT_BASS_CV_OUTPUT));
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(202.176, 115.909)), module, Meander::OUT_HARMONY_CV_OUTPUT));
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(78.74, 122.291)), module, Meander::OUT_CLOCK_BEATX2_OUTPUT));
@@ -4374,7 +4371,11 @@ struct MeanderWidget : ModuleWidget
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(325.402, 123.984)), module, Meander::OUT_BASS_TRIGGER_OUTPUT));
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(202.071, 124.267)), module, Meander::OUT_HARMONY_TRIGGER_OUTPUT));
 			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(266.982, 124.549)), module, Meander::OUT_MELODY_TRIGGER_OUTPUT));
-			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(381.0, 124.831)), module, Meander::OUT_FBM_TRIGGER_OUTPUT));
+
+						
+			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(380.0, 107.616)), module, Meander::OUT_FBM_GATE_OUTPUT));
+			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(380.0, 115.815)), module, Meander::OUT_FBM_CV_OUTPUT));
+			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(380.0, 124.831)), module, Meander::OUT_FBM_TRIGGER_OUTPUT));
 
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(6.865, 101.793)), module, Meander::LIGHT_CLOCK_IN_LIGHT));
 
