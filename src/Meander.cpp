@@ -272,6 +272,8 @@ struct HarmonyParms
 struct MelodyParms  
 {
 	bool enabled=true;
+	bool chordal=true;
+	bool scaler=false;
 	float volume=8.0f;  // 0-10 V
 	int note_length_divisor=4;
 	double target_octave=3.0;  // 4=middle-C C4 0v  must be an integer value
@@ -1344,6 +1346,9 @@ struct Meander : Module
 		CONTROL_HARMONY_FBM_PERIOD_PARAM,
 		CONTROL_MELODY_FBM_PERIOD_PARAM,
 		CONTROL_ARP_FBM_PERIOD_PARAM,
+
+		BUTTON_ENABLE_MELODY_CHORDAL_PARAM,
+		BUTTON_ENABLE_MELODY_SCALER_PARAM,
 		
 		
 		NUM_PARAMS
@@ -1441,6 +1446,8 @@ struct Meander : Module
 		LIGHT_LEDBUTTON_CIRCLESETSTEP_15,
 		LIGHT_LEDBUTTON_CIRCLESETSTEP_16,
 		LIGHT_CLOCK_IN_LIGHT,
+		LIGHT_LEDBUTTON_MELODY_ENABLE_CHORDAL,
+		LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER,
 
 				
 		NUM_LIGHTS
@@ -1774,9 +1781,27 @@ struct Meander : Module
 		int step=theMeanderState.last_harmony_step;	
 		theMeanderState.theMelodyParms.last_step= step;
 		int note_index=	(int)(theMeanderState.theMelodyParms.note_avg*num_step_chord_notes[step]);		
-	//	int note_to_play=step_chord_notes[step][(int)(theMeanderState.theMelodyParms.note_avg*num_step_chord_notes[step])]; // do not create inversion
 		theMeanderState.theMelodyParms.last_chord_note_index= note_index;
-		int note_to_play=step_chord_notes[step][note_index]; // do not create inversion
+		int note_to_play=step_chord_notes[step][note_index]; 
+
+		if (theMeanderState.theMelodyParms.chordal)
+		{
+			note_index=	(int)(theMeanderState.theMelodyParms.note_avg*num_step_chord_notes[step]);	
+			note_to_play=step_chord_notes[step][note_index]; 
+	
+		}
+		else
+		if (theMeanderState.theMelodyParms.scaler)
+		{
+			note_index=	(int)(theMeanderState.theMelodyParms.note_avg*num_root_key_notes[root_key]);
+			note_to_play=root_key_notes[root_key][note_index]; 
+		}
+
+
+		if (true) // experimenting with scaler melody
+		{
+			
+		}
 
         if (false) // accidentals seldom sound good
 		{
@@ -2102,6 +2127,8 @@ struct Meander : Module
 
 	
 	dsp::SchmittTrigger MelodyDestutterToggle;
+	dsp::SchmittTrigger MelodyEnableChordalToggle;
+	dsp::SchmittTrigger MelodyEnableScalerToggle;
 	
 	dsp::SchmittTrigger RunToggle;
 		
@@ -2419,6 +2446,22 @@ struct Meander : Module
 			theMeanderState.theMelodyParms.destutter = !theMeanderState.theMelodyParms.destutter;
 		}
 		lights[LIGHT_LEDBUTTON_MELODY_DESTUTTER].value = theMeanderState.theMelodyParms.destutter ? 1.0f : 0.0f; 
+
+		if (MelodyEnableChordalToggle.process(params[BUTTON_ENABLE_MELODY_CHORDAL_PARAM].getValue())) 
+		{
+			theMeanderState.theMelodyParms.chordal = !theMeanderState.theMelodyParms.chordal;
+			theMeanderState.theMelodyParms.scaler = !theMeanderState.theMelodyParms.scaler;
+		}
+		lights[LIGHT_LEDBUTTON_MELODY_ENABLE_CHORDAL].value = theMeanderState.theMelodyParms.chordal ? 1.0f : 0.0f; 
+
+		if (MelodyEnableScalerToggle.process(params[BUTTON_ENABLE_MELODY_SCALER_PARAM].getValue())) 
+		{
+			theMeanderState.theMelodyParms.scaler = !theMeanderState.theMelodyParms.scaler;
+			theMeanderState.theMelodyParms.chordal = !theMeanderState.theMelodyParms.chordal;
+		}
+		lights[LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER].value = theMeanderState.theMelodyParms.scaler ? 1.0f : 0.0f; 
+
+
 
 		if (ArpEnableToggle.process(params[BUTTON_ENABLE_ARP_PARAM].getValue())) 
 		{
@@ -2904,6 +2947,8 @@ struct Meander : Module
 		configParam(CONTROL_MELODY_RANGE_PARAM, 0.f, 3.f, 1.f, "");
 
 		configParam(BUTTON_ENABLE_HARMONY_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(BUTTON_ENABLE_MELODY_CHORDAL_PARAM, 0.f, 1.f, 1.f, "");
+		configParam(BUTTON_ENABLE_MELODY_SCALER_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CONTROL_HARMONY_VOLUME_PARAM, 0.f, 10.f, 8.0f, "");
 		configParam(CONTROL_HARMONY_STEPS_PARAM, 1.f, 16.f, 16.f, "");
 		configParam(CONTROL_HARMONY_TARGETOCTAVE_PARAM, 1.f, 6.f, 3.f, "");
@@ -4172,10 +4217,16 @@ struct MeanderWidget : ModuleWidget
 				auto w= createParamCentered<Trimpot>(mm2px(Vec(174.027, 81.524)), module, Meander::CONTROL_HARMONYPRESETS_PARAM);
 				w->snap=true;
 				addParam(w); 
-			}
+			} 
  
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(240.353, 10.986)), module, Meander::BUTTON_ENABLE_MELODY_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.353, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE));
+
+			addParam(createParamCentered<LEDButton>(mm2px(Vec(270.353, 10.986)), module, Meander::BUTTON_ENABLE_MELODY_CHORDAL_PARAM));
+			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(270.274, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_CHORDAL));
+			addParam(createParamCentered<LEDButton>(mm2px(Vec(287.274, 10.986)), module, Meander::BUTTON_ENABLE_MELODY_SCALER_PARAM));
+			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(287.274, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER));
+
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(240.409, 25.524)), module, Meander::BUTTON_MELODY_DESTUTTER_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.409, 25.524)), module, Meander::LIGHT_LEDBUTTON_MELODY_DESTUTTER));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(240.353, 19.217)), module, Meander::CONTROL_MELODY_VOLUME_PARAM));
