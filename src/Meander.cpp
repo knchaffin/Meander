@@ -39,7 +39,7 @@ using namespace rack;
 #define MAX_STEPS 16
 #define MAX_CIRCLE_STATIONS 12
 #define MAX_HARMONIC_DEGREES 7
-#define MAX_AVAILABLE_HARMONY_PRESETS 23  // change this as new harmony presets are created
+#define MAX_AVAILABLE_HARMONY_PRESETS 24  // change this as new harmony presets are created
 
 ParamWidget* CircleOf5thsOuterButton[MAX_CIRCLE_STATIONS];  
 LightWidget* CircleOf5thsOuterButtonLight[MAX_CIRCLE_STATIONS]; 
@@ -1024,6 +1024,32 @@ void init_harmony()
 		theHarmonyTypes[23].harmony_steps[0]=1;
 		theHarmonyTypes[23].harmony_steps[1]=4;
 		theHarmonyTypes[23].harmony_steps[2]=5;
+
+		// (harmony_type==24)             /* Hallelujah */  // 
+		strcpy(theHarmonyTypes[24].harmony_type_desc, "Hallelujah" );
+		strcpy(theHarmonyTypes[24].harmony_degrees_desc, "I - VI - I - VI - IV - V - I -I" );
+	    DEBUG(theHarmonyTypes[24].harmony_type_desc);
+        theHarmonyTypes[24].num_harmony_steps=16;  // 1-8
+		theHarmonyTypes[24].min_steps=1;
+	    theHarmonyTypes[24].max_steps=theHarmonyTypes[24].num_harmony_steps;
+		theHarmonyTypes[24].harmony_steps[0]=1;
+		theHarmonyTypes[24].harmony_steps[1]=6;
+		theHarmonyTypes[24].harmony_steps[2]=1;
+		theHarmonyTypes[24].harmony_steps[3]=6;
+		theHarmonyTypes[24].harmony_steps[4]=4;
+		theHarmonyTypes[24].harmony_steps[5]=5;
+		theHarmonyTypes[24].harmony_steps[6]=1;
+		theHarmonyTypes[24].harmony_steps[7]=1;
+
+		theHarmonyTypes[24].harmony_steps[8]=1;
+		theHarmonyTypes[24].harmony_steps[9]=4;
+		theHarmonyTypes[24].harmony_steps[10]=5;
+		theHarmonyTypes[24].harmony_steps[11]=6;
+		theHarmonyTypes[24].harmony_steps[12]=4;
+		theHarmonyTypes[24].harmony_steps[13]=5;
+		theHarmonyTypes[24].harmony_steps[14]=3;
+		theHarmonyTypes[24].harmony_steps[15]=6;
+		
 		
 		// End of preset harmony types
 }
