@@ -317,6 +317,7 @@ struct BassParms
 {
 	bool enabled=true; 
 	int target_octave=2;
+	int bass_on_note_divisor=1;  // 1, 2, 4, 8   doHarmony() on these boundaries
 	bool octave_enabled=true;  // play bass as 2 notes an octave apart
 	float volume=10.0f;  // 0-10 V
 	struct note last[4];
@@ -1335,7 +1336,7 @@ struct Meander : Module
 		BUTTON_BASS_ACCENT_PARAM,
 		BUTTON_BASS_SYNCOPATE__PARAM,
 		BUTTON_BASS_AGOGIC_PARAM,
-		CONTROL_BASS_PATTERN_PARAM,
+		CONTROL_BASS_DIVISOR_PARAM,
 
 				
 		CONTROL_HARMONY_FBM_OCTAVES_PARAM,
@@ -2287,7 +2288,8 @@ struct Meander : Module
 			
 					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==1)
 						doHarmony();
-					doBass();
+					if (theMeanderState.theBassParms.bass_on_note_divisor==1)
+						doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==1)
 					{
 						doMelody();
@@ -2305,11 +2307,14 @@ struct Meander : Module
 					i2ts_count = 0;    
 					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==2)
 						doHarmony();
+					if (theMeanderState.theBassParms.bass_on_note_divisor==2)
+						doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==2)
 					{
 						doMelody();
 						melodyPlayed=true;
 					}
+
 			
 					clockPulse2ts.trigger(trigger_length);
 				}
@@ -2321,6 +2326,8 @@ struct Meander : Module
 			
 					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==4)
 						doHarmony();
+					if (theMeanderState.theBassParms.bass_on_note_divisor==4)
+						doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==4)
 					{
 						doMelody();
@@ -2339,6 +2346,8 @@ struct Meander : Module
 					i8ts_count = 0;  
 					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==8)
 						doHarmony();
+					if (theMeanderState.theBassParms.bass_on_note_divisor==8)
+						doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==8)
 					{
 						doMelody();
@@ -2794,6 +2803,15 @@ struct Meander : Module
 				theMeanderState.theBassParms.volume=fvalue;  
 			}
 
+			fvalue=params[CONTROL_BASS_DIVISOR_PARAM].getValue();
+			ivalue=(int)fvalue;
+			ivalue=pow(2,ivalue);
+			if ((ivalue)!=theMeanderState.theBassParms.bass_on_note_divisor)
+			{
+				theMeanderState.theBassParms.bass_on_note_divisor=ivalue;  
+			}
+
+
 			fvalue=std::round(params[CONTROL_BASS_TARGETOCTAVE_PARAM].getValue());
 			if (fvalue!=theMeanderState.theBassParms.target_octave)
 			{
@@ -2975,13 +2993,12 @@ struct Meander : Module
 
 		configParam(BUTTON_ENABLE_BASS_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CONTROL_BASS_VOLUME_PARAM, 0.f, 10.f, 8.0f, "");
+		configParam(CONTROL_BASS_DIVISOR_PARAM, 0.f, 3.f, 0.f, "");
 		configParam(CONTROL_BASS_TARGETOCTAVE_PARAM, 0.f, 3.f, 2.f, ""); 
 		configParam(BUTTON_BASS_ACCENT_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_BASS_SYNCOPATE__PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_BASS_AGOGIC_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(CONTROL_BASS_PATTERN_PARAM, 0.f, 1.f, 0.f, "");
-
-				
+					
 		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
 		configParam(CONTROL_MELODY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
 		configParam(CONTROL_ARP_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
@@ -3556,7 +3573,13 @@ struct MeanderWidget : ModuleWidget
 			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theBassParms.target_octave);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-			
+			pos=Vec(1035, 181);  
+			nvgFontSize(args.vg, 16);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theBassParms.bass_on_note_divisor);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			// arp params************
 			pos=Vec(865, 203);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
@@ -4277,7 +4300,12 @@ struct MeanderWidget : ModuleWidget
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  37.217)), module, Meander::BUTTON_BASS_ACCENT_PARAM));
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  45.217)), module, Meander::BUTTON_BASS_SYNCOPATE__PARAM));
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  53.217)), module, Meander::BUTTON_BASS_AGOGIC_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(305,  61.217)), module, Meander::CONTROL_BASS_PATTERN_PARAM));
+		
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(305, 61.217)), module, Meander::CONTROL_BASS_DIVISOR_PARAM);
+				w->snap=true;
+				addParam(w); 
+			} 
 
 			{
 				auto w= createParamCentered<Trimpot>(mm2px(Vec(358, 19)), module, Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM);
