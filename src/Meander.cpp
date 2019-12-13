@@ -252,15 +252,14 @@ struct HarmonyParms
 {
 	bool enabled=true;
 	float volume=10.0f;  // 0-10 V
+	int chord_on_note_divisor=1;  // 1, 2, 4, 8   doHarmony() on these boundaries
 	int target_octave=4;
 	double note_octave_range=1.0;
 	double note_avg_target=target_octave/10.0;  
 	double range_top=    note_avg_target + (note_octave_range/10.0);
 	double range_bottom= note_avg_target - (note_octave_range/10.0);
 	double r1=(range_top-range_bottom); 
-
 	double note_avg= note_avg_target;  
-
 	double alpha=.1;
 	double seed=1234;
 	int noctaves=3;
@@ -1327,7 +1326,7 @@ struct Meander : Module
 		CONTROL_HARMONY_TARGETOCTAVE_PARAM,
 		CONTROL_HARMONY_ALPHA_PARAM,
 		CONTROL_HARMONY_RANGE_PARAM,
-		CONTROL_HARMONY_PATTERN_PARAM,
+		CONTROL_HARMONY_DIVISOR_PARAM,
 		CONTROL_HARMONYPRESETS_PARAM,
 
 		BUTTON_ENABLE_BASS_PARAM,
@@ -1740,8 +1739,8 @@ struct Meander : Module
 			int temp_num_harmony_steps=1 + (int)((rnd*(theHarmonyTypes[22].num_harmony_steps-1)));
 			bar_count += (theHarmonyTypes[22].num_harmony_steps-temp_num_harmony_steps);
 		}
-		else
-			++bar_count; 
+	//	else
+	//		++bar_count; 
 			
 	//	current_cpu_t= clock();  // cpu clock ticks since program began
 	//	double current_cpu_time_double2= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
@@ -2038,12 +2037,8 @@ struct Meander : Module
   
 	LFOGenerator LFOclock;
 	
-	dsp::SchmittTrigger ST_32ts_trig;
-	dsp::SchmittTrigger ST_16ts_trig;
-	dsp::SchmittTrigger ST_8ts_trig;
-	dsp::SchmittTrigger ST_4ts_trig;
-	dsp::SchmittTrigger ST_2ts_trig;
-	dsp::SchmittTrigger ST_barts_trig;
+	dsp::SchmittTrigger ST_32ts_trig;  // 32nd note timer tick
+
 	dsp::SchmittTrigger run_button_trig;
 	dsp::SchmittTrigger ext_run_trig;
 	dsp::SchmittTrigger reset_btn_trig;
@@ -2065,6 +2060,8 @@ struct Meander : Module
 	bool pulse8ts = false; 
 	dsp::PulseGenerator clockPulse4ts;
 	bool pulse4ts = false;
+	dsp::PulseGenerator clockPulse2ts;
+	bool pulse2ts = false;
 	dsp::PulseGenerator clockPulse1ts;
 	bool pulse1ts = false;
 	
@@ -2169,19 +2166,22 @@ struct Meander : Module
 		time_sig_bottom = std::round(params[CONTROL_TIMESIGNATUREBOTTOM_PARAM].getValue());
 		time_sig_bottom = std::pow(2,time_sig_bottom+1);
 			
-		frequency = tempo/60.0f;
-					
+		frequency = tempo/60.0f;  // drives 1 tick per 32nd note
+						
 		// Reset
 		if (reset_btn_trig.process(params[BUTTON_RESET_PARAM].getValue() || inputs[IN_RESET_EXT].getVoltage())) 
 		{
 			LFOclock.setReset(1.0f);
 			bar_count = 0;
+			bar_note_count=0;
 			i32ts_count = 0;
 			i16ts_count = 0;
 			i8ts_count = 0;
 			i4ts_count = 0;
 			i2ts_count = 0;
 			barts_count = 0;
+			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
+			theMeanderState.theArpParms.note_count=0;
 			resetLight = 1.0;
 			resetPulse.trigger(0.01f);
 		//	outputs[OUT_RESET_OUT].setVoltage((reset_pulse ? 10.0f : 0.0f));
@@ -2195,12 +2195,15 @@ struct Meander : Module
 		if(!running)
 		{
 			bar_count = 0;
+			bar_note_count=0;
 			i32ts_count = 0;
 			i16ts_count = 0;
 			i8ts_count = 0;
 			i4ts_count = 0;
 			i2ts_count = 0;
 			barts_count = 0; 
+			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
+			theMeanderState.theArpParms.note_count=0;
 			outputs[OUT_CLOCK_BAR_OUTPUT].setVoltage(0.0f);	   // bars 	
 			outputs[OUT_CLOCK_BEAT_OUTPUT].setVoltage(0.0f);   // 4ts 
 			outputs[OUT_CLOCK_BEATX2_OUTPUT].setVoltage(0.0f); // 8ts
@@ -2217,7 +2220,6 @@ struct Meander : Module
 				i16ts_count_limit = 2;
 				i32ts_count_limit = 1;  
 				barts_count_limit = 32; 
-				//LFOclock.setFreq(frequency*4); // for 16ts
 				LFOclock.setFreq(frequency*8);   // for 32ts
 			}
 			else
@@ -2232,7 +2234,6 @@ struct Meander : Module
 				i16ts_count_limit = 2;
 				i32ts_count_limit = 1;  
 				barts_count_limit = time_sig_top * 8; 
-				//LFOclock.setFreq(frequency*4);  // for 16ts
 				LFOclock.setFreq(frequency*8);	  // for 32ts	
 				}
 
@@ -2244,7 +2245,6 @@ struct Meander : Module
 				i16ts_count_limit = 1;
 				i32ts_count_limit = 1;  
 				barts_count_limit = time_sig_top * 2;
-			//	LFOclock.setFreq(frequency*4);
 				LFOclock.setFreq(frequency*8);  // for 32ts
 				}
 
@@ -2257,7 +2257,6 @@ struct Meander : Module
 				i32ts_count_limit = 1;  
 			//	bars_count_limit = (time_sig_top/3) * 6;
 				barts_count_limit = (time_sig_top/3) * 12;
-			//	LFOclock.setFreq(frequency*6);
 				LFOclock.setFreq(frequency*12);  // for 32ts
 				}      
       		}
@@ -2269,139 +2268,140 @@ struct Meander : Module
 			if (inputs[IN_CLOCK_EXT].isConnected()) // External BPM control
 			{
 				inputs[IN_CLOCK_EXT].getVoltage();
-				// modity tempo				
+				// modify tempo				
 			}
 
 			
 			LFOclock.step(1.0 / args.sampleRate);
-
-						
-			if (ST_barts_trig.process(LFOclock.sqr())) 
+								
+			if (ST_32ts_trig.process(LFOclock.sqr()))   // triggers from each 1/32nd clock 
 			{
-				if(barts_count == 0)
+				bool melodyPlayed=false;   // set to prevent arp note being played on the melody beat
+				// bar
+				if (barts_count == barts_count_limit)
 				{
-					doHarmony();
+					barts_count = 0;  
+					++bar_count;
+					theMeanderState.theMelodyParms.bar_melody_counted_note=0;
+					bar_note_count=0;
+			
+					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==1)
+						doHarmony();
 					doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==1)
+					{
 						doMelody();
+						melodyPlayed=true;
+					}
 					clockPulse1ts.trigger(trigger_length);
 					// Pulse the output gate 
 					barGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
-				}    
-							
-				if (barts_count < (barts_count_limit-1))
-					barts_count++;
-				else
-				{
-					barts_count = 0;  
-					theMeanderState.theMelodyParms.bar_melody_counted_note=0;
-					bar_note_count=0;
 				}
-			}
-							
-			 
-			//32nds  ***********************************
+			
+		        // i2ts
+				if (i2ts_count == i2ts_count_limit)
 
-			clock_t current_cpu_t= clock();  // cpu clock ticks since program began
-			double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
+				{
+					i2ts_count = 0;    
+					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==2)
+						doHarmony();
+					if (theMeanderState.theMelodyParms.note_length_divisor==2)
+					{
+						doMelody();
+						melodyPlayed=true;
+					}
+			
+					clockPulse2ts.trigger(trigger_length);
+				}
 		
-			if (ST_32ts_trig.process(LFOclock.sqr()) && i32ts_count <= i32ts_count_limit){
-				i32ts_count++;
-			}
-			if (i32ts_count >= i32ts_count_limit){
-				if (theMeanderState.theMelodyParms.note_length_divisor==32)
-			     	doMelody();    
-				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==32))
-					doArp(); 
+				// i4ts
+				if (i4ts_count == i4ts_count_limit)
+				{
+					i4ts_count = 0;  
+			
+					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==4)
+						doHarmony();
+					if (theMeanderState.theMelodyParms.note_length_divisor==4)
+					{
+						doMelody();
+						melodyPlayed=true;
+					}
+					if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==4)&&(!melodyPlayed))
+						doArp();
+					clockPulse4ts.trigger(trigger_length);
+					// Pulse the output gate 
+				//	barGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
+				}
+					 
+		 		// i8ts
+				if (i8ts_count == i8ts_count_limit)
+				{
+					i8ts_count = 0;  
+					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==8)
+						doHarmony();
+					if (theMeanderState.theMelodyParms.note_length_divisor==8)
+					{
+						doMelody();
+						melodyPlayed=true;
+					}
+					if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==8)&&(!melodyPlayed))
+						doArp();
 				
-				i32ts_count = 0;
-				clockPulse32ts.trigger(trigger_length);
+					clockPulse8ts.trigger(trigger_length);
+				}
 
-				// output some fBm noise
-			//	double fBmarg=theMeanderState.theArpParms.seed + (double)current_cpu_time_double; 
-			//	double period=1.0; // the number of notes per period
-				double period=1.0/theMeanderState.theArpParms.period; // 1/seconds
-				double fBmarg=theMeanderState.theArpParms.seed + (double)(period*current_cpu_time_double); 
-				double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theArpParms.noctaves) +1.)/2; 
-				outputs[OUT_FBM_TRIGGER_OUTPUT].setChannels(1);  // set polyphony  
-				outputs[OUT_FBM_TRIGGER_OUTPUT].setVoltage((float)fBmrand ,0); 
-			}
-				    									
-			//16ths  ***********************************
-			if (ST_16ts_trig.process(LFOclock.sqr()) && i16ts_count <= i16ts_count_limit)
-			{
-				i16ts_count++;
-			}
-			if (i16ts_count >= i16ts_count_limit){
-				i16ts_count = 0;
-				if (theMeanderState.theMelodyParms.note_length_divisor==16)
-			     	doMelody();    
-				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==16))
-					doArp();
-			}
-			if(i16ts_count==0)
-			{
-				clockPulse16ts.trigger(trigger_length);
-			}
+				// i16ts
+				if (i16ts_count == i16ts_count_limit)
+				{
+					if (theMeanderState.theMelodyParms.note_length_divisor==16)
+					{
+						doMelody();  
+						melodyPlayed=true;  
+					}
+					if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==16)&&(!melodyPlayed))
+						doArp();
+					i16ts_count = 0;
+					clockPulse16ts.trigger(trigger_length);
+				}
 
-			//8ths  ***********************************
-			if (ST_8ts_trig.process(LFOclock.sqr()) && i8ts_count <= i8ts_count_limit)
-			{
-				i8ts_count++;
-			}
-			if (i8ts_count >= i8ts_count_limit)
-			{
-				i8ts_count = 0;  
-				// do per eighth note stuff here
-			    if (theMeanderState.theMelodyParms.note_length_divisor==8)
-			    doMelody();
-				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==8))
-				doArp();
-			}
-			if(i8ts_count == 0)
-			{
-				clockPulse8ts.trigger(trigger_length);
-			}
 
-			//4ths  ***********************************
-			if (ST_4ts_trig.process(LFOclock.sqr()) && i4ts_count <= i4ts_count_limit)
-			{
-				i4ts_count++;
-			}
-			if (i4ts_count >= i4ts_count_limit)
-			{
-				i4ts_count = 0;    
-				// do beat stuff here like bass
-				//*******************************
-				if (theMeanderState.theMelodyParms.note_length_divisor==4)
-					doMelody();
-				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==4))
-					doArp();
-			//	doBass();
-			}
-			if(i4ts_count == 0){
-				clockPulse4ts.trigger(trigger_length);
-			}
+				//32nds  ***********************************
 
-			//2ths  ***********************************
-			if (ST_2ts_trig.process(LFOclock.sqr()) && i2ts_count <= i2ts_count_limit){
+				clock_t current_cpu_t= clock();  // cpu clock ticks since program began
+				double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
+			
+				if (true)  // do on each 1/32nd clock tick
+				{
+					if (theMeanderState.theMelodyParms.note_length_divisor==32)
+					{
+						doMelody();   
+						melodyPlayed=true; 
+					}
+					if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==32)&&(!melodyPlayed))
+						doArp(); 
+									
+					clockPulse32ts.trigger(trigger_length);
+
+					// output some fBm noise
+					double period=1.0/theMeanderState.theArpParms.period; // 1/seconds
+					double fBmarg=theMeanderState.theArpParms.seed + (double)(period*current_cpu_time_double); 
+					double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theArpParms.noctaves) +1.)/2; 
+					outputs[OUT_FBM_TRIGGER_OUTPUT].setChannels(1);  // set polyphony  
+					outputs[OUT_FBM_TRIGGER_OUTPUT].setVoltage((float)fBmrand ,0); 
+				}
+
+				barts_count++;    
 				i2ts_count++;
+				i4ts_count++;
+				i8ts_count++;
+				i16ts_count++;
+				i32ts_count++;
+				
 			}
-			if (i2ts_count >= i2ts_count_limit){
-				i2ts_count = 0;    
-				// do beat stuff here like bass
-				//*******************************
-				if (theMeanderState.theMelodyParms.note_length_divisor==2)
-					doMelody();
-			//	doBass();
-			}
-			if(i2ts_count == 0){
-				clockPulse4ts.trigger(trigger_length);
-			}
-		
-    	}
+		}
 
 		pulse1ts = clockPulse1ts.process(1.0 / args.sampleRate);
+		pulse2ts = clockPulse2ts.process(1.0 / args.sampleRate);
 		pulse4ts = clockPulse4ts.process(1.0 / args.sampleRate);
 		pulse8ts = clockPulse8ts.process(1.0 / args.sampleRate);
 		pulse16ts = clockPulse16ts.process(1.0 / args.sampleRate);
@@ -2638,9 +2638,8 @@ struct Meander : Module
 			time_sig_bottom = std::round(params[CONTROL_TIMESIGNATUREBOTTOM_PARAM].getValue());
 			time_sig_bottom = std::pow(2,time_sig_bottom+1);
 
-			frequency = tempo/60.0f;
-
-		
+			frequency = tempo/60.0f;  // BPS
+			
 			if ((fvalue=std::round(params[CONTROL_ROOT_KEY_PARAM].getValue()))!=circle_root_key)
 			{
 				circle_root_key=(int)fvalue;
@@ -2676,6 +2675,15 @@ struct Meander : Module
 				theMeanderState.theHarmonyParms.range_top=    theMeanderState.theHarmonyParms.note_avg_target + (theMeanderState.theHarmonyParms.note_octave_range/10.0);
 				theMeanderState.theHarmonyParms.range_bottom= theMeanderState.theHarmonyParms.note_avg_target - (theMeanderState.theHarmonyParms.note_octave_range/10.0);
 				theMeanderState.theHarmonyParms.r1=(theMeanderState.theHarmonyParms.range_top-theMeanderState.theHarmonyParms.range_bottom); 
+			}
+
+			
+			fvalue=params[CONTROL_HARMONY_DIVISOR_PARAM].getValue();
+			int ivalue=(int)fvalue;
+			ivalue=pow(2,ivalue);
+			if ((ivalue)!=theMeanderState.theHarmonyParms.chord_on_note_divisor)
+			{
+				theMeanderState.theHarmonyParms.chord_on_note_divisor=ivalue;  
 			}
 
 			fvalue=(params[CONTROL_HARMONY_RANGE_PARAM].getValue());
@@ -2758,7 +2766,7 @@ struct Meander : Module
 			}
 			
 			fvalue=params[CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM].getValue();
-			int ivalue=(int)fvalue;
+			ivalue=(int)fvalue;
 			ivalue=pow(2,ivalue);
 			if ((ivalue)!=theMeanderState.theMelodyParms.note_length_divisor)
 			{
@@ -2954,7 +2962,7 @@ struct Meander : Module
 		configParam(CONTROL_HARMONY_TARGETOCTAVE_PARAM, 1.f, 6.f, 3.f, "");
 		configParam(CONTROL_HARMONY_ALPHA_PARAM, 0.f, 1.f, .9f, "");
 		configParam(CONTROL_HARMONY_RANGE_PARAM, 0.f, 3.f, 1.f, "");
-		configParam(CONTROL_HARMONY_PATTERN_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(CONTROL_HARMONY_DIVISOR_PARAM, 0.f, 3.f, 0.f, "");
 		configParam(CONTROL_HARMONYPRESETS_PARAM, 1.0f, (float)MAX_AVAILABLE_HARMONY_PRESETS, 1.0f, "");
 
 		configParam(BUTTON_ENABLE_ARP_PARAM, 0.f, 1.f, 0.f, "");
@@ -3440,7 +3448,8 @@ struct MeanderWidget : ModuleWidget
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theHarmonyParms.target_octave);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
-			
+
+						
 			pos=Vec(670, 176);  
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
@@ -3451,6 +3460,12 @@ struct MeanderWidget : ModuleWidget
 			nvgFontSize(args.vg, 16);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.note_octave_range);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(670, 222);  
+			nvgFontSize(args.vg, 16);
+			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
+			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theHarmonyParms.chord_on_note_divisor);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			//**************
@@ -4211,7 +4226,12 @@ struct MeanderWidget : ModuleWidget
 			}
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(174.27, 57.982)), module, Meander::CONTROL_HARMONY_ALPHA_PARAM));
 			addParam(createParamCentered<Trimpot>(mm2px(Vec(173.991, 65.788)), module, Meander::CONTROL_HARMONY_RANGE_PARAM));
-			addParam(createParamCentered<Trimpot>(mm2px(Vec(173.953, 74.114)), module, Meander::CONTROL_HARMONY_PATTERN_PARAM));
+			  
+			{
+				auto w= createParamCentered<Trimpot>(mm2px(Vec(173.953, 74.114)), module, Meander::CONTROL_HARMONY_DIVISOR_PARAM);
+				w->snap=true;
+				addParam(w); 
+			} 
 		
 			{
 				auto w= createParamCentered<Trimpot>(mm2px(Vec(174.027, 81.524)), module, Meander::CONTROL_HARMONYPRESETS_PARAM);
