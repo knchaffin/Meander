@@ -47,7 +47,7 @@ LightWidget* CircleOf5thsInnerLight[MAX_CIRCLE_STATIONS];  // root_key lights
 ParamWidget* CircleOf5thsSelectStepButton[MAX_STEPS];        
 LightWidget* CircleOf5thsSelectStepButtonLight[MAX_STEPS];   
 
-
+int time_sig_top, time_sig_bottom = 4;
 
 
 // make it a power of 8
@@ -211,7 +211,7 @@ int notate_mode_as_signature_root_key=0; // 0 initially
 // Mode        Transpose down by interval  or semitones
 // Ionian						Perfrect Unison    0
 // Dorian						Major second       2
-// Phrygian						Major third		   4
+// Phrygian						Major third		   4 
 // Lydian						Perfect fourth     5
 // Mixolydian					Perfect fifth	   7
 // Aeolian						Major sixth        9
@@ -2098,7 +2098,7 @@ struct Meander : Module
 	float resetLight = 0.0f;
 
 	bool running = true;
-
+	
 	int bar_count = 0;  // number of bars running count
 	
 	// need to changle to 32nds per
@@ -2110,11 +2110,9 @@ struct Meander : Module
 	int barts_count = 0;     // counted 32s notes per bar
 
 	float tempo =120.0f;
-	int time_sig_top, time_sig_bottom = 0;
-	int time_sig_bottom_old = 0;
 	float frequency = 2.0f;
 
-	// need to change to 32nd notes per
+	
 	int i32ts_count_limit = 1;// 32s notes per 32s note
 	int i16ts_count_limit = 2;// 32s notes per sixteenth note
 	int i8ts_count_limit = 4;   // 32s notes per eighth note
@@ -2169,12 +2167,15 @@ struct Meander : Module
 	rack::dsp::PulseGenerator bassGatePulse; 
 
 	rack::dsp::PulseGenerator barGatePulse; 
+
+	bool time_sig_changed=false;
 	
 	void process(const ProcessArgs &args) override 
 	{
-
+	
 		if (!initialized)
 			return;
+
 		//Run
 		if (RunToggle.process(params[BUTTON_RUN_PARAM].getValue()) || inputs[IN_RUN_EXT].getVoltage()) 
 		{ 
@@ -2189,13 +2190,33 @@ struct Meander : Module
 
 		tempo = std::round(params[CONTROL_TEMPOBPM_PARAM].getValue());
 
-		time_sig_top = std::round(params[CONTROL_TIMESIGNATURETOP_PARAM].getValue());
-		time_sig_bottom = std::round(params[CONTROL_TIMESIGNATUREBOTTOM_PARAM].getValue());
-		time_sig_bottom = std::pow(2,time_sig_bottom+1);
+	//	time_sig_top = std::round(params[CONTROL_TIMESIGNATURETOP_PARAM].getValue());
+	//	time_sig_bottom = std::round(params[CONTROL_TIMESIGNATUREBOTTOM_PARAM].getValue());
+	//	time_sig_bottom = std::pow(2,time_sig_bottom+1);
 			
 		frequency = tempo/60.0f;  // drives 1 tick per 32nd note
 						
 		// Reset
+
+	//	if (false)
+		if (time_sig_changed) 
+		{
+			LFOclock.setReset(1.0f);
+			bar_count = 0;
+			bar_note_count=0;
+			i32ts_count = 0;
+			i16ts_count = 0;
+			i8ts_count = 0;
+			i4ts_count = 0;
+			i2ts_count = 0;
+			barts_count = 0;
+			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
+			theMeanderState.theArpParms.note_count=0;
+			resetPulse.trigger(0.01f);
+			time_sig_changed=false;
+		
+		}
+
 		if (reset_btn_trig.process(params[BUTTON_RESET_PARAM].getValue() || inputs[IN_RESET_EXT].getVoltage())) 
 		{
 			LFOclock.setReset(1.0f);
@@ -2211,7 +2232,7 @@ struct Meander : Module
 			theMeanderState.theArpParms.note_count=0;
 			resetLight = 1.0;
 			resetPulse.trigger(0.01f);
-		//	outputs[OUT_RESET_OUT].setVoltage((reset_pulse ? 10.0f : 0.0f));
+			//	outputs[OUT_RESET_OUT].setVoltage((reset_pulse ? 10.0f : 0.0f));
 		}
 
 		resetLight -= resetLight / lightLambda / args.sampleRate;
@@ -2239,55 +2260,14 @@ struct Meander : Module
         }
 		else
 		{
-			if (time_sig_top == time_sig_bottom)
-			{
-				i2ts_count_limit =16;
-				i4ts_count_limit = 8;
-				i8ts_count_limit = 4;
-				i16ts_count_limit = 2;
-				i32ts_count_limit = 1;  
-				barts_count_limit = 32; 
-				LFOclock.setFreq(frequency*8);   // for 32ts
-			}
-			else
-			{
-				//clock divisions
-				if(time_sig_bottom == 4)
-				{
-				//debug("time sig bottom = %i", time_sig_bottom);
-				i2ts_count_limit =16;
-				i4ts_count_limit = 8;
-				i8ts_count_limit = 4;
-				i16ts_count_limit = 2;
-				i32ts_count_limit = 1;  
-				barts_count_limit = time_sig_top * 8; 
-				LFOclock.setFreq(frequency*8);	  // for 32ts	
-				}
-
-				if(time_sig_bottom == 8)
-				{
-				i2ts_count_limit =8;
-				i4ts_count_limit = 4;
-				i8ts_count_limit = 2;
-				i16ts_count_limit = 1;
-				i32ts_count_limit = 1;  
-				barts_count_limit = time_sig_top * 2;
-				LFOclock.setFreq(frequency*8);  // for 32ts
-				}
-
-				if((time_sig_top % 3) == 0)
-				{
-				i2ts_count_limit =16;
-				i4ts_count_limit = 12;
-				i8ts_count_limit = 4;
-				i16ts_count_limit = 2;
-				i32ts_count_limit = 1;  
-			//	bars_count_limit = (time_sig_top/3) * 6;
-				barts_count_limit = (time_sig_top/3) * 12;
-				LFOclock.setFreq(frequency*12);  // for 32ts
-				}      
-      		}
-   		}
+			i2ts_count_limit =16;  // these never change 32nds per note
+			i4ts_count_limit = 8;
+			i8ts_count_limit = 4;
+			i16ts_count_limit = 2;
+			i32ts_count_limit = 1;  
+			LFOclock.setFreq(frequency*(32/time_sig_bottom));	  // for 32ts	
+			barts_count_limit = (32*time_sig_top/time_sig_bottom);
+		}
 
 		if(running) 
 		{
@@ -2665,14 +2645,43 @@ struct Meander : Module
 
 			if ((fvalue=std::round(params[CONTROL_TEMPOBPM_PARAM].getValue()))!=tempo)
 			{
-			//	tempo = std::round(params[CONTROL_TEMPOBPM_PARAM].getValue());
 				tempo = fvalue;
 				DEBUG("tempo changed to %d", (int)tempo);
 			}
-			time_sig_top = std::round(params[CONTROL_TIMESIGNATURETOP_PARAM].getValue());
-			time_sig_bottom = std::round(params[CONTROL_TIMESIGNATUREBOTTOM_PARAM].getValue());
-			time_sig_bottom = std::pow(2,time_sig_bottom+1);
+		
 
+       		int ivalue=std::round(params[CONTROL_TIMESIGNATURETOP_PARAM].getValue());
+			if (ivalue!=time_sig_top)
+			{
+				time_sig_top = ivalue;
+				time_sig_changed=true;
+			}	
+			ivalue=std::round(params[CONTROL_TIMESIGNATUREBOTTOM_PARAM].getValue());
+			if (std::pow(2,ivalue+1)!=time_sig_bottom)
+			{
+				time_sig_bottom = std::pow(2,ivalue+1);
+				
+				int melody_note_length_divisor=0;
+				if (time_sig_bottom==2)
+				  melody_note_length_divisor=1;
+				else
+				if (time_sig_bottom==4)
+				  melody_note_length_divisor=2;
+				else
+				if (time_sig_bottom==8)
+				  melody_note_length_divisor=3;
+				else
+				if (time_sig_bottom==16)
+				  melody_note_length_divisor=4; 
+				theMeanderState.theMelodyParms.note_length_divisor=(int)std::pow(2,melody_note_length_divisor);
+				params[CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM].value=melody_note_length_divisor;
+
+				theMeanderState.theArpParms.increment=(int)std::pow(2,melody_note_length_divisor+1);
+				params[CONTROL_ARP_INCREMENT_PARAM].value=melody_note_length_divisor+1;
+				time_sig_changed=true;
+			}
+			
+			
 			frequency = tempo/60.0f;  // BPS
 			
 			if ((fvalue=std::round(params[CONTROL_ROOT_KEY_PARAM].getValue()))!=circle_root_key)
@@ -2714,7 +2723,7 @@ struct Meander : Module
 
 			
 			fvalue=params[CONTROL_HARMONY_DIVISOR_PARAM].getValue();
-			int ivalue=(int)fvalue;
+			ivalue=(int)fvalue;
 			ivalue=pow(2,ivalue);
 			if ((ivalue)!=theMeanderState.theHarmonyParms.chord_on_note_divisor)
 			{
@@ -2940,12 +2949,18 @@ struct Meander : Module
 		 	     
 	}  // end module process()
 
+	~Meander() 
+	{
+		
+	}
+
 
 	Meander() 
 	{
 		DEBUG("");  // clear debug log file
 	//	time_t systime=time(NULL);
 
+		
 		time_t rawtime;
   	//	struct tm *info;
 		time( &rawtime );
@@ -3726,7 +3741,7 @@ struct MeanderWidget : ModuleWidget
 
 			//************************
 
-			// drone area 
+			// display area 
 
 			// draw staff lines
 
@@ -3745,7 +3760,17 @@ struct MeanderWidget : ModuleWidget
 			if (beginEdge > 0) {
 				nvgBeginPath(args.vg);
 				nvgMoveTo(args.vg, beginEdge, beginTop+barLineVoffset);
-				nvgLineTo(args.vg, beginEdge, beginTop+barLineVlength);
+				nvgLineTo(args.vg, beginEdge, beginTop+(1.60*barLineVlength));
+				nvgStrokeColor(args.vg, nvgRGB(0, 0, 0));
+				nvgStrokeWidth(args.vg, lineWidth);
+				nvgStroke(args.vg);
+			}
+
+			 // draw bar right vertical edge
+			if (beginEdge > 0) {
+				nvgBeginPath(args.vg);
+				nvgMoveTo(args.vg, beginEdge+stafflineLength, beginTop+barLineVoffset);
+				nvgLineTo(args.vg, beginEdge+stafflineLength, beginTop+(1.60*barLineVlength));
 				nvgStrokeColor(args.vg, nvgRGB(0, 0, 0));
 				nvgStrokeWidth(args.vg, lineWidth);
 				nvgStroke(args.vg);
@@ -3773,18 +3798,28 @@ struct MeanderWidget : ModuleWidget
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			nvgFontSize(args.vg, 36);
-			pos=Vec(beginEdge+10, beginTop+80); 
+			pos=Vec(beginEdge+10, beginTop+60); 
 			snprintf(text, sizeof(text), "?");   // bass clef
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
 			nvgFontSize(args.vg, 40);
-			pos=Vec(beginEdge+53, beginTop+45);  
-			snprintf(text, sizeof(text), "$");   // 4/4
+			pos=Vec(beginEdge+53, beginTop+33);
+			snprintf(text, sizeof(text), "%d",time_sig_top);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			nvgFontSize(args.vg, 40);
-			pos=Vec(beginEdge+53, beginTop+81);  
-			snprintf(text, sizeof(text), "$");   // 4/4
+			pos=Vec(beginEdge+53, beginTop+69);
+			snprintf(text, sizeof(text), "%d",time_sig_top);  
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			nvgFontSize(args.vg, 40);
+			pos=Vec(beginEdge+53, beginTop+45);
+			snprintf(text, sizeof(text), "%d",time_sig_bottom);
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			nvgFontSize(args.vg, 40);
+			pos=Vec(beginEdge+53, beginTop+81);
+			snprintf(text, sizeof(text), "%d",time_sig_bottom);  
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			// do root_key signature
@@ -3909,8 +3944,13 @@ struct MeanderWidget : ModuleWidget
 			
 				display_note_position = 108.0-(octave*21.0)-(scale_note*3.0)-7.5;
 				DEBUG("display_note_position=%d", (int)display_note_position);
-			//	pos=Vec(beginEdge+70+(played_notes_circular_buffer[i].time32s*7), beginTop+45-display_note_position);   // finding ballpark
-				pos=Vec(beginEdge+70+(played_notes_circular_buffer[i].time32s*7), beginTop+display_note_position);  
+			
+				
+
+			//	pos=Vec(beginEdge+70+(played_notes_circular_buffer[i].time32s*7), beginTop+display_note_position);  
+
+				float note_x_spacing= 230.0/(32*time_sig_top/time_sig_bottom);  // experimenting with note spacing function of time_signature.  barts_count_limit is not in scope, needs to be global
+				pos=Vec(beginEdge+70+(played_notes_circular_buffer[i].time32s*note_x_spacing), beginTop+display_note_position);  
 				if (true)  // color code notes in staff rendering
 				{ 
 					if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_CHORD)
@@ -4122,7 +4162,8 @@ struct MeanderWidget : ModuleWidget
 			SigTopDisplay->box.pos = mm2px(Vec(42.2-4.5,50.9-5.6+3.0));
 			SigTopDisplay->box.size = mm2px(Vec(8.3, 5.6));
 			if (module) {
-			SigTopDisplay->value = &module->time_sig_top;
+		//	SigTopDisplay->value = &module->time_sig_top;
+			SigTopDisplay->value = &time_sig_top;
 			}
 			addChild(SigTopDisplay);
 			//SIG TOP KNOB
@@ -4132,7 +4173,8 @@ struct MeanderWidget : ModuleWidget
 			SigBottomDisplay->box.pos = mm2px(Vec(42.2-4.5,56-5.6+3.0));
 			SigBottomDisplay->box.size = mm2px(Vec(8.3, 5.6));
 			if (module) {
-			SigBottomDisplay->value = &module->time_sig_bottom;
+		//	SigBottomDisplay->value = &module->time_sig_bottom;
+			SigBottomDisplay->value = &time_sig_bottom;
 			}
 			addChild(SigBottomDisplay);
 			
