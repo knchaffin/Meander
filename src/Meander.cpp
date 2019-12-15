@@ -1598,7 +1598,9 @@ struct Meander : Module
 			for (int i=0; i<MAX_CIRCLE_STATIONS; ++i) {
 				CircleStepStates[i] = false;
 				lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+i].value=0.0f;
+			}
 
+			for (int i=0; i<16; ++i) {
 				if (i<theActiveHarmonyType.num_harmony_steps)
 					lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+i].value=0.25f;
 				else
@@ -2198,18 +2200,19 @@ struct Meander : Module
 						
 		// Reset
 
-	//	if (false)
 		if (time_sig_changed) 
 		{
 			LFOclock.setReset(1.0f);
 			bar_count = 0;
 			bar_note_count=0;
-			i32ts_count = 0;
-			i16ts_count = 0;
-			i8ts_count = 0;
-			i4ts_count = 0;
-			i2ts_count = 0;
-			barts_count = 0;
+		
+			i32ts_count = i32ts_count_limit;  // so play will start at the first beat, properly initialized
+			i16ts_count = i16ts_count_limit;
+			i8ts_count = i8ts_count_limit;
+			i4ts_count = i4ts_count_limit;
+			i2ts_count = i2ts_count_limit;
+			barts_count = barts_count_limit;
+
 			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 			theMeanderState.theArpParms.note_count=0;
 			resetPulse.trigger(0.01f);
@@ -2222,12 +2225,14 @@ struct Meander : Module
 			LFOclock.setReset(1.0f);
 			bar_count = 0;
 			bar_note_count=0;
-			i32ts_count = 0;
-			i16ts_count = 0;
-			i8ts_count = 0;
-			i4ts_count = 0;
-			i2ts_count = 0;
-			barts_count = 0;
+		
+			i32ts_count = i32ts_count_limit;  // so play will start at the first beat, properly initialized
+			i16ts_count = i16ts_count_limit;
+			i8ts_count = i8ts_count_limit;
+			i4ts_count = i4ts_count_limit;
+			i2ts_count = i2ts_count_limit;
+			barts_count = barts_count_limit;
+
 			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 			theMeanderState.theArpParms.note_count=0;
 			resetLight = 1.0;
@@ -2242,14 +2247,13 @@ struct Meander : Module
 
 		if(!running)
 		{
-			bar_count = 0;
-			bar_note_count=0;
-			i32ts_count = 0;
-			i16ts_count = 0;
-			i8ts_count = 0;
-			i4ts_count = 0;
-			i2ts_count = 0;
-			barts_count = 0; 
+			i32ts_count = i32ts_count_limit;  // so play will start at the first beat, properly initialized
+			i16ts_count = i16ts_count_limit;
+			i8ts_count = i8ts_count_limit;
+			i4ts_count = i4ts_count_limit;
+			i2ts_count = i2ts_count_limit;
+			barts_count = barts_count_limit;
+		
 			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 			theMeanderState.theArpParms.note_count=0;
 			outputs[OUT_CLOCK_BAR_OUTPUT].setVoltage(0.0f);	   // bars 	
@@ -2288,7 +2292,7 @@ struct Meander : Module
 				if (barts_count == barts_count_limit)
 				{
 					barts_count = 0;  
-					++bar_count;
+				//	++bar_count;
 					theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 					bar_note_count=0;
 			
@@ -2301,6 +2305,7 @@ struct Meander : Module
 						doMelody();
 						melodyPlayed=true;
 					}
+					++bar_count;
 					clockPulse1ts.trigger(trigger_length);
 					// Pulse the output gate 
 					barGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
@@ -2616,13 +2621,10 @@ struct Meander : Module
 				for (int j=0; j<12; ++j) 
 				{
 					if (j!=i) {
-					//	CircleStepStates[j] = false;
-						lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+j].value=0.0f;
+				//		lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+j].value=0.0f;
 					}
 				}
-
-				
-				
+					
 			}
 		
 			lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+theCirclePosition].value=1.0f;
@@ -3757,6 +3759,7 @@ struct MeanderWidget : ModuleWidget
 			yHalfLineSpacing=3.0f;
 
 		    // draw bar left vertical edge
+
 			if (beginEdge > 0) {
 				nvgBeginPath(args.vg);
 				nvgMoveTo(args.vg, beginEdge, beginTop+barLineVoffset);
