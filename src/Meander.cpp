@@ -40,7 +40,7 @@ using namespace rack;
 #define MAX_STEPS 16
 #define MAX_CIRCLE_STATIONS 12
 #define MAX_HARMONIC_DEGREES 7
-#define MAX_AVAILABLE_HARMONY_PRESETS 31  // change this as new harmony presets are created
+#define MAX_AVAILABLE_HARMONY_PRESETS 48  // change this as new harmony presets are created
 
 ParamWidget* CircleOf5thsOuterButton[MAX_CIRCLE_STATIONS];  
 LightWidget* CircleOf5thsOuterButtonLight[MAX_CIRCLE_STATIONS]; 
@@ -120,16 +120,6 @@ int circleDegreeLookup[]= {0, 0, 2, 4, 6, 1, 3, 5};  // to convert from arabic r
 int arabicStepDegreeSemicircleIndex[8];  // where is 1, 2... step in degree semicircle  // [8] so 1 based indexing can be used
 
 
-struct MarkovTransitionElement
-{
-	int index;
-	float probability;
-};
-
-bool Compare_Probabilities(const MarkovTransitionElement& a, const MarkovTransitionElement &b)
-{
-	return a.probability < b.probability;
-}
 
 //*******************************************
 
@@ -409,7 +399,31 @@ unsigned char circle_of_fifths_degrees_LC[][MAXSHORTSTRLEN]= {
 int  step_chord_notes[MAX_STEPS][MAX_NOTES_CANDIDATES];
 int  num_step_chord_notes[MAX_STEPS]={};
 
-float MarkovProgressionTransitionMatrix[8][8]={  // 8x8 so degrees can be 1 indexed
+float MarkovProgressionTransitionMatrixTemplate[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // I
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // II
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // III
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // IV
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // V
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // VI
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrix_I_IV_V[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.00, 0.00, 0.60, 0.40, 0.00, 0.00},  // I
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // II
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // III
+	{0.00, 0.20, 0.00, 0.00, 0.00, 0.80, 0.00, 0.00},  // IV
+	{0.00, 0.70, 0.00, 0.00, 0.30, 0.00, 0.00, 0.00},  // V
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // VI
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+
+
+float MarkovProgressionTransitionMatrixBach1[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.18, 0.01, 0.20, 0.41, 0.09, 0.12},  // I
 	{0.00, 0.01, 0.00, 0.03, 0.00, 0.89, 0.00, 0.07},  // II
@@ -418,6 +432,72 @@ float MarkovProgressionTransitionMatrix[8][8]={  // 8x8 so degrees can be 1 inde
 	{0.00, 0.80, 0.00, 0.02, 0.06, 0.00, 0.10, 0.20},  // V
 	{0.00, 0.03, 0.54, 0.03, 0.14, 0.19, 0.00, 0.08},  // VI
 	{0.00, 0.81, 0.00, 0.01, 0.03, 0.15, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixBach2[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.15, 0.01, 0.28, 0.41, 0.09, 0.06},  // I
+	{0.00, 0.01, 0.00, 0.00, 0.00, 0.71, 0.01, 0.25},  // II
+	{0.00, 0.03, 0.03, 0.00, 0.52, 0.06, 0.32, 0.03},  // III
+	{0.00, 0.22, 0.13, 0.00, 0.00, 0.39, 0.02, 0.23},  // IV
+	{0.00, 0.82, 0.01, 0.00, 0.07, 0.00, 0.09, 0.00},  // V
+	{0.00, 0.15, 0.29, 0.05, 0.11, 0.32, 0.00, 0.09},  // VI
+	{0.00, 0.91, 0.00, 0.01, 0.02, 0.04, 0.03, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixMozart1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.08, 0.00, 0.07, 0.68, 0.06, 0.11},  // I
+	{0.00, 0.37, 0.00, 0.00, 0.00, 0.46, 0.00, 0.17},  // II
+	{0.00, 0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00},  // III
+	{0.00, 0.42, 0.10, 0.00, 0.00, 0.39, 0.00, 0.09},  // IV
+	{0.00, 0.82, 0.00, 0.00, 0.05, 0.00, 0.07, 0.05},  // V
+	{0.00, 0.14, 0.51, 0.00, 0.16, 0.05, 0.00, 0.14},  // VI
+	{0.00, 0.76, 0.01, 0.00, 0.00, 0.23, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixMozart2[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.13, 0.00, 0.15, 0.62, 0.05, 0.05},  // I
+	{0.00, 0.49, 0.00, 0.01, 0.00, 0.40, 0.01, 0.09},  // II
+	{0.00, 0.67, 0.00, 0.00, 0.00, 0.00, 0.33, 0.00},  // III
+	{0.00, 0.64, 0.14, 0.00, 0.00, 0.15, 0.00, 0.07},  // IV
+	{0.00, 0.94, 0.00, 0.00, 0.01, 0.00, 0.04, 0.01},  // V
+	{0.00, 0.11, 0.51, 0.00, 0.14, 0.20, 0.00, 0.04},  // VI
+	{0.00, 0.82, 0.00, 0.01, 0.01, 0.16, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixPalestrina1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.15, 0.13, 0.28, 0.14, 0.22, 0.08},  // I
+	{0.00, 0.08, 0.00, 0.15, 0.13, 0.28, 0.14, 0.22},  // II
+	{0.00, 0.22, 0.08, 0.00, 0.15, 0.13, 0.28, 0.14},  // III
+	{0.00, 0.14, 0.22, 0.08, 0.00, 0.15, 0.13, 0.28},  // IV
+	{0.00, 0.28, 0.14, 0.22, 0.08, 0.00, 0.15, 0.13},  // V
+	{0.00, 0.13, 0.28, 0.14, 0.22, 0.08, 0.00, 0.15},  // VI
+	{0.00, 0.15, 0.13, 0.28, 0.14, 0.22, 0.08, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixBeethoven1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.10, 0.01, 0.13, 0.52, 0.02, 0.22},  // I
+	{0.00, 0.06, 0.00, 0.02, 0.00, 0.87, 0.00, 0.05},  // II
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.67, 0.33, 0.00},  // III
+	{0.00, 0.33, 0.03, 0.07, 0.00, 0.40, 0.03, 0.13},  // IV
+	{0.00, 0.56, 0.22, 0.01, 0.04, 0.00, 0.07, 0.11},  // V
+	{0.00, 0.06, 0.44, 0.00, 0.06, 0.11, 0.00, 0.33},  // VI
+	{0.00, 0.80, 0.00, 0.00, 0.03, 0.17, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixTraditional1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.00, 0.25, 0.25, 0.25, 0.25, 0.00},  // I
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.50, 0.00, 0.50},  // II
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 0.00},  // III
+	{0.00, 0.25, 0.25, 0.00, 0.00, 0.25, 0.00, 0.25},  // IV
+	{0.00, 0.50, 0.00, 0.00, 0.00, 0.00, 0.50, 0.00},  // V
+	{0.00, 0.00, 0.50, 0.00, 0.50, 0.00, 0.00, 0.00},  // VI
+	{0.00, 0.50, 0.00, 0.00, 0.00, 0.50, 0.00, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
 struct chord_type_info 
@@ -1075,8 +1155,8 @@ void init_harmony()
 		theHarmonyTypes[24].harmony_steps[14]=3;
 		theHarmonyTypes[24].harmony_steps[15]=6;
 		
-		// (harmony_type==25)             /* Pachelbel */  // 
-		strcpy(theHarmonyTypes[25].harmony_type_desc, "Pachelbel Canon - DMaj" );
+		// (harmony_type==25)             /* Pachelbel Canon*/  // 
+		strcpy(theHarmonyTypes[25].harmony_type_desc, "Canon - DMaj" );
 		strcpy(theHarmonyTypes[25].harmony_degrees_desc, "I - V - vi - iii - IV - I - IV - V" );
 	    DEBUG(theHarmonyTypes[25].harmony_type_desc);
         theHarmonyTypes[25].num_harmony_steps=8;  // 1-8
@@ -1103,8 +1183,8 @@ void init_harmony()
 		theHarmonyTypes[26].harmony_steps[2]=6;
 		theHarmonyTypes[26].harmony_steps[3]=4;
 		
-		// (harmony_type==27)             /* Andalusion Cadence*/  // 
-		strcpy(theHarmonyTypes[27].harmony_type_desc, "Andalusion Cadence" );
+		// (harmony_type==27)             /* Andalusion Cadence 1*/  // 
+		strcpy(theHarmonyTypes[27].harmony_type_desc, "Andalusion Cadence 1" );
 		strcpy(theHarmonyTypes[27].harmony_degrees_desc, "i - VII - VI - V" );
 	    DEBUG(theHarmonyTypes[27].harmony_type_desc);
         theHarmonyTypes[27].num_harmony_steps=4;  // 1-8
@@ -1176,8 +1256,8 @@ void init_harmony()
 		theHarmonyTypes[30].harmony_steps[0]=1;
 		theHarmonyTypes[30].harmony_steps[1]=5;
 
-		// (harmony_type==31)             /* Markov Chain */  // 
-		strcpy(theHarmonyTypes[31].harmony_type_desc, "Markov Chain" );
+		// (harmony_type==31)             /* Markov Chain  Bach 1*/  // 
+		strcpy(theHarmonyTypes[31].harmony_type_desc, "Markov Chain-Bach 1" );
 		strcpy(theHarmonyTypes[31].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
 	    DEBUG(theHarmonyTypes[31].harmony_type_desc);
         theHarmonyTypes[31].num_harmony_steps=7;  // 1-8
@@ -1190,6 +1270,235 @@ void init_harmony()
 		theHarmonyTypes[31].harmony_steps[4]=5;
 		theHarmonyTypes[31].harmony_steps[5]=6;
 		theHarmonyTypes[31].harmony_steps[6]=7;
+
+		// (harmony_type==32)             /* Pop */  // 
+		strcpy(theHarmonyTypes[32].harmony_type_desc, "Pop " );
+		strcpy(theHarmonyTypes[32].harmony_degrees_desc, "I-ii-IV-V" );
+	    DEBUG(theHarmonyTypes[32].harmony_type_desc);
+        theHarmonyTypes[32].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[32].min_steps=1;
+	    theHarmonyTypes[32].max_steps=theHarmonyTypes[32].num_harmony_steps;
+		theHarmonyTypes[32].harmony_steps[0]=1;
+		theHarmonyTypes[32].harmony_steps[1]=2;
+		theHarmonyTypes[32].harmony_steps[2]=4;
+		theHarmonyTypes[32].harmony_steps[3]=5;
+		
+		// (harmony_type==33)             /* Classical */  // 
+		strcpy(theHarmonyTypes[33].harmony_type_desc, "Classical" );
+		strcpy(theHarmonyTypes[33].harmony_degrees_desc, "I-V-I-vi-ii-V-I" );
+	    DEBUG(theHarmonyTypes[33].harmony_type_desc);
+        theHarmonyTypes[33].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[33].min_steps=1;
+	    theHarmonyTypes[33].max_steps=theHarmonyTypes[33].num_harmony_steps;
+		theHarmonyTypes[33].harmony_steps[0]=1;
+		theHarmonyTypes[33].harmony_steps[1]=5;
+		theHarmonyTypes[33].harmony_steps[2]=1;
+		theHarmonyTypes[33].harmony_steps[3]=6;
+		theHarmonyTypes[33].harmony_steps[4]=2;
+		theHarmonyTypes[33].harmony_steps[5]=5;
+		theHarmonyTypes[33].harmony_steps[6]=1;
+
+		// (harmony_type==34)             /*Mozart */  // 
+		strcpy(theHarmonyTypes[34].harmony_type_desc, "Mozart " );
+		strcpy(theHarmonyTypes[34].harmony_degrees_desc, "I-ii-V-I" );
+	    DEBUG(theHarmonyTypes[34].harmony_type_desc);
+        theHarmonyTypes[34].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[34].min_steps=1;
+	    theHarmonyTypes[34].max_steps=theHarmonyTypes[34].num_harmony_steps;
+		theHarmonyTypes[34].harmony_steps[0]=1;
+		theHarmonyTypes[34].harmony_steps[1]=2;
+		theHarmonyTypes[34].harmony_steps[2]=5;
+		theHarmonyTypes[34].harmony_steps[3]=1;
+
+		// (harmony_type==35)             /*Classical Tonal */  // 
+		strcpy(theHarmonyTypes[35].harmony_type_desc, "Classical Tonal" );
+		strcpy(theHarmonyTypes[35].harmony_degrees_desc, "I-V-I-IV-I" );
+	    DEBUG(theHarmonyTypes[35].harmony_type_desc);
+        theHarmonyTypes[35].num_harmony_steps=5;  // 1-8
+		theHarmonyTypes[35].min_steps=1;
+	    theHarmonyTypes[35].max_steps=theHarmonyTypes[35].num_harmony_steps;
+		theHarmonyTypes[35].harmony_steps[0]=1;
+		theHarmonyTypes[35].harmony_steps[1]=5;
+		theHarmonyTypes[35].harmony_steps[2]=1;
+		theHarmonyTypes[35].harmony_steps[3]=4;
+		theHarmonyTypes[35].harmony_steps[4]=1;
+
+		// (harmony_type==36)             /*Sensitive */  // 
+		strcpy(theHarmonyTypes[36].harmony_type_desc, "Sensitive" );
+		strcpy(theHarmonyTypes[36].harmony_degrees_desc, "VI-IV-I-V" );
+	    DEBUG(theHarmonyTypes[36].harmony_type_desc);
+        theHarmonyTypes[36].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[36].min_steps=1;
+	    theHarmonyTypes[36].max_steps=theHarmonyTypes[36].num_harmony_steps;
+		theHarmonyTypes[36].harmony_steps[0]=6;
+		theHarmonyTypes[36].harmony_steps[1]=4;
+		theHarmonyTypes[36].harmony_steps[2]=1;
+		theHarmonyTypes[36].harmony_steps[3]=5;
+		
+		// (harmony_type==37)             /*Jass */  // 
+		strcpy(theHarmonyTypes[37].harmony_type_desc, "Jazz" );
+		strcpy(theHarmonyTypes[37].harmony_degrees_desc, "ii-V-I" );
+	    DEBUG(theHarmonyTypes[37].harmony_type_desc);
+        theHarmonyTypes[37].num_harmony_steps=3;  // 1-8
+		theHarmonyTypes[37].min_steps=1;
+	    theHarmonyTypes[37].max_steps=theHarmonyTypes[37].num_harmony_steps;
+		theHarmonyTypes[37].harmony_steps[0]=2;
+		theHarmonyTypes[37].harmony_steps[1]=5;
+		theHarmonyTypes[37].harmony_steps[2]=1;
+
+		// (harmony_type==38)             /*Pop */  // 
+		strcpy(theHarmonyTypes[38].harmony_type_desc, "Pop" );
+		strcpy(theHarmonyTypes[38].harmony_degrees_desc, "I-IV-ii-V" );
+	    DEBUG(theHarmonyTypes[38].harmony_type_desc);
+        theHarmonyTypes[38].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[38].min_steps=1;
+	    theHarmonyTypes[38].max_steps=theHarmonyTypes[38].num_harmony_steps;
+		theHarmonyTypes[38].harmony_steps[0]=1;
+		theHarmonyTypes[38].harmony_steps[1]=4;
+		theHarmonyTypes[38].harmony_steps[2]=2;
+		theHarmonyTypes[38].harmony_steps[3]=5;
+
+		// (harmony_type==39)             /*Pop */  // 
+		strcpy(theHarmonyTypes[39].harmony_type_desc, "Pop" );
+		strcpy(theHarmonyTypes[39].harmony_degrees_desc, "I-ii-iii-IV-V" );
+	    DEBUG(theHarmonyTypes[39].harmony_type_desc);
+        theHarmonyTypes[39].num_harmony_steps=5;  // 1-8
+		theHarmonyTypes[39].min_steps=1;
+	    theHarmonyTypes[39].max_steps=theHarmonyTypes[39].num_harmony_steps;
+		theHarmonyTypes[39].harmony_steps[0]=1;
+		theHarmonyTypes[39].harmony_steps[1]=2;
+		theHarmonyTypes[39].harmony_steps[2]=3;
+		theHarmonyTypes[39].harmony_steps[3]=4;
+		theHarmonyTypes[39].harmony_steps[4]=5;
+
+		// (harmony_type==40)             /*Pop */  // 
+		strcpy(theHarmonyTypes[40].harmony_type_desc, "Pop" );
+		strcpy(theHarmonyTypes[40].harmony_degrees_desc, "I-iii-IV-iv" );  // can't really do a IV and iv together
+	    DEBUG(theHarmonyTypes[40].harmony_type_desc);
+        theHarmonyTypes[40].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[40].min_steps=1;
+	    theHarmonyTypes[40].max_steps=theHarmonyTypes[40].num_harmony_steps;
+		theHarmonyTypes[40].harmony_steps[0]=1;
+		theHarmonyTypes[40].harmony_steps[1]=3;
+		theHarmonyTypes[40].harmony_steps[2]=4;
+		theHarmonyTypes[40].harmony_steps[3]=4;
+
+		// (harmony_type==41)             /*Andalusian Cadence 2 */  // 
+		strcpy(theHarmonyTypes[41].harmony_type_desc, "Andalusian Cadence 2" );
+		strcpy(theHarmonyTypes[41].harmony_degrees_desc, "VI-V-IV-III" );
+	    DEBUG(theHarmonyTypes[41].harmony_type_desc);
+        theHarmonyTypes[41].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[41].min_steps=1;
+	    theHarmonyTypes[41].max_steps=theHarmonyTypes[41].num_harmony_steps;
+		theHarmonyTypes[41].harmony_steps[0]=6;
+		theHarmonyTypes[41].harmony_steps[1]=5;
+		theHarmonyTypes[41].harmony_steps[2]=4;
+		theHarmonyTypes[41].harmony_steps[3]=3;
+	
+		// (harmony_type==42)             /* Markov Chain  Bach 2*/  // 
+		strcpy(theHarmonyTypes[42].harmony_type_desc, "Markov Chain-Bach 2" );
+		strcpy(theHarmonyTypes[42].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[42].harmony_type_desc);
+        theHarmonyTypes[42].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[42].min_steps=1;
+	    theHarmonyTypes[42].max_steps=theHarmonyTypes[42].num_harmony_steps;
+		theHarmonyTypes[42].harmony_steps[0]=1;
+		theHarmonyTypes[42].harmony_steps[1]=2;
+		theHarmonyTypes[42].harmony_steps[2]=3;
+		theHarmonyTypes[42].harmony_steps[3]=4;
+		theHarmonyTypes[42].harmony_steps[4]=5;
+		theHarmonyTypes[42].harmony_steps[5]=6;
+		theHarmonyTypes[42].harmony_steps[6]=7;
+
+		// (harmony_type==43)             /* Markov Chain Mozart 1*/  // 
+		strcpy(theHarmonyTypes[43].harmony_type_desc, "Markov Chain-Mozart 1" );
+		strcpy(theHarmonyTypes[43].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[43].harmony_type_desc);
+        theHarmonyTypes[43].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[43].min_steps=1;
+	    theHarmonyTypes[43].max_steps=theHarmonyTypes[43].num_harmony_steps;
+		theHarmonyTypes[43].harmony_steps[0]=1;
+		theHarmonyTypes[43].harmony_steps[1]=2;
+		theHarmonyTypes[43].harmony_steps[2]=3;
+		theHarmonyTypes[43].harmony_steps[3]=4;
+		theHarmonyTypes[43].harmony_steps[4]=5;
+		theHarmonyTypes[43].harmony_steps[5]=6;
+		theHarmonyTypes[43].harmony_steps[6]=7;
+
+		// (harmony_type==44)             /* Markov Chain Mozart 2*/  // 
+		strcpy(theHarmonyTypes[44].harmony_type_desc, "Markov Chain-Mozart 2" );
+		strcpy(theHarmonyTypes[44].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[44].harmony_type_desc);
+        theHarmonyTypes[44].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[44].min_steps=1;
+	    theHarmonyTypes[44].max_steps=theHarmonyTypes[44].num_harmony_steps;
+		theHarmonyTypes[44].harmony_steps[0]=1;
+		theHarmonyTypes[44].harmony_steps[1]=2;
+		theHarmonyTypes[44].harmony_steps[2]=3;
+		theHarmonyTypes[44].harmony_steps[3]=4;
+		theHarmonyTypes[44].harmony_steps[4]=5;
+		theHarmonyTypes[44].harmony_steps[5]=6;
+		theHarmonyTypes[44].harmony_steps[6]=7;
+
+		// (harmony_type==45)             /* Markov Chain Palestrina 1*/  // 
+		strcpy(theHarmonyTypes[45].harmony_type_desc, "Markov Chain-Palestrina 1" );
+		strcpy(theHarmonyTypes[45].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[45].harmony_type_desc);
+        theHarmonyTypes[45].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[45].min_steps=1;
+	    theHarmonyTypes[45].max_steps=theHarmonyTypes[45].num_harmony_steps;
+		theHarmonyTypes[45].harmony_steps[0]=1;
+		theHarmonyTypes[45].harmony_steps[1]=2;
+		theHarmonyTypes[45].harmony_steps[2]=3;
+		theHarmonyTypes[45].harmony_steps[3]=4;
+		theHarmonyTypes[45].harmony_steps[4]=5;
+		theHarmonyTypes[45].harmony_steps[5]=6;
+		theHarmonyTypes[45].harmony_steps[6]=7;
+
+		// (harmony_type==46)             /* Markov Chain Beethoven 1*/  // 
+		strcpy(theHarmonyTypes[46].harmony_type_desc, "Markov Chain-Beethoven 1" );
+		strcpy(theHarmonyTypes[46].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[46].harmony_type_desc);
+        theHarmonyTypes[46].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[46].min_steps=1;
+	    theHarmonyTypes[46].max_steps=theHarmonyTypes[46].num_harmony_steps;
+		theHarmonyTypes[46].harmony_steps[0]=1;
+		theHarmonyTypes[46].harmony_steps[1]=2;
+		theHarmonyTypes[46].harmony_steps[2]=3;
+		theHarmonyTypes[46].harmony_steps[3]=4;
+		theHarmonyTypes[46].harmony_steps[4]=5;
+		theHarmonyTypes[46].harmony_steps[5]=6;
+		theHarmonyTypes[46].harmony_steps[6]=7;
+
+		// (harmony_type==47)             /* Markov Chain Traditional 1*/  // 
+		strcpy(theHarmonyTypes[47].harmony_type_desc, "Markov Chain-Traditional 1" );
+		strcpy(theHarmonyTypes[47].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[47].harmony_type_desc);
+        theHarmonyTypes[47].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[47].min_steps=1;
+	    theHarmonyTypes[47].max_steps=theHarmonyTypes[47].num_harmony_steps;
+		theHarmonyTypes[47].harmony_steps[0]=1;
+		theHarmonyTypes[47].harmony_steps[1]=2;
+		theHarmonyTypes[47].harmony_steps[2]=3;
+		theHarmonyTypes[47].harmony_steps[3]=4;
+		theHarmonyTypes[47].harmony_steps[4]=5;
+		theHarmonyTypes[47].harmony_steps[5]=6;
+		theHarmonyTypes[47].harmony_steps[6]=7;
+
+		// (harmony_type==48)             /* Markov Chain I-IV-V*/  // 
+		strcpy(theHarmonyTypes[48].harmony_type_desc, "Markov Chain-I-IV-V" );
+		strcpy(theHarmonyTypes[48].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[48].harmony_type_desc);
+        theHarmonyTypes[48].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[48].min_steps=1;
+	    theHarmonyTypes[48].max_steps=theHarmonyTypes[48].num_harmony_steps;
+		theHarmonyTypes[48].harmony_steps[0]=1;
+		theHarmonyTypes[48].harmony_steps[1]=2;
+		theHarmonyTypes[48].harmony_steps[2]=3;
+		theHarmonyTypes[48].harmony_steps[3]=4;
+		theHarmonyTypes[48].harmony_steps[4]=5;
+		theHarmonyTypes[48].harmony_steps[5]=6;
+		theHarmonyTypes[48].harmony_steps[6]=7;
 
 
 		// End of preset harmony types
@@ -1787,26 +2096,10 @@ struct Meander : Module
 			step=step%theActiveHarmonyType.num_harmony_steps;
 		}
 		else
-		if (harmony_type==31) // Markov Chain
+		if ((harmony_type==31)||(harmony_type==42)||(harmony_type==43)||(harmony_type==44)||(harmony_type==45)||(harmony_type==46)||(harmony_type==47)||(harmony_type==48))  // Markov chains
 		{
-			/*
-			float MarkovProgressionTransitionMatrix[8][8]={  // 8x8 so degrees can be 1 indexed
-				{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
-				{0.00, 0.00, 0.18, 0.01, 0.20, 0.41, 0.09, 0.12},  // I
-				{0.00, 0.01, 0.00, 0.03, 0.00, 0.89, 0.00, 0.07},  // II
-				{0.00, 0.06, 0.06, 0.00, 0.25, 0.19, 0.31, 0.13},  // III
-				{0.00, 0.22, 0.14, 0.00, 0.00, 0.48, 0.00, 0.15},  // IV
-				{0.00, 0.80, 0.00, 0.02, 0.06, 0.00, 0.10, 0.20},  // V
-				{0.00, 0.03, 0.54, 0.03, 0.14, 0.19, 0.00, 0.08},  // VI
-				{0.00, 0.81, 0.00, 0.01, 0.03, 0.15, 0.00, 0.00}}; // VII
-			//   dummy  I     II    III   IV    V     VI    VII 
-			*/
-		 
 			float rnd = rack::random::uniform();
 			DEBUG("rnd=%.2f",rnd);
-		//	step = (int)((rnd*theActiveHarmonyType.num_harmony_steps));
-		//	step=step%theActiveHarmonyType.num_harmony_steps;
-
 		    DEBUG("Markov theMeanderState.theHarmonyParms.last_circle_step=%d", theMeanderState.theHarmonyParms.last_circle_step);
 
 			if (theMeanderState.theHarmonyParms.last_circle_step==-1)
@@ -1822,13 +2115,63 @@ struct Meander : Module
 				for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
 				{
 					probabilityTargetBottom[i]=bottom;
-					probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrix[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					if (harmony_type==31)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==42)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==43)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==44)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==45)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==46)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==47)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixTraditional1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==48)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+										
+					
 					bottom=probabilityTargetTop[i];
 				}
 				DEBUG("Markov Probabilities:");
 				for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
 				{
-					DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrix[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+				//	if (harmony_type==31)
+				//		DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					if (harmony_type==31)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==42)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==43)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==44)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==45)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==46)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==47)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixTradional1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==48)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+										
+
 					if ((rnd>probabilityTargetBottom[i])&&(rnd<= probabilityTargetTop[i]))
 					{
 						step=i-1;
@@ -1838,16 +2181,15 @@ struct Meander : Module
 			
 			}
 		
-		}	
-
-			
+		}
+		
+    	
 
 		DEBUG("step=%d", step);
 
 		int degreeStep=(theActiveHarmonyType.harmony_steps[step])%8;  
 		DEBUG("degreeStep=%d", degreeStep);
-
-	//	theMeanderState.theHarmonyParms.last_circle_step=degreeStep;  // used for Markov chain
+	
 		theMeanderState.theHarmonyParms.last_circle_step=step;  // used for Markov chain
 
 		//find this in semicircle
@@ -1864,8 +2206,6 @@ struct Meander : Module
 			}
 		}
 		
-	   
-
 		CircleStepStates[step] = true;
 
 		if (!theMeanderState.userControllingHarmonyFromCircle)
