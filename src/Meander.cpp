@@ -23,6 +23,7 @@
 // the following will "comment out" all DEBUG() calls for speed
 #define DEBUG(format, ...) // DEBUG(format, ...)
 
+
 bool initialized=false;
 
 bool Audit_enable=false;  
@@ -39,7 +40,7 @@ using namespace rack;
 #define MAX_STEPS 16
 #define MAX_CIRCLE_STATIONS 12
 #define MAX_HARMONIC_DEGREES 7
-#define MAX_AVAILABLE_HARMONY_PRESETS 24  // change this as new harmony presets are created
+#define MAX_AVAILABLE_HARMONY_PRESETS 48  // change this as new harmony presets are created
 
 ParamWidget* CircleOf5thsOuterButton[MAX_CIRCLE_STATIONS];  
 LightWidget* CircleOf5thsOuterButtonLight[MAX_CIRCLE_STATIONS]; 
@@ -117,6 +118,8 @@ int harmonyStepsChanged=0;
 int semiCircleDegrees[]={1, 5, 2, 6, 3, 7, 4};  // default order if starting at C
 int circleDegreeLookup[]= {0, 0, 2, 4, 6, 1, 3, 5};  // to convert from arabic roman equivalents to circle degrees
 int arabicStepDegreeSemicircleIndex[8];  // where is 1, 2... step in degree semicircle  // [8] so 1 based indexing can be used
+
+
 
 //*******************************************
 
@@ -264,7 +267,9 @@ struct HarmonyParms
 	double seed=1234;
 	int noctaves=3;
 	float period=100.0;
+	int last_circle_step=-1;  // used for Markov chains
 	int last_chord_type=0;
+	int bar_harmony_chords_counted_note=0;
 	struct note last[4];
 };  
 
@@ -320,6 +325,7 @@ struct BassParms
 	int bass_on_note_divisor=1;  // 1, 2, 4, 8   doHarmony() on these boundaries
 	bool octave_enabled=true;  // play bass as 2 notes an octave apart
 	float volume=10.0f;  // 0-10 V
+	int bar_bass_counted_note=0;
 	struct note last[4];
 }; 
 
@@ -393,7 +399,106 @@ unsigned char circle_of_fifths_degrees_LC[][MAXSHORTSTRLEN]= {
 int  step_chord_notes[MAX_STEPS][MAX_NOTES_CANDIDATES];
 int  num_step_chord_notes[MAX_STEPS]={};
 
+float MarkovProgressionTransitionMatrixTemplate[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // I
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // II
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // III
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // IV
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // V
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // VI
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
 
+float MarkovProgressionTransitionMatrix_I_IV_V[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.00, 0.00, 0.60, 0.40, 0.00, 0.00},  // I
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // II
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // III
+	{0.00, 0.20, 0.00, 0.00, 0.00, 0.80, 0.00, 0.00},  // IV
+	{0.00, 0.70, 0.00, 0.00, 0.30, 0.00, 0.00, 0.00},  // V
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // VI
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+
+
+float MarkovProgressionTransitionMatrixBach1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.18, 0.01, 0.20, 0.41, 0.09, 0.12},  // I
+	{0.00, 0.01, 0.00, 0.03, 0.00, 0.89, 0.00, 0.07},  // II
+	{0.00, 0.06, 0.06, 0.00, 0.25, 0.19, 0.31, 0.13},  // III
+	{0.00, 0.22, 0.14, 0.00, 0.00, 0.48, 0.00, 0.15},  // IV
+	{0.00, 0.80, 0.00, 0.02, 0.06, 0.00, 0.10, 0.20},  // V
+	{0.00, 0.03, 0.54, 0.03, 0.14, 0.19, 0.00, 0.08},  // VI
+	{0.00, 0.81, 0.00, 0.01, 0.03, 0.15, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixBach2[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.15, 0.01, 0.28, 0.41, 0.09, 0.06},  // I
+	{0.00, 0.01, 0.00, 0.00, 0.00, 0.71, 0.01, 0.25},  // II
+	{0.00, 0.03, 0.03, 0.00, 0.52, 0.06, 0.32, 0.03},  // III
+	{0.00, 0.22, 0.13, 0.00, 0.00, 0.39, 0.02, 0.23},  // IV
+	{0.00, 0.82, 0.01, 0.00, 0.07, 0.00, 0.09, 0.00},  // V
+	{0.00, 0.15, 0.29, 0.05, 0.11, 0.32, 0.00, 0.09},  // VI
+	{0.00, 0.91, 0.00, 0.01, 0.02, 0.04, 0.03, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixMozart1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.08, 0.00, 0.07, 0.68, 0.06, 0.11},  // I
+	{0.00, 0.37, 0.00, 0.00, 0.00, 0.46, 0.00, 0.17},  // II
+	{0.00, 0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00},  // III
+	{0.00, 0.42, 0.10, 0.00, 0.00, 0.39, 0.00, 0.09},  // IV
+	{0.00, 0.82, 0.00, 0.00, 0.05, 0.00, 0.07, 0.05},  // V
+	{0.00, 0.14, 0.51, 0.00, 0.16, 0.05, 0.00, 0.14},  // VI
+	{0.00, 0.76, 0.01, 0.00, 0.00, 0.23, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixMozart2[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.13, 0.00, 0.15, 0.62, 0.05, 0.05},  // I
+	{0.00, 0.49, 0.00, 0.01, 0.00, 0.40, 0.01, 0.09},  // II
+	{0.00, 0.67, 0.00, 0.00, 0.00, 0.00, 0.33, 0.00},  // III
+	{0.00, 0.64, 0.14, 0.00, 0.00, 0.15, 0.00, 0.07},  // IV
+	{0.00, 0.94, 0.00, 0.00, 0.01, 0.00, 0.04, 0.01},  // V
+	{0.00, 0.11, 0.51, 0.00, 0.14, 0.20, 0.00, 0.04},  // VI
+	{0.00, 0.82, 0.00, 0.01, 0.01, 0.16, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixPalestrina1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.15, 0.13, 0.28, 0.14, 0.22, 0.08},  // I
+	{0.00, 0.08, 0.00, 0.15, 0.13, 0.28, 0.14, 0.22},  // II
+	{0.00, 0.22, 0.08, 0.00, 0.15, 0.13, 0.28, 0.14},  // III
+	{0.00, 0.14, 0.22, 0.08, 0.00, 0.15, 0.13, 0.28},  // IV
+	{0.00, 0.28, 0.14, 0.22, 0.08, 0.00, 0.15, 0.13},  // V
+	{0.00, 0.13, 0.28, 0.14, 0.22, 0.08, 0.00, 0.15},  // VI
+	{0.00, 0.15, 0.13, 0.28, 0.14, 0.22, 0.08, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixBeethoven1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.10, 0.01, 0.13, 0.52, 0.02, 0.22},  // I
+	{0.00, 0.06, 0.00, 0.02, 0.00, 0.87, 0.00, 0.05},  // II
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.67, 0.33, 0.00},  // III
+	{0.00, 0.33, 0.03, 0.07, 0.00, 0.40, 0.03, 0.13},  // IV
+	{0.00, 0.56, 0.22, 0.01, 0.04, 0.00, 0.07, 0.11},  // V
+	{0.00, 0.06, 0.44, 0.00, 0.06, 0.11, 0.00, 0.33},  // VI
+	{0.00, 0.80, 0.00, 0.00, 0.03, 0.17, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
+
+float MarkovProgressionTransitionMatrixTraditional1[8][8]={  // 8x8 so degrees can be 1 indexed
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
+	{0.00, 0.00, 0.00, 0.25, 0.25, 0.25, 0.25, 0.00},  // I
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.50, 0.00, 0.50},  // II
+	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 0.00},  // III
+	{0.00, 0.25, 0.25, 0.00, 0.00, 0.25, 0.00, 0.25},  // IV
+	{0.00, 0.50, 0.00, 0.00, 0.00, 0.00, 0.50, 0.00},  // V
+	{0.00, 0.00, 0.50, 0.00, 0.50, 0.00, 0.00, 0.00},  // VI
+	{0.00, 0.50, 0.00, 0.00, 0.00, 0.50, 0.00, 0.00}}; // VII
+//   dummy  I     II    III   IV    V     VI    VII 
 
 struct chord_type_info 
 {
@@ -706,8 +811,8 @@ void init_harmony()
 	  //semiCircleDegrees[]={1, 5, 2, 6, 3, 7, 4}; 
 
     // (harmony_type==1)             /* typical classical */  // I + n and descend by 4ths
-		strcpy(theHarmonyTypes[1].harmony_type_desc, "classical" );
-		strcpy(theHarmonyTypes[1].harmony_degrees_desc, "I - VI - II - V" );
+		strcpy(theHarmonyTypes[1].harmony_type_desc, "50's Classic R&R do-wop" );
+		strcpy(theHarmonyTypes[1].harmony_degrees_desc, "I - VI - ii - V" );
 	    DEBUG(theHarmonyTypes[1].harmony_type_desc);
         theHarmonyTypes[1].num_harmony_steps=4;  // 1-7
 		theHarmonyTypes[1].min_steps=1;
@@ -731,7 +836,7 @@ void init_harmony()
 	
 	// (harmony_type==3)             /* typical romantic */   // basically alternating between two root_keys, one major and one minor
 		strcpy(theHarmonyTypes[3].harmony_type_desc, "romantic - alt root_keys" );
-		strcpy(theHarmonyTypes[3].harmony_degrees_desc, "I - IV - V - I - VI - II - III - VI" );
+		strcpy(theHarmonyTypes[3].harmony_degrees_desc, "I - IV - V - I - v1 - ii - iii - vi" );
 	    DEBUG(theHarmonyTypes[3].harmony_type_desc);
         theHarmonyTypes[3].num_harmony_steps=8;
 		theHarmonyTypes[3].min_steps=1;
@@ -777,7 +882,7 @@ void init_harmony()
 
     // (harmony_type==7)             /* strong 1 "house of rising sun"*/  
 		strcpy(theHarmonyTypes[7].harmony_type_desc, "strong 1" );
-		strcpy(theHarmonyTypes[7].harmony_degrees_desc, "I - III - IV - VI" );
+		strcpy(theHarmonyTypes[7].harmony_degrees_desc, "I - iii - IV - VI" );
 	    DEBUG(theHarmonyTypes[7].harmony_type_desc);
         theHarmonyTypes[7].num_harmony_steps=4;
 		theHarmonyTypes[7].min_steps=1;
@@ -800,7 +905,7 @@ void init_harmony()
 
      // (harmony_type==9)  // harmonic+   C, G, D,...  CW by 5ths
 	     strcpy(theHarmonyTypes[9].harmony_type_desc, "harmonic+ CW 5ths" );
-		 strcpy(theHarmonyTypes[9].harmony_degrees_desc, "I - V - II - VI - III - VII - IV" );
+		 strcpy(theHarmonyTypes[9].harmony_degrees_desc, "I - V - ii - vi - iii - vii - IV" );
 	     DEBUG(theHarmonyTypes[9].harmony_type_desc);
          theHarmonyTypes[9].num_harmony_steps=7;  // 1-7
 		 theHarmonyTypes[9].min_steps=1;
@@ -810,7 +915,7 @@ void init_harmony()
 
      // (harmony_type==10)  // harmonic-  C, F#, B,...  CCW by 4ths
 	    strcpy(theHarmonyTypes[10].harmony_type_desc, "harmonic- CCW 4ths" );
-		strcpy(theHarmonyTypes[10].harmony_degrees_desc, "I - IV - VII - III - VI - II - V" );
+		strcpy(theHarmonyTypes[10].harmony_degrees_desc, "I - IV - vii - iii - VI - ii - V" );
 	    DEBUG(theHarmonyTypes[10].harmony_type_desc);
         theHarmonyTypes[10].num_harmony_steps=7;  // 1-7
 		theHarmonyTypes[10].min_steps=1;
@@ -820,7 +925,7 @@ void init_harmony()
 
      // (harmony_type==11)  // tonal+  // C, D, E, F, ...
 	    strcpy(theHarmonyTypes[11].harmony_type_desc, "tonal+" );
-		strcpy(theHarmonyTypes[11].harmony_degrees_desc, "I - II - III - IV - V - VI - VII" );
+		strcpy(theHarmonyTypes[11].harmony_degrees_desc, "I - ii - iii - IV - V - vi - vii" );
 	    DEBUG(theHarmonyTypes[11].harmony_type_desc);
         theHarmonyTypes[11].num_harmony_steps=7;  // 1-7
 		theHarmonyTypes[11].min_steps=1;
@@ -830,7 +935,7 @@ void init_harmony()
 
      // (harmony_type==12)  // tonal-  // C, B, A, ...
 	     strcpy(theHarmonyTypes[12].harmony_type_desc, "tonal-" );
-		 strcpy(theHarmonyTypes[12].harmony_degrees_desc, "I - VII - VI - V - IV - III - II" );
+		 strcpy(theHarmonyTypes[12].harmony_degrees_desc, "I - vii - vi - V - IV - iii - ii" );
 	     DEBUG(theHarmonyTypes[12].harmony_type_desc);
 		 theHarmonyTypes[12].num_harmony_steps=7;  // 1-7
 		 theHarmonyTypes[12].min_steps=1;
@@ -944,7 +1049,7 @@ void init_harmony()
 
     // (harmony_type==18)             /* 50's r&r  */
 		strcpy(theHarmonyTypes[18].harmony_type_desc, "50's R&R" );
-		strcpy(theHarmonyTypes[18].harmony_degrees_desc, "I - VI - IV - V" );
+		strcpy(theHarmonyTypes[18].harmony_degrees_desc, "I - vi - IV - V" );
 	    DEBUG(theHarmonyTypes[18].harmony_type_desc);
         meter_numerator=4;
         meter_denominator=4;
@@ -1005,7 +1110,7 @@ void init_harmony()
 	
 		// (harmony_type==22)             /* random coming home */  // I + n and descend by 4ths
 		strcpy(theHarmonyTypes[22].harmony_type_desc, "random coming home" );
-		strcpy(theHarmonyTypes[22].harmony_degrees_desc, "I - IV - VII - III - VI - II - V" );
+		strcpy(theHarmonyTypes[22].harmony_degrees_desc, "I - IV - vii - iii - vi - ii - V" );
 	    DEBUG(theHarmonyTypes[22].harmony_type_desc);
         theHarmonyTypes[22].num_harmony_steps=4;  // 1-7
 		theHarmonyTypes[22].min_steps=1;
@@ -1027,7 +1132,7 @@ void init_harmony()
 
 		// (harmony_type==24)             /* Hallelujah */  // 
 		strcpy(theHarmonyTypes[24].harmony_type_desc, "Hallelujah" );
-		strcpy(theHarmonyTypes[24].harmony_degrees_desc, "I - VI - I - VI - IV - V - I -I" );
+		strcpy(theHarmonyTypes[24].harmony_degrees_desc, "I-vi-I-vi-IV-V-I-I-I-IV-V-vi-IV-V-iii-v1" );
 	    DEBUG(theHarmonyTypes[24].harmony_type_desc);
         theHarmonyTypes[24].num_harmony_steps=16;  // 1-8
 		theHarmonyTypes[24].min_steps=1;
@@ -1050,7 +1155,352 @@ void init_harmony()
 		theHarmonyTypes[24].harmony_steps[14]=3;
 		theHarmonyTypes[24].harmony_steps[15]=6;
 		
+		// (harmony_type==25)             /* Pachelbel Canon*/  // 
+		strcpy(theHarmonyTypes[25].harmony_type_desc, "Canon - DMaj" );
+		strcpy(theHarmonyTypes[25].harmony_degrees_desc, "I - V - vi - iii - IV - I - IV - V" );
+	    DEBUG(theHarmonyTypes[25].harmony_type_desc);
+        theHarmonyTypes[25].num_harmony_steps=8;  // 1-8
+		theHarmonyTypes[25].min_steps=1;
+	    theHarmonyTypes[25].max_steps=theHarmonyTypes[25].num_harmony_steps;
+		theHarmonyTypes[25].harmony_steps[0]=1;
+		theHarmonyTypes[25].harmony_steps[1]=5;
+		theHarmonyTypes[25].harmony_steps[2]=6;
+		theHarmonyTypes[25].harmony_steps[3]=3;
+		theHarmonyTypes[25].harmony_steps[4]=4;
+		theHarmonyTypes[25].harmony_steps[5]=1;
+		theHarmonyTypes[25].harmony_steps[6]=4;
+		theHarmonyTypes[25].harmony_steps[7]=5;
+
+		// (harmony_type==26)             /* Pop Rock Classic-1*/  // 
+		strcpy(theHarmonyTypes[26].harmony_type_desc, "Pop Rock Classic-1" );
+		strcpy(theHarmonyTypes[26].harmony_degrees_desc, "I - V - vi - IV" );
+	    DEBUG(theHarmonyTypes[26].harmony_type_desc);
+        theHarmonyTypes[26].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[26].min_steps=1;
+	    theHarmonyTypes[26].max_steps=theHarmonyTypes[26].num_harmony_steps;
+		theHarmonyTypes[26].harmony_steps[0]=1;
+		theHarmonyTypes[26].harmony_steps[1]=5;
+		theHarmonyTypes[26].harmony_steps[2]=6;
+		theHarmonyTypes[26].harmony_steps[3]=4;
 		
+		// (harmony_type==27)             /* Andalusion Cadence 1*/  // 
+		strcpy(theHarmonyTypes[27].harmony_type_desc, "Andalusion Cadence 1" );
+		strcpy(theHarmonyTypes[27].harmony_degrees_desc, "i - VII - VI - V" );
+	    DEBUG(theHarmonyTypes[27].harmony_type_desc);
+        theHarmonyTypes[27].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[27].min_steps=1;
+	    theHarmonyTypes[27].max_steps=theHarmonyTypes[27].num_harmony_steps;
+		theHarmonyTypes[27].harmony_steps[0]=1;
+		theHarmonyTypes[27].harmony_steps[1]=7;
+		theHarmonyTypes[27].harmony_steps[2]=6;
+		theHarmonyTypes[27].harmony_steps[3]=5;
+		
+		// (harmony_type==28)             /* 16 bar blues*/  // 
+		strcpy(theHarmonyTypes[28].harmony_type_desc, "16 Bar Blues" );
+		strcpy(theHarmonyTypes[28].harmony_degrees_desc, "I-I-I-I-I-I-I-I-IV-IV-I-I-V-IV-I-I" );
+	    DEBUG(theHarmonyTypes[28].harmony_type_desc);
+        theHarmonyTypes[28].num_harmony_steps=16;  // 1-8
+		theHarmonyTypes[28].min_steps=1;
+	    theHarmonyTypes[28].max_steps=theHarmonyTypes[28].num_harmony_steps;
+		theHarmonyTypes[28].harmony_steps[0]=1;
+		theHarmonyTypes[28].harmony_steps[1]=1;
+		theHarmonyTypes[28].harmony_steps[2]=1;
+		theHarmonyTypes[28].harmony_steps[3]=1;
+		theHarmonyTypes[28].harmony_steps[4]=1;
+		theHarmonyTypes[28].harmony_steps[5]=1;
+		theHarmonyTypes[28].harmony_steps[6]=1;
+		theHarmonyTypes[28].harmony_steps[7]=1;
+
+		theHarmonyTypes[28].harmony_steps[8]=4;
+		theHarmonyTypes[28].harmony_steps[9]=4;
+		theHarmonyTypes[28].harmony_steps[10]=1;
+		theHarmonyTypes[28].harmony_steps[11]=1;
+		theHarmonyTypes[28].harmony_steps[12]=5;
+		theHarmonyTypes[28].harmony_steps[13]=4;
+		theHarmonyTypes[28].harmony_steps[14]=1;
+		theHarmonyTypes[28].harmony_steps[15]=1;
+		
+		
+		// (harmony_type==29)             /* Black */  // 
+		strcpy(theHarmonyTypes[29].harmony_type_desc, "Black" );
+		strcpy(theHarmonyTypes[29].harmony_degrees_desc, "I-I-V-V" );
+	    DEBUG(theHarmonyTypes[29].harmony_type_desc);
+        theHarmonyTypes[29].num_harmony_steps=16;  // 1-8
+		theHarmonyTypes[29].min_steps=1;
+	    theHarmonyTypes[29].max_steps=theHarmonyTypes[29].num_harmony_steps;
+		theHarmonyTypes[29].harmony_steps[0]=1;
+		theHarmonyTypes[29].harmony_steps[1]=7;
+		theHarmonyTypes[29].harmony_steps[2]=3;
+		theHarmonyTypes[29].harmony_steps[3]=7;
+		theHarmonyTypes[29].harmony_steps[4]=1;
+		theHarmonyTypes[29].harmony_steps[5]=1;
+		theHarmonyTypes[29].harmony_steps[6]=1;
+		theHarmonyTypes[29].harmony_steps[7]=1;
+
+		theHarmonyTypes[29].harmony_steps[8]=1;
+		theHarmonyTypes[29].harmony_steps[9]=7;
+		theHarmonyTypes[29].harmony_steps[10]=3;
+		theHarmonyTypes[29].harmony_steps[11]=7;
+		theHarmonyTypes[29].harmony_steps[12]=4;
+		theHarmonyTypes[29].harmony_steps[13]=4;
+		theHarmonyTypes[29].harmony_steps[14]=5;
+		theHarmonyTypes[29].harmony_steps[15]=5;
+
+		// (harmony_type==30)             /*IV */  // 
+		strcpy(theHarmonyTypes[30].harmony_type_desc, "IV" );
+		strcpy(theHarmonyTypes[30].harmony_degrees_desc, "I-V" );
+	    DEBUG(theHarmonyTypes[30].harmony_type_desc);
+        theHarmonyTypes[30].num_harmony_steps=16;  // 1-8
+		theHarmonyTypes[30].min_steps=1;
+	    theHarmonyTypes[30].max_steps=theHarmonyTypes[30].num_harmony_steps;
+		theHarmonyTypes[30].harmony_steps[0]=1;
+		theHarmonyTypes[30].harmony_steps[1]=5;
+
+		// (harmony_type==31)             /* Markov Chain  Bach 1*/  // 
+		strcpy(theHarmonyTypes[31].harmony_type_desc, "Markov Chain-Bach 1" );
+		strcpy(theHarmonyTypes[31].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[31].harmony_type_desc);
+        theHarmonyTypes[31].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[31].min_steps=1;
+	    theHarmonyTypes[31].max_steps=theHarmonyTypes[31].num_harmony_steps;
+		theHarmonyTypes[31].harmony_steps[0]=1;
+		theHarmonyTypes[31].harmony_steps[1]=2;
+		theHarmonyTypes[31].harmony_steps[2]=3;
+		theHarmonyTypes[31].harmony_steps[3]=4;
+		theHarmonyTypes[31].harmony_steps[4]=5;
+		theHarmonyTypes[31].harmony_steps[5]=6;
+		theHarmonyTypes[31].harmony_steps[6]=7;
+
+		// (harmony_type==32)             /* Pop */  // 
+		strcpy(theHarmonyTypes[32].harmony_type_desc, "Pop " );
+		strcpy(theHarmonyTypes[32].harmony_degrees_desc, "I-ii-IV-V" );
+	    DEBUG(theHarmonyTypes[32].harmony_type_desc);
+        theHarmonyTypes[32].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[32].min_steps=1;
+	    theHarmonyTypes[32].max_steps=theHarmonyTypes[32].num_harmony_steps;
+		theHarmonyTypes[32].harmony_steps[0]=1;
+		theHarmonyTypes[32].harmony_steps[1]=2;
+		theHarmonyTypes[32].harmony_steps[2]=4;
+		theHarmonyTypes[32].harmony_steps[3]=5;
+		
+		// (harmony_type==33)             /* Classical */  // 
+		strcpy(theHarmonyTypes[33].harmony_type_desc, "Classical" );
+		strcpy(theHarmonyTypes[33].harmony_degrees_desc, "I-V-I-vi-ii-V-I" );
+	    DEBUG(theHarmonyTypes[33].harmony_type_desc);
+        theHarmonyTypes[33].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[33].min_steps=1;
+	    theHarmonyTypes[33].max_steps=theHarmonyTypes[33].num_harmony_steps;
+		theHarmonyTypes[33].harmony_steps[0]=1;
+		theHarmonyTypes[33].harmony_steps[1]=5;
+		theHarmonyTypes[33].harmony_steps[2]=1;
+		theHarmonyTypes[33].harmony_steps[3]=6;
+		theHarmonyTypes[33].harmony_steps[4]=2;
+		theHarmonyTypes[33].harmony_steps[5]=5;
+		theHarmonyTypes[33].harmony_steps[6]=1;
+
+		// (harmony_type==34)             /*Mozart */  // 
+		strcpy(theHarmonyTypes[34].harmony_type_desc, "Mozart " );
+		strcpy(theHarmonyTypes[34].harmony_degrees_desc, "I-ii-V-I" );
+	    DEBUG(theHarmonyTypes[34].harmony_type_desc);
+        theHarmonyTypes[34].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[34].min_steps=1;
+	    theHarmonyTypes[34].max_steps=theHarmonyTypes[34].num_harmony_steps;
+		theHarmonyTypes[34].harmony_steps[0]=1;
+		theHarmonyTypes[34].harmony_steps[1]=2;
+		theHarmonyTypes[34].harmony_steps[2]=5;
+		theHarmonyTypes[34].harmony_steps[3]=1;
+
+		// (harmony_type==35)             /*Classical Tonal */  // 
+		strcpy(theHarmonyTypes[35].harmony_type_desc, "Classical Tonal" );
+		strcpy(theHarmonyTypes[35].harmony_degrees_desc, "I-V-I-IV-I" );
+	    DEBUG(theHarmonyTypes[35].harmony_type_desc);
+        theHarmonyTypes[35].num_harmony_steps=5;  // 1-8
+		theHarmonyTypes[35].min_steps=1;
+	    theHarmonyTypes[35].max_steps=theHarmonyTypes[35].num_harmony_steps;
+		theHarmonyTypes[35].harmony_steps[0]=1;
+		theHarmonyTypes[35].harmony_steps[1]=5;
+		theHarmonyTypes[35].harmony_steps[2]=1;
+		theHarmonyTypes[35].harmony_steps[3]=4;
+		theHarmonyTypes[35].harmony_steps[4]=1;
+
+		// (harmony_type==36)             /*Sensitive */  // 
+		strcpy(theHarmonyTypes[36].harmony_type_desc, "Sensitive" );
+		strcpy(theHarmonyTypes[36].harmony_degrees_desc, "VI-IV-I-V" );
+	    DEBUG(theHarmonyTypes[36].harmony_type_desc);
+        theHarmonyTypes[36].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[36].min_steps=1;
+	    theHarmonyTypes[36].max_steps=theHarmonyTypes[36].num_harmony_steps;
+		theHarmonyTypes[36].harmony_steps[0]=6;
+		theHarmonyTypes[36].harmony_steps[1]=4;
+		theHarmonyTypes[36].harmony_steps[2]=1;
+		theHarmonyTypes[36].harmony_steps[3]=5;
+		
+		// (harmony_type==37)             /*Jass */  // 
+		strcpy(theHarmonyTypes[37].harmony_type_desc, "Jazz" );
+		strcpy(theHarmonyTypes[37].harmony_degrees_desc, "ii-V-I" );
+	    DEBUG(theHarmonyTypes[37].harmony_type_desc);
+        theHarmonyTypes[37].num_harmony_steps=3;  // 1-8
+		theHarmonyTypes[37].min_steps=1;
+	    theHarmonyTypes[37].max_steps=theHarmonyTypes[37].num_harmony_steps;
+		theHarmonyTypes[37].harmony_steps[0]=2;
+		theHarmonyTypes[37].harmony_steps[1]=5;
+		theHarmonyTypes[37].harmony_steps[2]=1;
+
+		// (harmony_type==38)             /*Pop */  // 
+		strcpy(theHarmonyTypes[38].harmony_type_desc, "Pop" );
+		strcpy(theHarmonyTypes[38].harmony_degrees_desc, "I-IV-ii-V" );
+	    DEBUG(theHarmonyTypes[38].harmony_type_desc);
+        theHarmonyTypes[38].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[38].min_steps=1;
+	    theHarmonyTypes[38].max_steps=theHarmonyTypes[38].num_harmony_steps;
+		theHarmonyTypes[38].harmony_steps[0]=1;
+		theHarmonyTypes[38].harmony_steps[1]=4;
+		theHarmonyTypes[38].harmony_steps[2]=2;
+		theHarmonyTypes[38].harmony_steps[3]=5;
+
+		// (harmony_type==39)             /*Pop */  // 
+		strcpy(theHarmonyTypes[39].harmony_type_desc, "Pop" );
+		strcpy(theHarmonyTypes[39].harmony_degrees_desc, "I-ii-iii-IV-V" );
+	    DEBUG(theHarmonyTypes[39].harmony_type_desc);
+        theHarmonyTypes[39].num_harmony_steps=5;  // 1-8
+		theHarmonyTypes[39].min_steps=1;
+	    theHarmonyTypes[39].max_steps=theHarmonyTypes[39].num_harmony_steps;
+		theHarmonyTypes[39].harmony_steps[0]=1;
+		theHarmonyTypes[39].harmony_steps[1]=2;
+		theHarmonyTypes[39].harmony_steps[2]=3;
+		theHarmonyTypes[39].harmony_steps[3]=4;
+		theHarmonyTypes[39].harmony_steps[4]=5;
+
+		// (harmony_type==40)             /*Pop */  // 
+		strcpy(theHarmonyTypes[40].harmony_type_desc, "Pop" );
+		strcpy(theHarmonyTypes[40].harmony_degrees_desc, "I-iii-IV-iv" );  // can't really do a IV and iv together
+	    DEBUG(theHarmonyTypes[40].harmony_type_desc);
+        theHarmonyTypes[40].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[40].min_steps=1;
+	    theHarmonyTypes[40].max_steps=theHarmonyTypes[40].num_harmony_steps;
+		theHarmonyTypes[40].harmony_steps[0]=1;
+		theHarmonyTypes[40].harmony_steps[1]=3;
+		theHarmonyTypes[40].harmony_steps[2]=4;
+		theHarmonyTypes[40].harmony_steps[3]=4;
+
+		// (harmony_type==41)             /*Andalusian Cadence 2 */  // 
+		strcpy(theHarmonyTypes[41].harmony_type_desc, "Andalusian Cadence 2" );
+		strcpy(theHarmonyTypes[41].harmony_degrees_desc, "VI-V-IV-III" );
+	    DEBUG(theHarmonyTypes[41].harmony_type_desc);
+        theHarmonyTypes[41].num_harmony_steps=4;  // 1-8
+		theHarmonyTypes[41].min_steps=1;
+	    theHarmonyTypes[41].max_steps=theHarmonyTypes[41].num_harmony_steps;
+		theHarmonyTypes[41].harmony_steps[0]=6;
+		theHarmonyTypes[41].harmony_steps[1]=5;
+		theHarmonyTypes[41].harmony_steps[2]=4;
+		theHarmonyTypes[41].harmony_steps[3]=3;
+	
+		// (harmony_type==42)             /* Markov Chain  Bach 2*/  // 
+		strcpy(theHarmonyTypes[42].harmony_type_desc, "Markov Chain-Bach 2" );
+		strcpy(theHarmonyTypes[42].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[42].harmony_type_desc);
+        theHarmonyTypes[42].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[42].min_steps=1;
+	    theHarmonyTypes[42].max_steps=theHarmonyTypes[42].num_harmony_steps;
+		theHarmonyTypes[42].harmony_steps[0]=1;
+		theHarmonyTypes[42].harmony_steps[1]=2;
+		theHarmonyTypes[42].harmony_steps[2]=3;
+		theHarmonyTypes[42].harmony_steps[3]=4;
+		theHarmonyTypes[42].harmony_steps[4]=5;
+		theHarmonyTypes[42].harmony_steps[5]=6;
+		theHarmonyTypes[42].harmony_steps[6]=7;
+
+		// (harmony_type==43)             /* Markov Chain Mozart 1*/  // 
+		strcpy(theHarmonyTypes[43].harmony_type_desc, "Markov Chain-Mozart 1" );
+		strcpy(theHarmonyTypes[43].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[43].harmony_type_desc);
+        theHarmonyTypes[43].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[43].min_steps=1;
+	    theHarmonyTypes[43].max_steps=theHarmonyTypes[43].num_harmony_steps;
+		theHarmonyTypes[43].harmony_steps[0]=1;
+		theHarmonyTypes[43].harmony_steps[1]=2;
+		theHarmonyTypes[43].harmony_steps[2]=3;
+		theHarmonyTypes[43].harmony_steps[3]=4;
+		theHarmonyTypes[43].harmony_steps[4]=5;
+		theHarmonyTypes[43].harmony_steps[5]=6;
+		theHarmonyTypes[43].harmony_steps[6]=7;
+
+		// (harmony_type==44)             /* Markov Chain Mozart 2*/  // 
+		strcpy(theHarmonyTypes[44].harmony_type_desc, "Markov Chain-Mozart 2" );
+		strcpy(theHarmonyTypes[44].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[44].harmony_type_desc);
+        theHarmonyTypes[44].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[44].min_steps=1;
+	    theHarmonyTypes[44].max_steps=theHarmonyTypes[44].num_harmony_steps;
+		theHarmonyTypes[44].harmony_steps[0]=1;
+		theHarmonyTypes[44].harmony_steps[1]=2;
+		theHarmonyTypes[44].harmony_steps[2]=3;
+		theHarmonyTypes[44].harmony_steps[3]=4;
+		theHarmonyTypes[44].harmony_steps[4]=5;
+		theHarmonyTypes[44].harmony_steps[5]=6;
+		theHarmonyTypes[44].harmony_steps[6]=7;
+
+		// (harmony_type==45)             /* Markov Chain Palestrina 1*/  // 
+		strcpy(theHarmonyTypes[45].harmony_type_desc, "Markov Chain-Palestrina 1" );
+		strcpy(theHarmonyTypes[45].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[45].harmony_type_desc);
+        theHarmonyTypes[45].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[45].min_steps=1;
+	    theHarmonyTypes[45].max_steps=theHarmonyTypes[45].num_harmony_steps;
+		theHarmonyTypes[45].harmony_steps[0]=1;
+		theHarmonyTypes[45].harmony_steps[1]=2;
+		theHarmonyTypes[45].harmony_steps[2]=3;
+		theHarmonyTypes[45].harmony_steps[3]=4;
+		theHarmonyTypes[45].harmony_steps[4]=5;
+		theHarmonyTypes[45].harmony_steps[5]=6;
+		theHarmonyTypes[45].harmony_steps[6]=7;
+
+		// (harmony_type==46)             /* Markov Chain Beethoven 1*/  // 
+		strcpy(theHarmonyTypes[46].harmony_type_desc, "Markov Chain-Beethoven 1" );
+		strcpy(theHarmonyTypes[46].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[46].harmony_type_desc);
+        theHarmonyTypes[46].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[46].min_steps=1;
+	    theHarmonyTypes[46].max_steps=theHarmonyTypes[46].num_harmony_steps;
+		theHarmonyTypes[46].harmony_steps[0]=1;
+		theHarmonyTypes[46].harmony_steps[1]=2;
+		theHarmonyTypes[46].harmony_steps[2]=3;
+		theHarmonyTypes[46].harmony_steps[3]=4;
+		theHarmonyTypes[46].harmony_steps[4]=5;
+		theHarmonyTypes[46].harmony_steps[5]=6;
+		theHarmonyTypes[46].harmony_steps[6]=7;
+
+		// (harmony_type==47)             /* Markov Chain Traditional 1*/  // 
+		strcpy(theHarmonyTypes[47].harmony_type_desc, "Markov Chain-Traditional 1" );
+		strcpy(theHarmonyTypes[47].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[47].harmony_type_desc);
+        theHarmonyTypes[47].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[47].min_steps=1;
+	    theHarmonyTypes[47].max_steps=theHarmonyTypes[47].num_harmony_steps;
+		theHarmonyTypes[47].harmony_steps[0]=1;
+		theHarmonyTypes[47].harmony_steps[1]=2;
+		theHarmonyTypes[47].harmony_steps[2]=3;
+		theHarmonyTypes[47].harmony_steps[3]=4;
+		theHarmonyTypes[47].harmony_steps[4]=5;
+		theHarmonyTypes[47].harmony_steps[5]=6;
+		theHarmonyTypes[47].harmony_steps[6]=7;
+
+		// (harmony_type==48)             /* Markov Chain I-IV-V*/  // 
+		strcpy(theHarmonyTypes[48].harmony_type_desc, "Markov Chain-I-IV-V" );
+		strcpy(theHarmonyTypes[48].harmony_degrees_desc, "I-ii-iii-IV-V-vi-vii" );
+	    DEBUG(theHarmonyTypes[48].harmony_type_desc);
+        theHarmonyTypes[48].num_harmony_steps=7;  // 1-8
+		theHarmonyTypes[48].min_steps=1;
+	    theHarmonyTypes[48].max_steps=theHarmonyTypes[48].num_harmony_steps;
+		theHarmonyTypes[48].harmony_steps[0]=1;
+		theHarmonyTypes[48].harmony_steps[1]=2;
+		theHarmonyTypes[48].harmony_steps[2]=3;
+		theHarmonyTypes[48].harmony_steps[3]=4;
+		theHarmonyTypes[48].harmony_steps[4]=5;
+		theHarmonyTypes[48].harmony_steps[5]=6;
+		theHarmonyTypes[48].harmony_steps[6]=7;
+
+
 		// End of preset harmony types
 }
 
@@ -1598,7 +2048,9 @@ struct Meander : Module
 			for (int i=0; i<MAX_CIRCLE_STATIONS; ++i) {
 				CircleStepStates[i] = false;
 				lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+i].value=0.0f;
+			}
 
+			for (int i=0; i<16; ++i) {
 				if (i<theActiveHarmonyType.num_harmony_steps)
 					lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+i].value=0.25f;
 				else
@@ -1632,26 +2084,114 @@ struct Meander : Module
 
 		if (randomize_harmony) // this could be used to randomize any progression
 		{
-			//srand(time);
-			float rnd = ((float) rand()/RAND_MAX);
+			float rnd = rack::random::uniform();
 			step = (int)((rnd*theActiveHarmonyType.num_harmony_steps));
 			step=step%theActiveHarmonyType.num_harmony_steps;
 		}
 		else
 		if (harmony_type==23) // this could be used to randomize any progression
 		{
-			//srand(time);
-			float rnd = ((float) rand()/RAND_MAX);
+			float rnd = rack::random::uniform();
 			step = (int)((rnd*theActiveHarmonyType.num_harmony_steps));
 			step=step%theActiveHarmonyType.num_harmony_steps;
 		}
+		else
+		if ((harmony_type==31)||(harmony_type==42)||(harmony_type==43)||(harmony_type==44)||(harmony_type==45)||(harmony_type==46)||(harmony_type==47)||(harmony_type==48))  // Markov chains
+		{
+			float rnd = rack::random::uniform();
+			DEBUG("rnd=%.2f",rnd);
+		    DEBUG("Markov theMeanderState.theHarmonyParms.last_circle_step=%d", theMeanderState.theHarmonyParms.last_circle_step);
 
-		DEBUG("step=%d", step+1);
+			if (theMeanderState.theHarmonyParms.last_circle_step==-1)
+			{
+				step=0;
+			}
+			else
+			{
+				float probabilityTargetBottom[8]={0};  // skip first array index since this is 1 based
+				float probabilityTargetTop[8]={0};     // skip first array index since this is 1 based
+				float bottom=0;
+				step=1;
+				for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
+				{
+					probabilityTargetBottom[i]=bottom;
+					if (harmony_type==31)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==42)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==43)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==44)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==45)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==46)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==47)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixTraditional1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+					else
+					if (harmony_type==48)
+						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+										
+					
+					bottom=probabilityTargetTop[i];
+				}
+				DEBUG("Markov Probabilities:");
+				for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
+				{
+				//	if (harmony_type==31)
+				//		DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					if (harmony_type==31)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==42)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==43)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==44)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==45)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==46)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==47)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixTradional1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+					else
+					if (harmony_type==48)
+						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+										
 
+					if ((rnd>probabilityTargetBottom[i])&&(rnd<= probabilityTargetTop[i]))
+					{
+						step=i-1;
+						DEBUG("step=%d", step);
+					}
+				}
+			
+			}
 		
+		}
+		
+    	
+
+		DEBUG("step=%d", step);
 
 		int degreeStep=(theActiveHarmonyType.harmony_steps[step])%8;  
 		DEBUG("degreeStep=%d", degreeStep);
+	
+		theMeanderState.theHarmonyParms.last_circle_step=step;  // used for Markov chain
+
 		//find this in semicircle
 		for (int i=0; i<7; ++i)
 		{
@@ -1666,8 +2206,6 @@ struct Meander : Module
 			}
 		}
 		
-	   
-
 		CircleStepStates[step] = true;
 
 		if (!theMeanderState.userControllingHarmonyFromCircle)
@@ -1761,8 +2299,7 @@ struct Meander : Module
 
 		if ((harmony_type==22)&&(step==0))
 		{
-			//srand(time);
-			float rnd = ((float) rand()/RAND_MAX);
+			float rnd = rack::random::uniform();
 			int temp_num_harmony_steps=1 + (int)((rnd*(theHarmonyTypes[22].num_harmony_steps-1)));
 			bar_count += (theHarmonyTypes[22].num_harmony_steps-temp_num_harmony_steps);
 		}
@@ -1824,21 +2361,16 @@ struct Meander : Module
 		}
 
 
-		if (true) // experimenting with scaler melody
+        if (false) // accidentals are probably not notated correctly  Flat accidentals may sound better than sharp
 		{
-			
-		}
-
-        if (false) // accidentals seldom sound good
-		{
-		//	if ((theMeanderState.theMelodyParms.bar_melody_counted_note!=1)&&(theMeanderState.theMelodyParms.bar_melody_counted_note!=theMeanderState.theMelodyParms.note_length_divisor)) // allow accidentals, but not on first or last melody note in bar
 			if ((theMeanderState.theMelodyParms.bar_melody_counted_note!=1)&&(theMeanderState.theMelodyParms.bar_melody_counted_note==(theMeanderState.theMelodyParms.note_length_divisor-1))) // allow accidentals, but not on first or last melody note in bar
 			{
-				float rnd = ((float) rand()/RAND_MAX);
-				if (rnd<.1)
+			
+				float rnd = rack::random::uniform();
+				if (rnd<.05)
 					note_to_play += 1;
 				else
-				if (rnd>.1)
+				if (rnd>.90)
 					note_to_play -= 1;
 			}
 		}
@@ -2027,6 +2559,10 @@ struct Meander : Module
 				
 		if (theMeanderState.theBassParms.enabled) 
 		{
+			++theMeanderState.theBassParms.bar_bass_counted_note;
+			if (theMeanderState.theBassParms.bar_bass_counted_note==2)  // experimenting with bass patterns
+			  return;
+
 			if (theMeanderState.theBassParms.octave_enabled)
 				outputs[OUT_BASS_CV_OUTPUT].setChannels(2);  // set polyphony  may need to deal with unset channel voltages
 			else
@@ -2169,7 +2705,8 @@ struct Meander : Module
 	rack::dsp::PulseGenerator barGatePulse; 
 
 	bool time_sig_changed=false;
-	
+   
+    	
 	void process(const ProcessArgs &args) override 
 	{
 	
@@ -2198,20 +2735,22 @@ struct Meander : Module
 						
 		// Reset
 
-	//	if (false)
 		if (time_sig_changed) 
 		{
 			LFOclock.setReset(1.0f);
 			bar_count = 0;
 			bar_note_count=0;
-			i32ts_count = 0;
-			i16ts_count = 0;
-			i8ts_count = 0;
-			i4ts_count = 0;
-			i2ts_count = 0;
-			barts_count = 0;
+		
+			i32ts_count = i32ts_count_limit;  // so play will start at the first beat, properly initialized
+			i16ts_count = i16ts_count_limit;
+			i8ts_count = i8ts_count_limit;
+			i4ts_count = i4ts_count_limit;
+			i2ts_count = i2ts_count_limit;
+			barts_count = barts_count_limit;
+
 			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 			theMeanderState.theArpParms.note_count=0;
+			theMeanderState.theBassParms.bar_bass_counted_note=0;
 			resetPulse.trigger(0.01f);
 			time_sig_changed=false;
 		
@@ -2222,14 +2761,19 @@ struct Meander : Module
 			LFOclock.setReset(1.0f);
 			bar_count = 0;
 			bar_note_count=0;
-			i32ts_count = 0;
-			i16ts_count = 0;
-			i8ts_count = 0;
-			i4ts_count = 0;
-			i2ts_count = 0;
-			barts_count = 0;
+		
+			i32ts_count = i32ts_count_limit;  // so play will start at the first beat, properly initialized
+			i16ts_count = i16ts_count_limit;
+			i8ts_count = i8ts_count_limit;
+			i4ts_count = i4ts_count_limit;
+			i2ts_count = i2ts_count_limit;
+			barts_count = barts_count_limit;
+
 			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 			theMeanderState.theArpParms.note_count=0;
+			theMeanderState.theBassParms.bar_bass_counted_note=0;
+
+			theMeanderState.theHarmonyParms.last_circle_step=-1; // for Markov chain
 			resetLight = 1.0;
 			resetPulse.trigger(0.01f);
 			//	outputs[OUT_RESET_OUT].setVoltage((reset_pulse ? 10.0f : 0.0f));
@@ -2242,16 +2786,16 @@ struct Meander : Module
 
 		if(!running)
 		{
-			bar_count = 0;
-			bar_note_count=0;
-			i32ts_count = 0;
-			i16ts_count = 0;
-			i8ts_count = 0;
-			i4ts_count = 0;
-			i2ts_count = 0;
-			barts_count = 0; 
+			i32ts_count = i32ts_count_limit;  // so play will start at the first beat, properly initialized
+			i16ts_count = i16ts_count_limit;
+			i8ts_count = i8ts_count_limit;
+			i4ts_count = i4ts_count_limit;
+			i2ts_count = i2ts_count_limit;
+			barts_count = barts_count_limit;
+		
 			theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 			theMeanderState.theArpParms.note_count=0;
+			theMeanderState.theBassParms.bar_bass_counted_note=0;
 			outputs[OUT_CLOCK_BAR_OUTPUT].setVoltage(0.0f);	   // bars 	
 			outputs[OUT_CLOCK_BEAT_OUTPUT].setVoltage(0.0f);   // 4ts 
 			outputs[OUT_CLOCK_BEATX2_OUTPUT].setVoltage(0.0f); // 8ts
@@ -2288,8 +2832,9 @@ struct Meander : Module
 				if (barts_count == barts_count_limit)
 				{
 					barts_count = 0;  
-					++bar_count;
+				//	++bar_count;
 					theMeanderState.theMelodyParms.bar_melody_counted_note=0;
+					theMeanderState.theBassParms.bar_bass_counted_note=0;
 					bar_note_count=0;
 			
 					if (theMeanderState.theHarmonyParms.chord_on_note_divisor==1)
@@ -2301,6 +2846,7 @@ struct Meander : Module
 						doMelody();
 						melodyPlayed=true;
 					}
+					++bar_count;  // moved here so reset will start on first step rather than second
 					clockPulse1ts.trigger(trigger_length);
 					// Pulse the output gate 
 					barGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
@@ -2616,13 +3162,10 @@ struct Meander : Module
 				for (int j=0; j<12; ++j) 
 				{
 					if (j!=i) {
-					//	CircleStepStates[j] = false;
-						lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+j].value=0.0f;
+				//		lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+j].value=0.0f;
 					}
 				}
-
-				
-				
+					
 			}
 		
 			lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+theCirclePosition].value=1.0f;
@@ -2959,7 +3502,7 @@ struct Meander : Module
 	{
 		DEBUG("");  // clear debug log file
 	//	time_t systime=time(NULL);
-
+	//	rack::random::init();  // must be called per thread
 		
 		time_t rawtime;
   	//	struct tm *info;
@@ -3757,6 +4300,7 @@ struct MeanderWidget : ModuleWidget
 			yHalfLineSpacing=3.0f;
 
 		    // draw bar left vertical edge
+
 			if (beginEdge > 0) {
 				nvgBeginPath(args.vg);
 				nvgMoveTo(args.vg, beginEdge, beginTop+barLineVoffset);
@@ -3798,7 +4342,7 @@ struct MeanderWidget : ModuleWidget
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			nvgFontSize(args.vg, 36);
-			pos=Vec(beginEdge+10, beginTop+60); 
+			pos=Vec(beginEdge+10, beginTop+80); 
 			snprintf(text, sizeof(text), "?");   // bass clef
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
@@ -4111,6 +4655,7 @@ struct MeanderWidget : ModuleWidget
 		setModule(module);
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander.svg")));
 			
+		rack::random::init();  // must be called per thread
 
 		// if (module) 
 		 if (true) 
