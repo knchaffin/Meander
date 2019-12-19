@@ -6,7 +6,7 @@ FLAGS +=
 CFLAGS +=
 CXXFLAGS +=
 
- 
+
 
 # Careful about linking to shared libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine, but they should be added to this plugin's build system.
@@ -28,4 +28,16 @@ DISTRIBUTABLES += $(wildcard LICENSE*)
 # Include the Rack plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
 
-
+# extra dist target for Azure CI Windows build, as there is only 7zp available and no zip command
+azure-win-dist: all
+ifdef ARCH_WIN
+   rm -rf dist
+   mkdir -p dist/$(SLUG)
+   @# Strip and copy plugin binary
+   cp $(TARGET) dist/$(SLUG)/
+   $(STRIP) -s dist/$(SLUG)/$(TARGET)
+   @# Copy distributables
+   cp -R $(DISTRIBUTABLES) dist/$(SLUG)/
+   @# Create ZIP package
+   cd dist && 7z a -tzip -mx=9 $(SLUG)-$(VERSION)-$(ARCH).zip -r $(SLUG)
+endif

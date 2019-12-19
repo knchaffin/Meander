@@ -43,12 +43,9 @@ stages:
     #    ./scripts/resetversion.sh
     #  displayName: Update Version in plugins.json
     - bash: |
-        wget https://github.com/tisaconundrum2/zip/raw/master/zip.exe
-        mkdir dist
-        copy zip.exe dist
         export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
         export CC=gcc
-        make dist
+        make azure-win-dist
         mkdir artifacts_win/
         cp dist/*zip artifacts_win/
       displayName: Build Windows Plugin
