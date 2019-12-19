@@ -43,7 +43,7 @@ stages:
     #    ./scripts/resetversion.sh
     #  displayName: Update Version in plugins.json
     - script: |
-        set RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+        set RACK_DIR=%AGENT_TEMPDIRECTORY%/Rack-SDK
         set CC=gcc
         make win-dist
         mkdir artifacts_win/
