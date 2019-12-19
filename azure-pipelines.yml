@@ -6,6 +6,28 @@ trigger:
 pr:
 - master
 
+variables:
+  add-gitrev-to-plugin-version: |
+    gitrev=`git rev-parse --short HEAD`
+    version="1.0.${gitrev}"
+    echo "Updating to version=$version"
+    tf=`mktemp`
+    jq --arg VERSION "$version" '.version=$VERSION' plugin.json > $tf
+    mv $tf plugin.json
+
+  add-release-notes:
+    cat <<- EOH
+    # Meander binaries
+    These assets were built against
+    https://vcvrack.com/downloads/Rack-SDK-1.1.6.zip
+    The build date and most recent commits are:
+    EOH
+    date
+    echo ""
+    echo "Most recent commits:"
+    echo ""
+    git log --pretty=oneline | head -5
+
 stages:
 - stage: build
   displayName: Build Plugin
@@ -39,9 +61,9 @@ stages:
         unzip Rack-SDK.zip
       displayName: Get Rack-SDK
 
-    #- bash: |
-    #    ./scripts/resetversion.sh
-    #  displayName: Update Version in plugins.json
+    - bash: |
+        $(add-gitrev-to-plugin-version)
+      displayName: Update Version in plugins.json
     - bash: |
         export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
         export CC=gcc
@@ -112,9 +134,9 @@ stages:
             for file in $(Build.ArtifactStagingDirectory)/*.zip; do mv "$file" "${file/.zip/-${EXTEND_TAG}.zip}"; done
             ls -l $(Build.ArtifactStagingDirectory)
           displayName: Tag asset names with Date
-        #- bash: |
-        #    cat "last build"  > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
-        #  displayName: Fake up release notes
+        - bash: |
+            $(add-release-notes) > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+          displayName: Add release notes
         - task: GitHubRelease@0
           displayName: "Update Github Release"
           inputs:
@@ -124,5 +146,5 @@ stages:
             tag: Nightly
             target: '$(Build.SourceVersion)'
             addChangeLog: false
-        #    releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+            releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
             assets: $(Build.ArtifactStagingDirectory)/*.zip
