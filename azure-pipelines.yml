@@ -17,7 +17,7 @@ variables:
 
   add-release-notes: |
     cat <<- EOH
-    # Meander binaries
+    # Meander binaries (development builds)
     These assets were built against
     https://vcvrack.com/downloads/Rack-SDK-1.1.6.zip
     The build date and most recent commits are:
