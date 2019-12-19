@@ -1299,7 +1299,7 @@
     <path
        inkscape:connector-curvature="0"
        style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 222.34196,45.080975 h 13.69732 v -7.12563 h -13.69732 z"
+       d="m 222.05816,32.310025 h 13.69732 v -7.12563 h -13.69732 z"
        id="rect4707-1"
        inkscape:label="linedisplaybox_Harmony_Steps">
       <title
@@ -1709,7 +1709,7 @@
        aria-label="Steps "
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        id="text1177-6"
-       transform="translate(-3.9511112)">
+       transform="translate(-4.2349101,-12.77095)">
       <title
          id="title1872">text_Harmony_Steps</title>
       <path
@@ -1837,8 +1837,8 @@
     </path>
     <path
        inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.10827181;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 26.557675,85.496151 h 26.010987 v -7.12563 H 26.557675 Z"
+       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.11409441;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 23.968628,82.941961 h 28.883833 v -7.12563 H 23.968628 Z"
        id="rect4707-1-0"
        inkscape:label="linedisplaybox_Scale">
       <title
@@ -2094,7 +2094,7 @@
     <path
        inkscape:connector-curvature="0"
        style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 220.90197,24.243761 h 13.69732 v -7.12563 h -13.69732 z"
+       d="m 221.75337,23.676163 h 13.69732 v -7.12563 h -13.69732 z"
        id="rect4707-1-1"
        inkscape:label="linedisplaybox_Harmony_Volume">
       <title
@@ -2103,7 +2103,7 @@
     <path
        inkscape:connector-curvature="0"
        style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 222.31579,54.145506 h 13.69732 v -7.12563 h -13.69732 z"
+       d="m 222.03199,41.374556 h 13.69732 v -7.12563 h -13.69732 z"
        id="rect4707-1-6"
        inkscape:label="linedisplaybox_Harmony_OctaveStratum">
       <title
@@ -2112,7 +2112,7 @@
     <path
        inkscape:connector-curvature="0"
        style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 222.31579,62.386854 h 13.69732 v -7.12563 h -13.69732 z"
+       d="m 222.03199,49.615904 h 13.69732 v -7.12563 h -13.69732 z"
        id="rect4707-1-5"
        inkscape:label="linedisplaybox_Harmony_Alpha">
       <title
@@ -2121,7 +2121,7 @@
     <path
        inkscape:connector-curvature="0"
        style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 222.31579,70.628201 h 13.69732 v -7.12563 h -13.69732 z"
+       d="m 222.03199,57.857251 h 13.69732 v -7.12563 h -13.69732 z"
        id="rect4707-1-53"
        inkscape:label="linedisplaybox_Harmony_Range">
       <title
@@ -2130,7 +2130,7 @@
     <path
        inkscape:connector-curvature="0"
        style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07959312;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 221.95661,78.869548 h 14.0565 v -7.12563 h -14.0565 z"
+       d="m 221.67281,66.098598 h 14.0565 v -7.12563 h -14.0565 z"
        id="rect4707-1-9"
        inkscape:label="linedisplaybox_Harmony_Steps">
       <title
@@ -3137,13 +3137,13 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="179.49333"
-       y="60.484444"
+       x="179.20953"
+       y="47.713493"
        id="text1909"><tspan
          sodipodi:role="line"
          id="tspan1907"
-         x="179.49333"
-         y="60.484444"
+         x="179.20953"
+         y="47.713493"
          style="stroke-width:0.26458332">Variability (0-1)</tspan></text>
     <text
        id="text1940"
@@ -3169,24 +3169,24 @@
          style="stroke-width:0.26458332">Octave Range +-</tspan></text>
     <text
        id="text1948"
-       y="51.171112"
-       x="178.92889"
+       y="38.400162"
+       x="178.6451"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        xml:space="preserve"><tspan
          style="stroke-width:0.26458332"
-         y="51.171112"
-         x="178.92889"
+         y="38.400162"
+         x="178.6451"
          id="tspan1946"
          sodipodi:role="line">Target Octave (1-6)</tspan></text>
     <text
        id="text1952"
-       y="68.386673"
-       x="178.92889"
+       y="55.615723"
+       x="178.6451"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        xml:space="preserve"><tspan
          style="stroke-width:0.26458332"
-         y="68.386673"
-         x="178.92889"
+         y="55.615723"
+         x="178.6451"
          id="tspan1950"
          sodipodi:role="line">Octave Range +-</tspan></text>
     <text
@@ -3519,13 +3519,13 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="179.6447"
-       y="75.997208"
+       x="179.3609"
+       y="63.226257"
        id="text1804"><tspan
          sodipodi:role="line"
          id="tspan1802"
-         x="179.6447"
-         y="75.997208"
+         x="179.3609"
+         y="63.226257"
          style="stroke-width:0.26458332">Chords on 1/</tspan></text>
     <text
        xml:space="preserve"
@@ -3549,6 +3549,28 @@
          x="312.46259"
          id="tspan1783"
          sodipodi:role="line">Bass on 1/</tspan></text>
+    <text
+       xml:space="preserve"
+       style="display:inline;font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="179.64468"
+       y="70.888824"
+       id="text1782"><tspan
+         sodipodi:role="line"
+         id="tspan1780"
+         x="179.64468"
+         y="70.888824"
+         style="stroke-width:0.26458332">All 7ths</tspan></text>
+    <text
+       xml:space="preserve"
+       style="display:inline;font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="208.87599"
+       y="70.605026"
+       id="text1788"><tspan
+         sodipodi:role="line"
+         id="tspan1786"
+         x="208.87599"
+         y="70.605026"
+         style="stroke-width:0.26458332">V 7ths</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -4065,8 +4087,8 @@
     <circle
        style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path1177-0-23-2-5"
-       cx="174.02841"
-       cy="40.81028"
+       cx="173.74461"
+       cy="28.03933"
        r="2.8591328"
        inkscape:label="control_Harmony_Steps">
       <title
@@ -4075,8 +4097,8 @@
     <circle
        style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path1177-0-23-9-3"
-       cx="174.00967"
-       cy="49.396366"
+       cx="173.72588"
+       cy="36.625416"
        r="2.8591328"
        inkscape:label="control_Harmony_OctaveStratum">
       <title
@@ -4085,8 +4107,8 @@
     <circle
        style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path1177-0-23-27-0"
-       cx="174.26985"
-       cy="57.982449"
+       cx="173.98605"
+       cy="45.211498"
        r="2.8591328"
        inkscape:label="control_Harmony_Alpha">
       <title
@@ -4095,8 +4117,8 @@
     <circle
        style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path1177-0-23-3-7"
-       cx="173.99094"
-       cy="65.787979"
+       cx="173.70714"
+       cy="53.017029"
        r="2.8591328"
        inkscape:label="control_Harmony_Range">
       <title
@@ -4105,8 +4127,8 @@
     <circle
        style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path1177-0-23-77-5"
-       cx="173.95345"
-       cy="74.113876"
+       cx="173.66965"
+       cy="61.342926"
        r="2.8591328"
        inkscape:label="control_Harmony_Pattern">
       <title
@@ -4803,6 +4825,26 @@
        inkscape:label="button_Enable_Melody">
       <title
          id="title1797">button_Enable_Melody</title>
+    </circle>
+    <circle
+       inkscape:label="control_Harmony_Pattern"
+       r="2.8591328"
+       cy="69.005493"
+       cx="174.23724"
+       id="circle1778"
+       style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+      <title
+         id="title1776">control_Harmony_Pattern</title>
+    </circle>
+    <circle
+       style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle1792"
+       cx="202.61713"
+       cy="69.289291"
+       r="2.8591328"
+       inkscape:label="control_Harmony_Pattern">
+      <title
+         id="title1790">control_Harmony_Pattern</title>
     </circle>
   </g>
 </svg>
