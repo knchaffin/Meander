@@ -1,0 +1,128 @@
+trigger:
+- master
+- candidate*
+- release*
+
+pr:
+- master
+
+stages:
+- stage: build
+  displayName: Build Plugin
+  jobs:
+  - job: BuildPlugin
+    strategy:
+      matrix:
+        mac:
+          imageName: 'macos-10.13'
+          isMac: true
+        windows:
+          imageName: 'vs2017-win2016'
+          isWindows: true
+        linux:
+          imageName: 'ubuntu-16.04'
+          isLinux: true
+
+    pool:
+      vmImage: $(imageName)
+
+    steps:
+    - checkout: self
+      fetchDepth: 1
+      # submodules: recursive # can't do submodules here b'cuz depth=1 fails with Github
+
+    - script: |
+        uname -a
+        git submodule update --init --recursive
+        pushd $AGENT_TEMPDIRECTORY
+        curl -o Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-1.1.6.zip
+        unzip Rack-SDK.zip
+      displayName: Download Rack-SDK
+
+    #- script: |
+    #    ./scripts/resetversion.sh
+    #  displayName: Update Version in plugins.json
+    - script: |
+        export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+        export CC=gcc
+        make win-dist
+        mkdir artifacts_win/
+        cp dist/*zip artifacts_win/
+      displayName: Build Windows Plugin
+      condition: variables.isWindows
+    - script: |
+        export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+        make dist
+        mkdir artifacts_mac/
+        cp dist/*zip artifacts_mac/
+      displayName: Build MacOS Plugin
+      condition: variables.isMac
+    - script: |
+        sudo apt install -y libglu-dev
+        export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+        make dist
+        mkdir artifacts_lin/
+        cp dist/*zip artifacts_lin/
+      displayName: Build Linux Plugins
+      condition: variables.isLinux
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: Plugin-Linux
+        targetPath: artifacts_lin/
+      displayName: Publish Linux Zip
+      condition: variables.isLinux
+
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: Plugin-MacOS
+        targetPath: artifacts_mac/
+      displayName: Publish MacOS Zip
+      condition: variables.isMac
+
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: Plugin-Windows
+        targetPath: artifacts_win/
+      displayName: Publish Windows Zip
+      condition: variables.isWindows
+- stage: publish
+  displayName: Publish Plugin
+  dependsOn: build
+  jobs:
+    - job: PublishArtifacts
+      steps:
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: Plugin-Linux
+            patterns: "**/*.zip"
+            targetPath: $(Build.ArtifactStagingDirectory)
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: Plugin-MacOS
+            patterns: "**/*.zip"
+            targetPath: $(Build.ArtifactStagingDirectory)
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: Plugin-Windows
+            patterns: "**/*.zip"
+            targetPath: $(Build.ArtifactStagingDirectory)
+        - script: |
+            ls -l $(Build.ArtifactStagingDirectory)
+            export EXTEND_TAG=`date "+%Y%m%d"`
+            for file in $(Build.ArtifactStagingDirectory)/*.zip; do mv "$file" "${file/.zip/-${EXTEND_TAG}.zip}"; done
+            ls -l $(Build.ArtifactStagingDirectory)
+          displayName: Tag asset names with Date
+        #- script: |
+        #    cat "last build"  > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+        #  displayName: Fake up release notes
+        - task: GitHubRelease@0
+          displayName: "Update Github Release"
+          inputs:
+            gitHubConnection: github.com_qno
+            repositoryName: qno/Meander
+            action: edit
+            tag: Nightly
+            target: '$(Build.SourceVersion)'
+            addChangeLog: false
+        #    releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+            assets: $(Build.ArtifactStagingDirectory)/*.zip
