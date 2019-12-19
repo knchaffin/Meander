@@ -15,7 +15,7 @@ variables:
     jq --arg VERSION "$version" '.version=$VERSION' plugin.json > $tf
     mv $tf plugin.json
 
-  add-release-notes:
+  add-release-notes: |
     cat <<- EOH
     # Meander binaries
     These assets were built against
