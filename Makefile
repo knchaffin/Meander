@@ -28,9 +28,9 @@ DISTRIBUTABLES += $(wildcard LICENSE*)
 # Include the Rack plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
 
-# extra dist target for Azure CI Windows build, as there is only 7zp available and no zip command
-azure-win-dist: all
 ifdef ARCH_WIN
+# extra dist target for Azure CI Windows build, as there is only 7zip available and no zip command
+azure-win-dist: all
    rm -rf dist
    mkdir -p dist/$(SLUG)
    @# Strip and copy plugin binary
