@@ -7,6 +7,8 @@ pr:
 - master
 
 variables:
+  rack-sdk-version: 1.1.6
+
   add-gitrev-to-plugin-version: |
     gitrev=`git rev-parse --short HEAD`
     version="1.0.${gitrev}"
@@ -19,7 +21,7 @@ variables:
     cat <<- EOH
     # Meander binaries (development builds)
     These assets were built against
-    https://vcvrack.com/downloads/Rack-SDK-1.1.6.zip
+    https://vcvrack.com/downloads/Rack-SDK-$(rack-sdk-version).zip
     The build date and most recent commits are:
     EOH
     date
@@ -57,7 +59,7 @@ stages:
         uname -a
         git submodule update --init --recursive
         pushd $AGENT_TEMPDIRECTORY
-        curl -o Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-1.1.6.zip
+        curl -o Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-$(rack-sdk-version).zip
         unzip Rack-SDK.zip
       displayName: Get Rack-SDK
 
