@@ -13,14 +13,9 @@
 
 #include "Common-Noise.hpp"
 
-/*  // additional logging macros
-#define DEBUG(format, ...) rack::logger::log(rack::logger::DEBUG_LEVEL, __FILE__, __LINE__, format, ##__VA_ARGS__)
-#define INFO(format, ...) rack::logger::log(rack::logger::INFO_LEVEL, __FILE__, __LINE__, format, ##__VA_ARGS__)
-#define WARN(format, ...) rack::logger::log(rack::logger::WARN_LEVEL, __FILE__, __LINE__, format, ##__VA_ARGS__)
-#define FATAL(format, ...) rack::logger::log(rack::logger::FATAL_LEVEL, __FILE__, __LINE__, format, ##__VA_ARGS__)
-*/
 
-// the following will "comment out" all DEBUG() calls for speed
+
+// the following will "comment out" all DEBUG() calls for speed.  Comment out the next line and DEBUG is compiled
 #define DEBUG(format, ...) // DEBUG(format, ...)
 
 
@@ -65,9 +60,6 @@ struct CircleElement
 	Vec pt3;
 	Vec pt4;
 	Vec radialDirection;
-//	int ButtonParamIndex;
-//	int ButtonLEDIndex;
-//	int LightKeyIndex;
 };
 
 
@@ -92,7 +84,6 @@ struct DegreeSemiCircle
 	int RootKeyCircle5thsPosition=0;    // semicircle [index] of "I" degree 
 	int OffsetSteps=0;  // how many 30 degree steps the semicircle must be rotated to display correctly
 	DegreeElement degreeElements[MAX_HARMONIC_DEGREES];
-
 };
 
 
@@ -186,7 +177,6 @@ enum noteTypes
 	NOTE_TYPE_EXTERNAL
 };
 
-//.noteType=NOTE_TYPE_CHORD;
 
 struct note
 {
@@ -291,7 +281,6 @@ struct MelodyParms
 
 	double note_avg= note_avg_target;  
 	double alpha=.9;
-//	double alpha=0.;  // to check for target
 	double seed=12345;
 	int noctaves=4;
 	float period=10.0;
@@ -506,16 +495,9 @@ struct chord_type_info
 struct chord_type_info chordTypeInfo[30];
 
 
-void set_meander_defaults()
-{
-
-}
-
 void init_vars()
 {
 	DEBUG("init_vars()");
-
-//	theMeanderState. theHarmonyParms.note_avg=(double)theMeanderState. theHarmonyParms.target_octave/10.;
 
 	circle_of_fifths[0]=0;
 	circle_of_fifths[1]=7;
@@ -733,7 +715,7 @@ void init_notes()
 
 		int num_mode_notes=10*mode_step_intervals[mode][0]; // the [0] entry is the notes per scale value, times 10 ocatves of midi
 
-	//	if (j==root_key)
+	
 		if (true)
 		{
 			DEBUG("  num_mode_notes=%d", num_mode_notes);
@@ -1556,7 +1538,6 @@ void setup_harmony()
 {
 	DEBUG("setup_harmony-begin"); 
     int i,j,k;
-   // int minor_flag;
     int circle_position=0;
 	int circleDegree=0;
 		
@@ -1612,10 +1593,8 @@ void setup_harmony()
           	if ((root_key_note%MAX_NOTES)==circle_of_fifths[circle_position])
 		    {
 				DEBUG("  root_key_note=%d %s", root_key_note, note_desig[root_key_note%MAX_NOTES]);
-             // for (k=0;k<chord_type_num_notes[theCircleOf5ths.Circle5ths[circle_position].chordType];++k)
-				for (k=0;k<chord_type_num_notes[thisStepChordType];++k)
+             	for (k=0;k<chord_type_num_notes[thisStepChordType];++k)
 				{  
-				//	step_chord_notes[i][num_step_chord_notes[i]]=(int)((int)root_key_note+(int)chord_type_intervals[theCircleOf5ths.Circle5ths[circle_position].chordType][k]);
 					step_chord_notes[i][num_step_chord_notes[i]]=(int)((int)root_key_note+(int)chord_type_intervals[thisStepChordType][k]);
 					DEBUG("    step_chord_notes[%d][%d]= %d %s", i, num_step_chord_notes[i], step_chord_notes[i][num_step_chord_notes[i]], note_desig[step_chord_notes[i][num_step_chord_notes[i]]%MAX_NOTES]);
 					++num_step_chord_notes[i];
@@ -1643,7 +1622,6 @@ void MeanderMusicStructuresInitialize()
 {
 	DEBUG("MeanderMusicStructuresInitialize()");
 	
-	set_meander_defaults();
 	init_vars();
 	init_notes();
 	init_harmony();
@@ -1652,7 +1630,7 @@ void MeanderMusicStructuresInitialize()
 	initialized=true;  // prevents process() from doing anything before initialization
 } 
 
-// should only be called once after initialization
+
 		void ConstructCircle5ths(int circleRootKey, int mode)
 		{
 			DEBUG("ConstructCircle5ths()");
@@ -1685,10 +1663,7 @@ void MeanderMusicStructuresInitialize()
 					Vec centerLine=(radialLine1.plus(radialLine2)).div(2.);
 					theCircleOf5ths.Circle5ths[i].radialDirection=centerLine;
 					theCircleOf5ths.Circle5ths[i].radialDirection=theCircleOf5ths.Circle5ths[i].radialDirection.normalize();
-
-				//	theCircleOf5ths.Circle5ths[i].ButtonParamIndex=Meander::LIGHT_LEDBUTTON_CIRCLESTEP_1+i;
-				//	theCircleOf5ths.Circle5ths[i].ButtonLEDIndex=Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_1+i;
-				//	theCircleOf5ths.Circle5ths[i].LightRootKeyIndex=Meander::LIGHT_CIRCLE_ROOTKEY_POSITION_1_LIGHT+i;
+				
 			}		
 		};
 
@@ -1767,8 +1742,7 @@ void MeanderMusicStructuresInitialize()
 				}
 			}
 
-			
-			//
+						
 			DEBUG("");
 			DEBUG("SemiCircle degrees:");
 			for (int i=0; i<7; ++i)
@@ -2066,7 +2040,6 @@ struct Meander : Module
 		{
 			current_chord_note=(int)((int)root_key_note+(int)chord_type_intervals[circle_chord_type][j]);
 			DEBUG("  current_chord_note=%d %s", current_chord_note, note_desig[current_chord_note%12]);
-		//	int note_to_play=current_chord_note;
 			int note_to_play=current_chord_note+(octaveOffset*12);
 			// don't play the notes immediately but rather wait and let doHarmony do it at the appropriate time
 			if (!running)
@@ -2075,7 +2048,6 @@ struct Meander : Module
 				outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState.theHarmonyParms.volume);
 				outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage(CV_MAX10);  // this should trigger ADSR, but should be a pulse rather than stay high
 				harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
-				//outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage( barGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 );  // drops the volume way too much
 			}
 		
 			if (j<4)
@@ -2138,7 +2110,6 @@ struct Meander : Module
 			}
 			outputs	[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
 			harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
-			//return;
 		}
      
 		DEBUG("theHarmonyTypes[%d].num_harmony_steps=%d", harmony_type, theActiveHarmonyType.num_harmony_steps);
@@ -2294,8 +2265,6 @@ struct Meander : Module
 		lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].value=1.0f;
 		
 	
-	//	double fBmarg=theMeanderState.theHarmonyParms.seed + (double)current_cpu_time_double; 
-	//	double period=.010; // the number of notes per period
 		double period=1.0/theMeanderState.theHarmonyParms.period; // 1/seconds
 		double fBmarg=theMeanderState.theHarmonyParms.seed + (double)(period*current_cpu_time_double); 
 	    double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theHarmonyParms.noctaves) +1.)/2; 
@@ -2329,7 +2298,6 @@ struct Meander : Module
 			theMeanderState.theHarmonyParms.last_chord_type=step_chord_type;
 			theMeanderState.last_harmony_chord_root_note=circle_of_fifths[current_circle_position];
 			theMeanderState.last_harmony_step=step;
-		//	theMeanderState.last_harmony_circle_position=current_circle_position;
 		}
 
 		DEBUG("theMeanderState.last_harmony_chord_root_note=%d %s", theMeanderState.last_harmony_chord_root_note, note_desig[theMeanderState.last_harmony_chord_root_note%MAX_NOTES]);
@@ -2339,9 +2307,7 @@ struct Meander : Module
 		for (int j=0;j<num_chord_members;++j) 
 		{
 				DEBUG("num_step_chord_notes[%d]=%d", step, num_step_chord_notes[step]);
-				// the following line is getting the notes from the next step. how?
 				current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState. theHarmonyParms.note_avg*num_step_chord_notes[step])+j]; // do not create inversion
-				//current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState. theHarmonyParms.note_avg*num_step_chord_notes[step])+j-5]; // do create inversion
 				DEBUG("current_chord_notes[%d]=%d %s", j, current_chord_notes[j], note_desig[current_chord_notes[j]%MAX_NOTES]);
 				
 				int note_to_play=current_chord_notes[j];
@@ -2359,8 +2325,7 @@ struct Meander : Module
 						if (bar_note_count<256)
 						played_notes_circular_buffer[bar_note_count++]=theMeanderState.theHarmonyParms.last[j];
 					}
-
-				//	outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-6.0,j);  // (note, channel)
+				
 					outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel)
 					harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output	
 				}
@@ -2386,12 +2351,7 @@ struct Meander : Module
 			int temp_num_harmony_steps=1 + (int)((rnd*(theHarmonyTypes[22].num_harmony_steps-1)));
 			bar_count += (theHarmonyTypes[22].num_harmony_steps-temp_num_harmony_steps);
 		}
-	//	else
-	//		++bar_count; 
-			
-	//	current_cpu_t= clock();  // cpu clock ticks since program began
-	//	double current_cpu_time_double2= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
-	//	DEBUG("harmony processing time=%.3lf",current_cpu_time_double2-current_cpu_time_double);
+
 	}
 
 	void doMelody()
@@ -2408,8 +2368,6 @@ struct Meander : Module
 
 		theMeanderState.theArpParms.note_count=0;  // where does this really go, at the begining of a melody note
 	
-	//	double fBmarg=theMeanderState.theMelodyParms.seed + (double)current_cpu_time_double; 
-	//	double period=.10; // the number of notes per period
 		double period=1.0/theMeanderState.theMelodyParms.period; // 1/seconds
 		double fBmarg=theMeanderState.theMelodyParms.seed + (double)(period*current_cpu_time_double); 
 		double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theMelodyParms.noctaves) +1.)/2; 
@@ -2517,11 +2475,6 @@ struct Meander : Module
 		else
 		if (theMeanderState.theArpParms.pattern==-2)
 		{
-		/*	if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count+1)/2))
-			arp_note=-theMeanderState.theArpParms.note_count;
-			else
-			arp_note=(-theMeanderState.theArpParms.count-1+theMeanderState.theArpParms.note_count);
-		*/
 			if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count)/2))
 			arp_note-=theMeanderState.theArpParms.note_count;
 			else
@@ -2539,8 +2492,7 @@ struct Meander : Module
 		float volume_factor=pow((1.0-theMeanderState.theArpParms.decay), theMeanderState.theArpParms.note_count);
 		volume *= volume_factor;
 
-		//note_to_play += arp_note;
-
+		
 		DEBUG("theMeanderState.theMelodyParms.last_chord_note_index=%d", theMeanderState.theMelodyParms.last_chord_note_index);
 		DEBUG("num_step_chord_notes[%d]=%d", theMeanderState.theMelodyParms.last_step, num_step_chord_notes[theMeanderState.theMelodyParms.last_step]);
 				
@@ -2621,11 +2573,8 @@ struct Meander : Module
 			played_notes_circular_buffer[bar_note_count++]=theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count];
 		}
 	
-	//	outputs[OUT_MELODY_CV_OUTPUT].setChannels(2);  // set polyphony  may need to deal with unset channel voltages
-	//	outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,1);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.theMelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
 		outputs[OUT_MELODY_CV_OUTPUT].setChannels(1);  // set polyphony  may need to deal with unset channel voltages
 		outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,0);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.theMelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
-	//	outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
 		outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(volume);
 		melodyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output			
 	}
@@ -2720,7 +2669,6 @@ struct Meander : Module
 	
 	int bar_count = 0;  // number of bars running count
 	
-	// need to changle to 32nds per
 	int i32ts_count = 0;  // counted 32s notes per 32s note
 	int i16ts_count = 0;  // counted 32s notes per sixteenth note
 	int i8ts_count = 0;  // counted 32s notes per eighth note
@@ -2739,7 +2687,6 @@ struct Meander : Module
 	int i2ts_count_limit =16;  // 32s notes per half note
 	int barts_count_limit = 32;     // 32s notes per bar
 	
-//	float min_bpm = 30.0f;
 	float min_bpm = 10.0f;
 	float max_bpm = 300.0f;
 
@@ -2828,10 +2775,6 @@ struct Meander : Module
 			tempo=fvalue;
 		}
 
-	//	time_sig_top = std::round(params[CONTROL_TIMESIGNATURETOP_PARAM].getValue());
-	//	time_sig_bottom = std::round(params[CONTROL_TIMESIGNATUREBOTTOM_PARAM].getValue());
-	//	time_sig_bottom = std::pow(2,time_sig_bottom+1);
-			
 		frequency = tempo/60.0f;  // drives 1 tick per 32nd note
 						
 		// Reset
@@ -2877,8 +2820,7 @@ struct Meander : Module
 			theMeanderState.theHarmonyParms.last_circle_step=-1; // for Markov chain
 			resetLight = 1.0;
 			resetPulse.trigger(0.01f);
-			//	outputs[OUT_RESET_OUT].setVoltage((reset_pulse ? 10.0f : 0.0f));
-
+		
 			if (!running)
 			{
 				outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
@@ -2923,14 +2865,7 @@ struct Meander : Module
 
 		if(running) 
 		{
-			float ExtClockState=0;
-			if (inputs[IN_CLOCK_EXT].isConnected()) // External BPM control
-			{
-				ExtClockState=inputs[IN_CLOCK_EXT].getVoltage();
-				// modify tempo				
-			}
-
-			
+						 
 			LFOclock.step(1.0 / args.sampleRate);
 
 			bool clockTick=false;
@@ -2945,10 +2880,7 @@ struct Meander : Module
 					 clockTick=true;
 			}
 			
-			
-			
-		    //   || (ST_32ts_trig.process(LFOclock.sqr()) ))  // triggers from each internal 1/32nd clock 
-		//	if (ST_32ts_trig.process(inputs[IN_CLOCK_EXT].getVoltage()))   // triggers from each external clock tick 
+				   
 		    if (clockTick)
 			{
 				bool melodyPlayed=false;   // set to prevent arp note being played on the melody beat
@@ -2956,7 +2888,6 @@ struct Meander : Module
 				if (barts_count == barts_count_limit)
 				{
 					barts_count = 0;  
-				//	++bar_count;
 					theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 					theMeanderState.theBassParms.bar_bass_counted_note=0;
 					bar_note_count=0;
@@ -3055,25 +2986,25 @@ struct Meander : Module
 				clock_t current_cpu_t= clock();  // cpu clock ticks since program began
 				double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
 			
-				if (true)  // do on each 1/32nd clock tick
+				 // do on each 1/32nd clock tick
+				
+				if (theMeanderState.theMelodyParms.note_length_divisor==32)
 				{
-					if (theMeanderState.theMelodyParms.note_length_divisor==32)
-					{
-						doMelody();   
-						melodyPlayed=true; 
-					}
-					if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==32)&&(!melodyPlayed))
-						doArp(); 
-									
-					clockPulse32ts.trigger(trigger_length);
-
-					// output some fBm noise
-					double period=1.0/theMeanderState.theArpParms.period; // 1/seconds
-					double fBmarg=theMeanderState.theArpParms.seed + (double)(period*current_cpu_time_double); 
-					double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theArpParms.noctaves) +1.)/2; 
-					outputs[OUT_FBM_TRIGGER_OUTPUT].setChannels(1);  // set polyphony  
-					outputs[OUT_FBM_TRIGGER_OUTPUT].setVoltage((float)fBmrand ,0); 
+					doMelody();   
+					melodyPlayed=true; 
 				}
+				if ((theMeanderState.theArpParms.enabled)&&(theMeanderState.theArpParms.increment==32)&&(!melodyPlayed))
+					doArp(); 
+								
+				clockPulse32ts.trigger(trigger_length);
+
+				// output some fBm noise
+				double period=1.0/theMeanderState.theArpParms.period; // 1/seconds
+				double fBmarg=theMeanderState.theArpParms.seed + (double)(period*current_cpu_time_double); 
+				double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theArpParms.noctaves) +1.)/2; 
+				outputs[OUT_FBM_TRIGGER_OUTPUT].setChannels(1);  // set polyphony  
+				outputs[OUT_FBM_TRIGGER_OUTPUT].setVoltage((float)fBmrand ,0); 
+				
 
 				barts_count++;    
 				i2ts_count++;
@@ -3116,7 +3047,6 @@ struct Meander : Module
 		if (HarmonyEnableAll7thsToggle.process(params[BUTTON_ENABLE_HARMONY_ALL7THS_PARAM].getValue())) 
 		{
 			theMeanderState. theHarmonyParms.enable_all_7ths = !theMeanderState. theHarmonyParms.enable_all_7ths;
-		//	init_harmony(); // reinitialize in case user has changed harmony parms
 			setup_harmony();  // calculate harmony notes
 			circleChanged=true;
 		}
@@ -3125,7 +3055,6 @@ struct Meander : Module
 		if (HarmonyEnableV7thsToggle.process(params[BUTTON_ENABLE_HARMONY_V7THS_PARAM].getValue())) 
 		{
 			theMeanderState. theHarmonyParms.enable_V_7ths = !theMeanderState. theHarmonyParms.enable_V_7ths;
-		//	init_harmony(); // reinitialize in case user has changed harmony parms
 			setup_harmony();
 			circleChanged=true;
 		}
@@ -3185,9 +3114,7 @@ struct Meander : Module
 		}
 		lights[LIGHT_LEDBUTTON_ARP_ENABLE_SCALER].value = theMeanderState.theArpParms.scaler ? 1.0f : 0.0f; 
 
-		//***********
-
-		
+			
 		
 		//***************
 			 
@@ -3233,16 +3160,12 @@ struct Meander : Module
 		float gateValue=0;
 		if (  (inputs[IN_HARMONY_GATE_EXT].isConnected())
 			&&((gateValue=inputs[IN_HARMONY_GATE_EXT].getVoltage()))
-		//	&&((circleDegree=std::abs(inputs[IN_HARMONY_CV_EXT].getVoltage()))>=0)  
 			&&((circleDegree=inputs[IN_HARMONY_CV_EXT].getVoltage())>=0) )  
-		//	&&(circleDegree!=extHarmonyIn) )  
 		{
 			DEBUG("IN_HARMONY_GATE_EXT is connected and circleDegree=%f", circleDegree);
 
 			extHarmonyIn=circleDegree;
-
-		//	float octave=0;
-		//	float octave=std::round(circleDegree);
+		
 			float octave=(float)((int)(circleDegree));
 
 			circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0);
@@ -3291,9 +3214,7 @@ struct Meander : Module
 			
 			theMeanderState.userControllingHarmonyFromCircle=true;
 			theMeanderState. theHarmonyParms.enabled=false;
-
-			
-		//	lights[LIGHT_LEDBUTTON_HARMONY_ENABLE].value = theMeanderState. theHarmonyParms.enabled ? 1.0f : 0.0f; 
+		
 
 			for (int i=0; i<12; ++i) 
 			{
@@ -3445,7 +3366,6 @@ struct Meander : Module
 
 			if ((fvalue=std::round(params[CONTROL_HARMONYPRESETS_PARAM].getValue()))!=harmony_type)
 			{
-			//	harmony_type = (int)fvalue;  // queue it for handling in draw()
 				DEBUG("harmony_type changed to %d %s", (int)fvalue, "test");  // need actual descriptor
 				harmonyStepsChanged=(int)fvalue;  // don't changed until between sequences.  The new harmony_type is in harmonyStepsChanged
 			}
@@ -3595,7 +3515,6 @@ struct Meander : Module
 			{	
 				DEBUG("circleChanged");	
 				
-			//	notate_mode_as_signature_root_key=((root_key-(drop_semitones[mode_root_key_signature_offset[mode]]))+12)%12;
 				notate_mode_as_signature_root_key=((root_key-(mode_natural_roots[mode_root_key_signature_offset[mode]]))+12)%12;
 				DEBUG("notate_mode_as_signature_root_key=%d", notate_mode_as_signature_root_key);
 				
@@ -3642,19 +3561,11 @@ struct Meander : Module
 	Meander() 
 	{
 		DEBUG("");  // clear debug log file
-	//	time_t systime=time(NULL);
-	//	rack::random::init();  // must be called per thread
-		
+			
 		time_t rawtime;
-  	//	struct tm *info;
-		time( &rawtime );
-   		//info = localtime( &rawtime );
-  		// printf("Current local time and date: %s", asctime(info));
-
-		//clock_t start_t; //,  cpu_t;
-  		//start_t = clock();  // cpu clock ticks since program began
-   	//	cpu_t = (double)(start_t) / CLOCKS_PER_SEC;
-
+  		time( &rawtime );
+   		
+		
 		lowFreqClock.setDivision(512);  // every 86 samples, 2ms
 		sec1Clock.setDivision(44000);
 		lightDivider.setDivision(512);  // every 86 samples, 2ms
@@ -3663,12 +3574,9 @@ struct Meander : Module
 		initPerlin();
 		MeanderMusicStructuresInitialize();
 
-	//	params[CONTROL_HARMONY_VOLUME_PARAM].value=1;
-		 
-		
+			
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
-		//lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT].value=1.0f;
 		for (int i=0; i<12; ++i)
 				lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+i].value=0.0f;
 		lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+root_key].value=1.0f;  // loaded root_key might not be 0/C
@@ -3785,13 +3693,10 @@ struct Meander : Module
 			return;
 		} 
 
-	//	Vec pos = Vec(5,-7.3); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
 		Vec pos = Vec(-40, -3); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
 		nvgFontSize(ctx.vg, 14);
 		nvgFontFaceId(ctx.vg, font->handle);
 		nvgTextLetterSpacing(ctx.vg, -1);
-	//	nvgFillColor(ctx.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF));
-	//	nvgFillColor(ctx.vg, nvgRGBA(0x0, 0xFF, 0xFF, 0xFF));
 		nvgFillColor(ctx.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
 		char text[128]; 
 		snprintf(text, sizeof(text), "#%d:  %s", harmony_type, theActiveHarmonyType.harmony_type_desc);
@@ -3808,7 +3713,6 @@ struct Meander : Module
 		nvgText(ctx.vg, pos.x, pos.y, text, NULL);
 
 		nvgFontSize(ctx.vg, 12);
-	//	nvgFillColor(ctx.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
 		nvgFillColor(ctx.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
 		pos = Vec(-35, 20); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
 		snprintf(text, sizeof(text), "%s           ",  theActiveHarmonyType.harmony_degrees_desc);
@@ -3840,7 +3744,6 @@ struct RootKeySelectLineDisplay : TransparentWidget {
 		nvgFontFaceId(ctx.vg, font->handle);
 		nvgTextLetterSpacing(ctx.vg, -1);
 		nvgTextAlign(ctx.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-	//	nvgFillColor(ctx.vg, nvgRGBA(0xdf, 0xd2, 0x2c, 0xFF));
 		nvgFillColor(ctx.vg, nvgRGBA(0xff, 0xff, 0x2c, 0xFF));
 
 		char text[128];
@@ -3874,7 +3777,6 @@ struct ScaleSelectLineDisplay : TransparentWidget {
 		nvgFontFaceId(ctx.vg, font->handle);
 		nvgTextLetterSpacing(ctx.vg, -1);
 		nvgTextAlign(ctx.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-	//	nvgFillColor(ctx.vg, nvgRGBA(0xdf, 0xd2, 0x2c, 0xFF));
 		nvgFillColor(ctx.vg, nvgRGBA(0xff, 0xff, 0x2c, 0xFF));
 	
 		char text[128];
@@ -3894,7 +3796,7 @@ struct ScaleSelectLineDisplay : TransparentWidget {
 		}
 		
 		nvgText(ctx.vg, pos.x-35, pos.y+39, text, NULL);
-		//DEBUG("mode=%d root_key=%d root_key_notes[%d]=%s", mode, root_key, root_key, text);
+		
 	} 
 
 };
@@ -3902,7 +3804,6 @@ struct ScaleSelectLineDisplay : TransparentWidget {
 ////////////////////////////////////
 struct BpmDisplayWidget : TransparentWidget {
 
-//	Meander *module; 
 
   float *value = NULL;
   std::shared_ptr<Font> font;
@@ -3921,15 +3822,12 @@ struct BpmDisplayWidget : TransparentWidget {
     nvgFontSize(args.vg, 36);
     nvgFontFaceId(args.vg, font->handle);
     nvgTextLetterSpacing(args.vg, 2.3);
-	//nvgTextLetterSpacing(args.vg, 5.0);
 
-    std::stringstream to_display;   
+	std::stringstream to_display;   
     to_display << std::setw(3) << *value;
 
-    //Vec textPos = Vec(4.0f, 17.0f); 
-	Vec textPos = Vec(6.0f, -6.0f);   // this is a relative offset within the widget box
+   	Vec textPos = Vec(6.0f, -6.0f);   // this is a relative offset within the widget box
   
- // NVGcolor textColor = nvgRGB(0xf0, 0x00, 0x00);
 	NVGcolor textColor = nvgRGB(0xff, 0xff, 0x2c);
 	nvgFillColor(args.vg, textColor);
     nvgText(args.vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
@@ -3956,19 +3854,16 @@ struct SigDisplayWidget : TransparentWidget {
     }
     
     // text 
-  //  nvgFontSize(args.vg, 14);
-	nvgFontSize(args.vg, 18);
+  	nvgFontSize(args.vg, 18);
     nvgFontFaceId(args.vg, font->handle);
     nvgTextLetterSpacing(args.vg, 2.2);
 
     std::stringstream to_display;   
     to_display << std::setw(2) << *value;
 
-  //  Vec textPos = Vec(16.0f, 15.0f);   // this is a relative offset within the box
-	Vec textPos = Vec(14.0f, 14.0f);   // this is a relative offset within the box
+ 	Vec textPos = Vec(14.0f, 14.0f);   // this is a relative offset within the box
    
- // NVGcolor textColor = nvgRGB(0xf0, 0x00, 0x00);
-	NVGcolor textColor = nvgRGBA(0xff, 0xff, 0x2c, 0xff);
+ 	NVGcolor textColor = nvgRGBA(0xff, 0xff, 0x2c, 0xff);
     nvgFillColor(args.vg, textColor);
     nvgText(args.vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
   }
@@ -3978,8 +3873,7 @@ struct SigDisplayWidget : TransparentWidget {
 
 struct MeanderWidget : ModuleWidget 
 {
-	//static std::shared_ptr<rack::Svg> svg;  // of the loaded svg file
-
+	
 	struct CircleOf5thsDisplay : TransparentWidget 
 	{
 		Meander* module;
@@ -4152,7 +4046,6 @@ struct MeanderWidget : ModuleWidget
 
 			pos=Vec(672, 61);  
 			nvgFontSize(args.vg, 17);
-		//	nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
 			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theHarmonyParms.volume);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
@@ -4259,14 +4152,12 @@ struct MeanderWidget : ModuleWidget
 
 			pos=Vec(1020, 63);  
 			nvgFontSize(args.vg, 17);
-		//	nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0xFF, 0xFF));
 			snprintf(text, sizeof(text), "%.1lf", theMeanderState.theBassParms.volume);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(1035, 85);  
 			nvgFontSize(args.vg, 17);
 			nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
-		//	nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0F, 0xFF));
 			snprintf(text, sizeof(text), "%d", (int)theMeanderState.theBassParms.target_octave);
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
@@ -4402,7 +4293,6 @@ struct MeanderWidget : ModuleWidget
 			// draw staff lines
 
 			beginEdge = 890;
-		//	beginTop =200;
 			beginTop =190;
 			lineWidth=1.0; 
 			
@@ -4562,14 +4452,10 @@ struct MeanderWidget : ModuleWidget
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
 		
-			float display_note_position=0; //theMeanderState.theMelodyParms.last[0].note%12;
+			float display_note_position=0; 
 
 			for (int i=0; ((i<bar_note_count)&&(i<256)); ++i)
 			{
-			//	played_notes_circular_buffer[i].note;
-			//	played_notes_circular_buffer[i].length;
-			//	played_notes_circular_buffer[i].time32s;
-			//	played_notes_circular_buffer[i].countInBar;
 				int display_note=played_notes_circular_buffer[i].note;
 				DEBUG("display_note=%d %s", display_note, note_desig[display_note%12]);
 			 
@@ -4603,9 +4489,6 @@ struct MeanderWidget : ModuleWidget
 				DEBUG("display_note_position=%d", (int)display_note_position);
 			
 				
-
-			//	pos=Vec(beginEdge+70+(played_notes_circular_buffer[i].time32s*7), beginTop+display_note_position);  
-
 				float note_x_spacing= 230.0/(32*time_sig_top/time_sig_bottom);  // experimenting with note spacing function of time_signature.  barts_count_limit is not in scope, needs to be global
 				pos=Vec(beginEdge+70+(played_notes_circular_buffer[i].time32s*note_x_spacing), beginTop+display_note_position);  
 				if (true)  // color code notes in staff rendering
@@ -4647,17 +4530,10 @@ struct MeanderWidget : ModuleWidget
 
 				if (played_notes_circular_buffer[i].length==32)  // do overstrike for 1/32 symbol
 				{
-				//	nvgFontSize(args.vg, 20);
-				//	snprintf(text, sizeof(text), "`");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-				//	nvgText(args.vg, pos.x, pos.y+7, text, NULL);
-
 					nvgFontSize(args.vg, 15);
 					snprintf(text, sizeof(text), "e");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
 					nvgText(args.vg, pos.x-.5, pos.y+4.5, text, NULL);
-
-				//	nvgFontSize(args.vg, 30);  // dash flag gets confused with short note staff line
-				//	snprintf(text, sizeof(text), "-");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-				//	nvgText(args.vg, pos.x+1.5, pos.y-2, text, NULL);
+				
 				}
 
 
@@ -4707,9 +4583,7 @@ struct MeanderWidget : ModuleWidget
 			// write last harmony note played 4
 			pos=convertSVGtoNVG(221.7, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
 			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState. theHarmonyParms.last[3].note%12)], theMeanderState. theHarmonyParms.last[3].note/12);
-		//	nvgText(args.vg, pos.x, pos.y, text, NULL);
-			
-			
+					
 			// write last bass note played 
 			pos=convertSVGtoNVG(319.1, 121.0, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
 			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theBassParms.last[0].note%12)], (theMeanderState.theBassParms.last[0].note/12));
@@ -5269,7 +5143,7 @@ struct MeanderWidget : ModuleWidget
 	}    // end MeanderWidget(Meander* module)  
 
 	
-	// this could be deketed, I think, since I moved procedural code back to MeanderWidget() constructor
+	// this could be deleted, I think, since I moved procedural code back to MeanderWidget() constructor
 	void step() override   // note, this is a widget step() which is not deprecated and is a GUI call.  This advances UI by one "frame"
 	{  
 		ModuleWidget::step();
