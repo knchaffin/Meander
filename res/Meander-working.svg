@@ -1287,24 +1287,6 @@
          id="path2364"
          inkscape:connector-curvature="0" />
     </g>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.17088301;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 171.38856,92.295586 h 64.82303 v -7.122254 h -64.82303 z"
-       id="rect4707-2"
-       inkscape:label="linedisplaybox_Harmony_Presets">
-      <title
-         id="title1554">linedisplaybox_Harmony_Presets</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 222.05816,32.310025 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1"
-       inkscape:label="linedisplaybox_Harmony_Steps">
-      <title
-         id="title1524">linedisplaybox_Harmony_Steps</title>
-    </path>
     <g
        aria-label="Destutter"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -1826,24 +1808,6 @@
          id="path1818"
          inkscape:connector-curvature="0" />
     </g>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 39.073792,71.945277 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-2"
-       inkscape:label="linedisplaybox_Key">
-      <title
-         id="title1462">linedisplaybox_Key</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.11409441;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 23.968628,82.941961 h 28.883833 v -7.12563 H 23.968628 Z"
-       id="rect4707-1-0"
-       inkscape:label="linedisplaybox_Scale">
-      <title
-         id="title1466">linedisplaybox_Scale</title>
-    </path>
     <g
        style="display:inline"
        transform="matrix(0.26458333,0,0,0.26458333,36.11498,8.7462143)"
@@ -2091,132 +2055,6 @@
        d="M 171.30888,103.80555 H 398.78 v 7.62 H 171.30888 Z"
        id="rect1249-5"
        inkscape:connector-curvature="0" />
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 221.75337,23.676163 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-1"
-       inkscape:label="linedisplaybox_Harmony_Volume">
-      <title
-         id="title1514">linedisplaybox_Harmony_Volume</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 222.03199,41.374556 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-6"
-       inkscape:label="linedisplaybox_Harmony_OctaveStratum">
-      <title
-         id="title1530">linedisplaybox_Harmony_OctaveStratum</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 222.03199,49.615904 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-5"
-       inkscape:label="linedisplaybox_Harmony_Alpha">
-      <title
-         id="title1536">linedisplaybox_Harmony_Alpha</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 222.03199,57.857251 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-53"
-       inkscape:label="linedisplaybox_Harmony_Range">
-      <title
-         id="title1542">linedisplaybox_Harmony_Range</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07959312;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 221.67281,66.098598 h 14.0565 v -7.12563 h -14.0565 z"
-       id="rect4707-1-9"
-       inkscape:label="linedisplaybox_Harmony_Steps">
-      <title
-         id="title1548">linedisplaybox_Harmony_Steps</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.05933188;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 292.29729,44.291443 h 7.78989 v -7.144868 h -7.78989 z"
-       id="rect4707-1-3"
-       inkscape:label="linedisplaybox_Melody_OctaveStratum">
-      <title
-         id="title1594">linedisplaybox_Melody_OctaveStratum</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 286.38024,51.965315 h 13.69732 v -7.125632 h -13.69732 z"
-       id="rect4707-1-8"
-       inkscape:label="linedisplaybox_Harmony_Alpha">
-      <title
-         id="title1600">linedisplaybox_Harmony_Alpha</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 286.38024,59.927733 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-23"
-       inkscape:label="linedisplaybox_Harmony_Range">
-      <title
-         id="title1606">linedisplaybox_Harmony_Range</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 286.38023,71.939605 h 13.69732 v -7.125633 h -13.69732 z"
-       id="rect4707-1-7"
-       inkscape:label="linedisplaybox_Arp_OctaveStratum">
-      <title
-         id="title1614">linedisplaybox_Arp_OctaveStratum</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 286.38023,87.585512 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-06"
-       inkscape:label="linedisplaybox_Arp_Increment">
-      <title
-         id="title1626">linedisplaybox_Arp_Increment</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 286.38023,95.547929 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-66"
-       inkscape:label="linedisplaybox_Arp_Decay">
-      <title
-         id="title1632">linedisplaybox_Arp_Decay</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.11494281;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 270.59397,103.25604 h 29.46539 v -7.089257 h -29.46539 z"
-       id="rect4707-1-01"
-       inkscape:label="linedisplaybox_Arp_Pattern">
-      <title
-         id="title1638">linedisplaybox_Arp_Pattern</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.06038868;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 345.08814,32.320352 h 8.07106 v -7.143814 h -8.07106 z"
-       id="rect4707-1-77"
-       inkscape:label="linedisplaybox_Bass_OctaveStratum">
-      <title
-         id="title1650">linedisplaybox_Bass_OctaveStratum</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.06424192;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 344.54257,64.311962 h 9.15721 v -7.12563 h -9.15721 z"
-       id="rect4707-1-75"
-       inkscape:label="linedisplaybox_Bass_Pattern">
-      <title
-         id="title1668">linedisplaybox_Bass_Pattern</title>
-    </path>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -2269,11 +2107,6 @@
        style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.62199998;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 8.9471636,89.356155 H 45.295022 v 5.871577 H 8.9471636 Z"
        id="rect1590"
-       inkscape:connector-curvature="0" />
-    <path
-       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.90209407;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 171.79809,92.731946 h 64.07485 v 7.005982 h -64.07485 z"
-       id="rect1590-4"
        inkscape:connector-curvature="0" />
     <path
        style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.82835561;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -2987,24 +2820,6 @@
          id="path2046"
          inkscape:connector-curvature="0" />
     </g>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 286.55964,25.459438 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-1-5"
-       inkscape:label="linedisplaybox_Harmony_Volume">
-      <title
-         id="title1514-1">linedisplaybox_Harmony_Volume</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07856964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 339.46188,25.176538 h 13.69732 v -7.12563 h -13.69732 z"
-       id="rect4707-1-1-3"
-       inkscape:label="linedisplaybox_Harmony_Volume">
-      <title
-         id="title1514-0">linedisplaybox_Harmony_Volume</title>
-    </path>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:2.82222223px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -3222,15 +3037,6 @@
          x="263.87778"
          y="94.351112"
          style="stroke-width:0.26458332">(0-1.0)</tspan></text>
-    <path
-       inkscape:label="linedisplaybox_Melody_OctaveStratum"
-       id="path1822"
-       d="m 292.29729,36.389221 h 7.78989 v -7.144868 h -7.78989 z"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#f9f9f9;stroke-width:0.05933188;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:connector-curvature="0">
-      <title
-         id="title1820">linedisplaybox_Melody_OctaveStratum</title>
-    </path>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -3319,33 +3125,6 @@
          x="373.11951"
          id="tspan1767"
          sodipodi:role="line"> </tspan></text>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07027331;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 393.8811,22.67119 h 10.9295 v -7.143814 h -10.9295 z"
-       id="path1773"
-       inkscape:label="linedisplaybox_Bass_OctaveStratum">
-      <title
-         id="title1771">linedisplaybox_Bass_OctaveStratum</title>
-    </path>
-    <path
-       inkscape:label="linedisplaybox_Bass_OctaveStratum"
-       id="path1777"
-       d="M 393.87828,30.382601 H 405.0944 V 23.238787 H 393.87828 Z"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07118877;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:connector-curvature="0">
-      <title
-         id="title1775">linedisplaybox_Bass_OctaveStratum</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07117229;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 393.88348,38.896567 H 405.0944 V 31.752753 H 393.88348 Z"
-       id="path1782"
-       inkscape:label="linedisplaybox_Bass_OctaveStratum">
-      <title
-         id="title1779">linedisplaybox_Bass_OctaveStratum</title>
-    </path>
     <text
        id="text1786"
        y="52.7257"
@@ -3445,33 +3224,6 @@
          x="360.42459"
          y="60.104465"
          style="font-size:2.82222223px;stroke-width:0.26458332">Period Seconds (1-100)</tspan></text>
-    <path
-       inkscape:label="linedisplaybox_Bass_OctaveStratum"
-       id="path1805"
-       d="M 393.88348,46.842936 H 405.0944 V 39.699122 H 393.88348 Z"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07117229;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:connector-curvature="0">
-      <title
-         id="title1802">linedisplaybox_Bass_OctaveStratum</title>
-    </path>
-    <path
-       inkscape:connector-curvature="0"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07117229;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 393.59968,54.789305 H 404.8106 V 47.645491 H 393.59968 Z"
-       id="path1809"
-       inkscape:label="linedisplaybox_Bass_OctaveStratum">
-      <title
-         id="title1807">linedisplaybox_Bass_OctaveStratum</title>
-    </path>
-    <path
-       inkscape:label="linedisplaybox_Bass_OctaveStratum"
-       id="path1813"
-       d="M 393.59968,62.451875 H 404.8106 V 55.308061 H 393.59968 Z"
-       style="display:inline;fill:#2f270a;fill-opacity:1;stroke:#767676;stroke-width:0.07117229;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:connector-curvature="0">
-      <title
-         id="title1811">linedisplaybox_Bass_OctaveStratum</title>
-    </path>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -3551,7 +3303,7 @@
          sodipodi:role="line">Bass on 1/</tspan></text>
     <text
        xml:space="preserve"
-       style="display:inline;font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        x="179.64468"
        y="70.888824"
        id="text1782"><tspan
@@ -3562,7 +3314,7 @@
          style="stroke-width:0.26458332">All 7ths</tspan></text>
     <text
        xml:space="preserve"
-       style="display:inline;font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        x="208.87599"
        y="70.605026"
        id="text1788"><tspan
@@ -3571,12 +3323,264 @@
          x="208.87599"
          y="70.605026"
          style="stroke-width:0.26458332">V 7ths</tspan></text>
+    <rect
+       ry="1.4872619"
+       rx="7.9095163"
+       y="86.587318"
+       x="172.28294"
+       height="5.9490786"
+       width="63.276451"
+       id="rect1802"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1804"
+       width="13.622347"
+       height="6.8111734"
+       x="222.10696"
+       y="42.804733"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1806"
+       width="13.622347"
+       height="6.8111734"
+       x="222.10696"
+       y="34.563385"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1808"
+       width="13.622347"
+       height="6.8111734"
+       x="222.13313"
+       y="25.498852"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1810"
+       width="13.622347"
+       height="6.8111734"
+       x="221.64691"
+       y="16.683237"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1812"
+       width="13.622347"
+       height="6.8111734"
+       x="222.10696"
+       y="59.287426"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1814"
+       width="13.622347"
+       height="6.8111734"
+       x="222.10696"
+       y="51.046078"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1816"
+       width="13.622347"
+       height="6.8111734"
+       x="286.63687"
+       y="64.645256"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1818"
+       width="13.622347"
+       height="6.8111734"
+       x="286.35309"
+       y="53.009499"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1820"
+       width="13.622347"
+       height="6.8111734"
+       x="286.35306"
+       y="45.063126"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1822"
+       width="13.622347"
+       height="6.8111734"
+       x="286.35309"
+       y="80.821785"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1824"
+       width="13.622347"
+       height="6.8111734"
+       x="286.35306"
+       y="88.200562"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1826"
+       width="13.622347"
+       height="6.8111734"
+       x="286.6369"
+       y="18.669832"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1828"
+       width="13.622347"
+       height="6.8111734"
+       x="339.42346"
+       y="18.102234"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       ry="1.7027842"
+       rx="1.7027842"
+       y="57.550282"
+       x="345.09949"
+       height="6.5273743"
+       width="8.2301674"
+       id="rect1834"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       ry="1.7027842"
+       rx="1.7027842"
+       y="25.481001"
+       x="345.09946"
+       height="6.5273743"
+       width="8.2301674"
+       id="rect1836"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       ry="1.7027842"
+       rx="1.7027842"
+       y="37.116756"
+       x="292.02908"
+       height="6.5273743"
+       width="8.2301674"
+       id="rect1838"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       ry="1.7027842"
+       rx="1.7027842"
+       y="29.170387"
+       x="292.02905"
+       height="6.5273743"
+       width="8.2301674"
+       id="rect1840"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       ry="1.665391"
+       rx="2.3777277"
+       y="31.796246"
+       x="393.98459"
+       height="6.3840332"
+       width="11.492413"
+       id="rect1842"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1844"
+       width="11.492413"
+       height="6.3840332"
+       x="393.98456"
+       y="23.566078"
+       rx="2.3777277"
+       ry="1.665391" />
+    <rect
+       ry="1.665391"
+       rx="2.3777277"
+       y="15.61971"
+       x="393.98456"
+       height="6.3840332"
+       width="11.492413"
+       id="rect1846"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       ry="1.665391"
+       rx="2.3777277"
+       y="56.202953"
+       x="393.70074"
+       height="6.3840332"
+       width="11.492413"
+       id="rect1848"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       ry="1.665391"
+       rx="2.3777277"
+       y="47.688984"
+       x="393.70078"
+       height="6.3840332"
+       width="11.492413"
+       id="rect1850"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       ry="1.665391"
+       rx="2.3777277"
+       y="40.310215"
+       x="393.98456"
+       height="6.3840332"
+       width="11.492413"
+       id="rect1852"
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1854"
+       width="13.622347"
+       height="6.8111734"
+       x="39.164249"
+       y="65.212845"
+       rx="1.7027847"
+       ry="1.7027847" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1856"
+       width="28.876402"
+       height="6.4562902"
+       x="270.63779"
+       y="96.324371"
+       rx="3.6095319"
+       ry="1.6140642" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1858"
+       width="28.876402"
+       height="6.4562902"
+       x="24.01655"
+       y="75.890846"
+       rx="3.6095319"
+       ry="1.6140642" />
+    <rect
+       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1860"
+       width="63.276451"
+       height="5.9490786"
+       x="172.56674"
+       y="93.682289"
+       rx="7.9095163"
+       ry="1.4872619" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="widgets"
-     style="display:inline" />
+     style="display:none" />
   <g
      inkscape:groupmode="layer"
      id="layer2"
