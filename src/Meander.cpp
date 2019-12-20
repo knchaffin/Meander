@@ -2811,7 +2811,22 @@ struct Meander : Module
 		run_pulse = runPulse.process(1.0 / args.sampleRate);  
 		outputs[OUT_RUN_OUT].setVoltage((run_pulse ? 10.0f : 0.0f));
 
-		tempo = std::round(params[CONTROL_TEMPOBPM_PARAM].getValue());
+		if (inputs[IN_TEMPO_EXT].isConnected())
+		{
+			float fvalue=inputs[IN_TEMPO_EXT].getVoltage();
+			tempo=std::round(std::pow(2.0, fvalue)*120);
+			if (tempo<10)
+				tempo=10;
+			if (tempo>300)
+				tempo=300;
+		}
+		else
+		{
+			//	tempo = std::round(params[CONTROL_TEMPOBPM_PARAM].getValue());
+			float fvalue = std::round(params[CONTROL_TEMPOBPM_PARAM].getValue());
+			if (fvalue!=tempo)
+			tempo=fvalue;
+		}
 
 	//	time_sig_top = std::round(params[CONTROL_TIMESIGNATURETOP_PARAM].getValue());
 	//	time_sig_bottom = std::round(params[CONTROL_TIMESIGNATUREBOTTOM_PARAM].getValue());
@@ -2863,6 +2878,13 @@ struct Meander : Module
 			resetLight = 1.0;
 			resetPulse.trigger(0.01f);
 			//	outputs[OUT_RESET_OUT].setVoltage((reset_pulse ? 10.0f : 0.0f));
+
+			if (!running)
+			{
+				outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
+				outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
+				outputs[OUT_BASS_GATE_OUTPUT].setVoltage(0);
+			}
 		}
 
 		resetLight -= resetLight / lightLambda / args.sampleRate;
@@ -2901,17 +2923,33 @@ struct Meander : Module
 
 		if(running) 
 		{
-			
+			float ExtClockState=0;
 			if (inputs[IN_CLOCK_EXT].isConnected()) // External BPM control
 			{
-				inputs[IN_CLOCK_EXT].getVoltage();
+				ExtClockState=inputs[IN_CLOCK_EXT].getVoltage();
 				// modify tempo				
 			}
 
 			
 			LFOclock.step(1.0 / args.sampleRate);
-								
-			if (ST_32ts_trig.process(LFOclock.sqr()))   // triggers from each 1/32nd clock 
+
+			bool clockTick=false;
+			if ( inputs[IN_CLOCK_EXT].isConnected())
+			{
+				if (ST_32ts_trig.process(inputs[IN_CLOCK_EXT].getVoltage()))  // triggers from each external clock tick 
+				 	 clockTick=true;
+			}
+			else
+			{
+				if (ST_32ts_trig.process(LFOclock.sqr()))
+					 clockTick=true;
+			}
+			
+			
+			
+		    //   || (ST_32ts_trig.process(LFOclock.sqr()) ))  // triggers from each internal 1/32nd clock 
+		//	if (ST_32ts_trig.process(inputs[IN_CLOCK_EXT].getVoltage()))   // triggers from each external clock tick 
+		    if (clockTick)
 			{
 				bool melodyPlayed=false;   // set to prevent arp note being played on the melody beat
 				// bar
@@ -3078,14 +3116,18 @@ struct Meander : Module
 		if (HarmonyEnableAll7thsToggle.process(params[BUTTON_ENABLE_HARMONY_ALL7THS_PARAM].getValue())) 
 		{
 			theMeanderState. theHarmonyParms.enable_all_7ths = !theMeanderState. theHarmonyParms.enable_all_7ths;
-			setup_harmony();
+		//	init_harmony(); // reinitialize in case user has changed harmony parms
+			setup_harmony();  // calculate harmony notes
+			circleChanged=true;
 		}
 		lights[LIGHT_LEDBUTTON_ENABLE_HARMONY_ALL7THS_PARAM].value = theMeanderState. theHarmonyParms.enable_all_7ths ? 1.0f : 0.0f; 
 
 		if (HarmonyEnableV7thsToggle.process(params[BUTTON_ENABLE_HARMONY_V7THS_PARAM].getValue())) 
 		{
 			theMeanderState. theHarmonyParms.enable_V_7ths = !theMeanderState. theHarmonyParms.enable_V_7ths;
+		//	init_harmony(); // reinitialize in case user has changed harmony parms
 			setup_harmony();
+			circleChanged=true;
 		}
 		lights[LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM].value = theMeanderState. theHarmonyParms.enable_V_7ths ? 1.0f : 0.0f; 
 
