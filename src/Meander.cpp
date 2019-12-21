@@ -3942,7 +3942,7 @@ struct RSLabelCentered : LedDisplay {
 	NVGcolor color;
 
 //	RSLabelCentered(int x, int y, const char* str = "", int fontSize = 10, const NVGcolor& colour = COLOR_RS_GREY) {
-	RSLabelCentered(int x, int y, const char* str = "", int fontSize = 10, const NVGcolor& colour = nvgRGB(0xff, 0xff, 0x2c)) {
+	RSLabelCentered(int x, int y, const char* str = "", int fontSize = 10, const NVGcolor& colour = nvgRGB(0x00, 0x00, 0x00)) {
 	//	font = APP->window->loadFont(asset::plugin(pluginInstance, "res/fonts/Ubuntu Condensed 400.ttf"));
 		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/DejaVuSansMono.ttf"));
 		this->fontSize = fontSize;
@@ -4767,24 +4767,30 @@ struct MeanderWidget : ModuleWidget
 
 	MeanderWidget(Meander* module) 
 	{
-	//	if ((module!=nullptr) && (!module->instanceRunning))  // crashes Rack
-	//		return;
 		DEBUG("MeanderWidget()");
 		setModule(module);
 		this->module = module;
-		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander.svg")));
 
+
+	//	if ((module)&&(module->instanceRunning))
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander.svg")));
+	//	else
+	//	setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BlankPanel.svg")));  // need a blank panel
+  
 					
 		rack::random::init();  // must be called per thread
 
-		 if (module) 
+	//	 if (module)   // during preview, module is null
+		 if (true)   // must be executed in order to see ModuleWidget panel display in preview
 		 {
-
+			if (module) 
 			if(!module->instanceRunning) {
-				box.size.x = mm2px(7.08 * 10);
-				int middle = box.size.x / 2 + 1;
-				addChild(new RSLabelCentered(middle, box.size.y / 2, "DISABLED", 16));	
-				addChild(new RSLabelCentered(middle, box.size.y / 2 + 12, "ONLY ONE INSTANCE OF MEANDER REQUIRED"));
+				box.size.x = mm2px(5.08 * 45);
+				int middle = box.size.x / 2 + 7;
+				addChild(new RSLabelCentered(middle, (box.size.y / 2)-20, "DISABLED", 28));	
+				addChild(new RSLabelCentered(middle, (box.size.y / 2)+50, "DISABLED", 28));	
+				addChild(new RSLabelCentered(middle, (box.size.y / 2) -11, "ONLY ONE INSTANCE OF MEANDER REQUIRED",6));
+				addChild(new RSLabelCentered(middle, (box.size.y / 2) +20, "ONLY ONE INSTANCE OF MEANDER REQUIRED",6));
 				return;
 			}
 
@@ -5286,7 +5292,7 @@ struct MeanderWidget : ModuleWidget
 	void step() override   // note, this is a widget step() which is not deprecated and is a GUI call.  This advances UI by one "frame"
 	{  
 		if(!module) return;
-		if(!module->instanceRunning) return;
+	//	if(!module->instanceRunning) return;
 
 		ModuleWidget::step();
 	} 
