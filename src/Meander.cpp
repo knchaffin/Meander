@@ -11,7 +11,7 @@
 #include <string>
 #include <mutex>
 
-#include "meander.hpp"
+#include "Meander.hpp"
 
 struct Meander : Module 
 {
