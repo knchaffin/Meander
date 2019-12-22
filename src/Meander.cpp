@@ -13,7 +13,7 @@
 
 #include "Common-Noise.hpp"
 
-
+ 
 
 // the following will "comment out" all DEBUG() calls for speed.  Comment out the next line and DEBUG is compiled
 #define DEBUG(format, ...) // DEBUG(format, ...)
@@ -3747,7 +3747,6 @@ struct Meander : Module
 
  struct MeanderProgressionPresetLineDisplay : TransparentWidget {
 	
-	Meander *module; 
 	int frame = 0;
 	std::shared_ptr<Font> font; 
 	
@@ -3757,10 +3756,7 @@ struct Meander : Module
 
 	void draw(const DrawArgs &ctx) override {
 
-		if (module == NULL) { 
-			return;
-		} 
-
+	
 		Vec pos = Vec(-40, -3); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
 		nvgFontSize(ctx.vg, 14);
 		nvgFontFaceId(ctx.vg, font->handle);
@@ -3792,7 +3788,6 @@ struct Meander : Module
 
 struct RootKeySelectLineDisplay : TransparentWidget {
 	
-	Meander *module;
 	int frame = 0;
 	std::shared_ptr<Font> font;
 
@@ -3801,10 +3796,6 @@ struct RootKeySelectLineDisplay : TransparentWidget {
 	}
 
 	void draw(const DrawArgs &ctx) override {
-
-		if (module == NULL) {
-			return;
-		}
 
 		Vec pos = Vec(18,-11); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
 	
@@ -3824,7 +3815,6 @@ struct RootKeySelectLineDisplay : TransparentWidget {
 
 struct ScaleSelectLineDisplay : TransparentWidget {
 	
-	Meander *module;
 	int frame = 0;
 	std::shared_ptr<Font> font;
 
@@ -3833,11 +3823,6 @@ struct ScaleSelectLineDisplay : TransparentWidget {
 	}
 
 	void draw(const DrawArgs &ctx) override {
-
-		if (module == NULL) {
-			return;
-		}
-
 
 		Vec pos = Vec(36,-20); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
 	 
@@ -3903,8 +3888,6 @@ struct BpmDisplayWidget : TransparentWidget {
 };
 ////////////////////////////////////
 struct SigDisplayWidget : TransparentWidget {
-
-  Meander *module; 
 
   int *value = NULL;
   std::shared_ptr<Font> font;
@@ -3981,8 +3964,7 @@ struct MeanderWidget : ModuleWidget
 	Meander* module;
 	struct CircleOf5thsDisplay : TransparentWidget 
 	{
-		Meander* module;
-				
+					
 		int frame = 0;
 		std::shared_ptr<Font> textfont;
 		std::shared_ptr<Font> musicfont; 
@@ -4756,9 +4738,6 @@ struct MeanderWidget : ModuleWidget
 	
 		void draw(const DrawArgs &args) override 
 		{
-		//	if (!module)
-		//		return; 
-								
 			DrawCircle5ths(args, root_key);  // has to be done each frame as panel redraws as SVG and needs to be blanked and cirecles redrawn
 			DrawDegreesSemicircle(args,  root_key);
 			updatePanelText(args);
@@ -4777,12 +4756,11 @@ struct MeanderWidget : ModuleWidget
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander.svg")));
 					
 		rack::random::init();  // must be called per thread
-
-	//	 if (module)   // during preview, module is null
-		 if (true)   // must be executed in order to see ModuleWidget panel display in preview
+	
+		 if (true)   // must be executed in order to see ModuleWidget panel display in preview, module* is checked for null below as it is null in browser preview
 		 {
-			if (module) 
-			if(!module->instanceRunning) {
+			if ((module) &&(!module->instanceRunning)) 
+			{
 				box.size.x = mm2px(5.08 * 32);
 				int middle = box.size.x / 2 + 7;
 				addChild(new RSLabelCentered(middle+97, (box.size.y / 2)-20, "DISABLED", 28));	
@@ -4793,24 +4771,20 @@ struct MeanderWidget : ModuleWidget
 			}
 
 			MeanderProgressionPresetLineDisplay *ProgressionPresetDisplay = createWidget<MeanderProgressionPresetLineDisplay>(mm2px(Vec(186.1, (128.93-37.5))));  // From SVG file  186.1, (panelheight - boxY - boxheight)
-		   	ProgressionPresetDisplay->module = module;
 			ProgressionPresetDisplay->box.size = mm2px(Vec(46, 7.3));  // from SVG file
 			addChild(ProgressionPresetDisplay);
 
 			
 			RootKeySelectLineDisplay *MeanderRootKeySelectDisplay = createWidget<RootKeySelectLineDisplay>(mm2px(Vec(39.0, (128.93-56.5))));  // From SVG file  186.1, (panelheight - boxY - boxheight)
-		   	MeanderRootKeySelectDisplay->module = module;
 			MeanderRootKeySelectDisplay->box.size = mm2px(Vec(13.8, 7.2));  // from SVG file
 			addChild(MeanderRootKeySelectDisplay);
 
 			ScaleSelectLineDisplay *MeanderScaleSelectDisplay = createWidget<ScaleSelectLineDisplay>(mm2px(Vec(26.5, (128.93-42.9))));  // From SVG file  186.1, (panelheight - boxY - boxheight)
-		   	MeanderScaleSelectDisplay->module = module;
 			MeanderScaleSelectDisplay->box.size = mm2px(Vec(13.8, 7.2));  // from SVG file
 			addChild(MeanderScaleSelectDisplay);
 
 			CircleOf5thsDisplay *display = new CircleOf5thsDisplay();
-			display->module = module;
-			
+					
 			display->box.pos = Vec(0, 0);
 			display->box.size = Vec(box.size.x, box.size.y);
 			addChild(display);
@@ -4824,19 +4798,16 @@ struct MeanderWidget : ModuleWidget
 			BpmDisplayWidget *BPMdisplay = new BpmDisplayWidget();
 			BPMdisplay->box.pos = mm2px(Vec(12.8,42.5));
 			BPMdisplay->box.size = mm2px(Vec(38.0, 13.9));
-			if (module) {
-			BPMdisplay->value = &module->tempo;
-			}
+			if (module) 
+				BPMdisplay->value = &module->tempo;
 			addChild(BPMdisplay); 
 			
 			//SIG TOP DISPLAY 
 			SigDisplayWidget *SigTopDisplay = new SigDisplayWidget();
 			SigTopDisplay->box.pos = mm2px(Vec(42.2-4.5,50.9-5.6+3.0));
 			SigTopDisplay->box.size = mm2px(Vec(8.3, 5.6));
-			if (module) {
-		
 			SigTopDisplay->value = &time_sig_top;
-			}
+					
 			addChild(SigTopDisplay);
 			//SIG TOP KNOB
 		
@@ -4844,9 +4815,8 @@ struct MeanderWidget : ModuleWidget
 			SigDisplayWidget *SigBottomDisplay = new SigDisplayWidget();
 			SigBottomDisplay->box.pos = mm2px(Vec(42.2-4.5,56-5.6+3.0));
 			SigBottomDisplay->box.size = mm2px(Vec(8.3, 5.6));
-			if (module) {
 			SigBottomDisplay->value = &time_sig_bottom;
-			}
+					
 			addChild(SigBottomDisplay);
 			
 			int CircleOf5thsOuterButtonindex=0;
@@ -5279,11 +5249,7 @@ struct MeanderWidget : ModuleWidget
 				CircleOf5thsSelectStepButtonLight[i]->box.pos=buttonPosition;
 			}
 		}
-		else
-		{
 
-			DEBUG("Warning! module is null in MeanderWidget()");
-		}
 	}    // end MeanderWidget(Meander* module)  
  
 		
