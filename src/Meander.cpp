@@ -18,6 +18,8 @@
 // the following will "comment out" all DEBUG() calls for speed.  Comment out the next line and DEBUG is compiled
 #define DEBUG(format, ...) // DEBUG(format, ...)
 
+static bool owned = false;
+
 
 bool initialized=false;
 
@@ -317,6 +319,8 @@ struct BassParms
 	bool octave_enabled=true;  // play bass as 2 notes an octave apart
 	float volume=10.0f;  // 0-10 V
 	int bar_bass_counted_note=0;
+	bool syncopate=false;
+	bool accent=false;
 	struct note last[4];
 }; 
 
@@ -1769,6 +1773,8 @@ void MeanderMusicStructuresInitialize()
 
 struct Meander : Module 
 {
+	bool instanceRunning = false;
+	
 	enum ParamIds 
 	{
 		BUTTON_RUN_PARAM,
@@ -1844,7 +1850,7 @@ struct Meander : Module
 		CONTROL_BASS_VOLUME_PARAM,
 		CONTROL_BASS_TARGETOCTAVE_PARAM,
 		BUTTON_BASS_ACCENT_PARAM,
-		BUTTON_BASS_SYNCOPATE__PARAM,
+		BUTTON_BASS_SYNCOPATE_PARAM,
 		BUTTON_BASS_AGOGIC_PARAM,
 		CONTROL_BASS_DIVISOR_PARAM,
 
@@ -1964,6 +1970,8 @@ struct Meander : Module
 
 		LIGHT_LEDBUTTON_ENABLE_HARMONY_ALL7THS_PARAM,
 		LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM,
+		LIGHT_LEDBUTTON_BASS_SYNCOPATE_PARAM,
+		LIGHT_LEDBUTTON_BASS_ACCENT_PARAM,
 
 		NUM_LIGHTS
 	};
@@ -2047,7 +2055,7 @@ struct Meander : Module
 				outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-1.0+octaveOffset,j);  // (note, channel)  sift down 1 ocatve/v
 				outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState.theHarmonyParms.volume);
 				outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage(CV_MAX10);  // this should trigger ADSR, but should be a pulse rather than stay high
-				harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
+				harmonyTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 			}
 		
 			if (j<4)
@@ -2109,7 +2117,7 @@ struct Meander : Module
 					
 			}
 			outputs	[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
-			harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
+			harmonyTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 		}
      
 		DEBUG("theHarmonyTypes[%d].num_harmony_steps=%d", harmony_type, theActiveHarmonyType.num_harmony_steps);
@@ -2255,16 +2263,16 @@ struct Meander : Module
 		
 		CircleStepStates[step] = true;
 
-		if (!theMeanderState.userControllingHarmonyFromCircle)
+		if (!theMeanderState.userControllingHarmonyFromCircle) 
+		{ 
 			lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+step].value=1.0f;
+			lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].value=1.0f;
+		}
 
 		DEBUG("current_circle_position=%d root=%d %s", current_circle_position, circle_of_fifths[current_circle_position], note_desig[circle_of_fifths[current_circle_position]]);		
 		DEBUG("theCircleOf5ths.Circle5ths[current_circle_position].chordType=%d", theCircleOf5ths.Circle5ths[current_circle_position].chordType);
 		
-		if (!theMeanderState.userControllingHarmonyFromCircle)
-		lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].value=1.0f;
 		
-	
 		double period=1.0/theMeanderState.theHarmonyParms.period; // 1/seconds
 		double fBmarg=theMeanderState.theHarmonyParms.seed + (double)(period*current_cpu_time_double); 
 	    double fBmrand=(FastfBm1DNoise(fBmarg,theMeanderState.theHarmonyParms.noctaves) +1.)/2; 
@@ -2327,7 +2335,7 @@ struct Meander : Module
 					}
 				
 					outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel)
-					harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output	
+					harmonyTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output	
 				}
 		}
 		if (theMeanderState.theHarmonyParms.enabled)
@@ -2338,7 +2346,7 @@ struct Meander : Module
 			outputs[OUT_FBM_GATE_OUTPUT].setChannels(1);  // set polyphony  
 			outputs[OUT_FBM_GATE_OUTPUT].setVoltage((float)fBmrand ,0); 
 
-		    harmonyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
+		    harmonyTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 		}
 
 		++circle_step_index;
@@ -2447,7 +2455,7 @@ struct Meander : Module
 				outputs[OUT_FBM_CV_OUTPUT].setChannels(1);  // set polyphony  
 				outputs[OUT_FBM_CV_OUTPUT].setVoltage((float)fBmrand ,0); 
 
-				melodyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
+				melodyTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 			}
 		}
 	}
@@ -2576,7 +2584,7 @@ struct Meander : Module
 		outputs[OUT_MELODY_CV_OUTPUT].setChannels(1);  // set polyphony  may need to deal with unset channel voltages
 		outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,0);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.theMelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
 		outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(volume);
-		melodyGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output			
+		melodyTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output			
 	}
 
 
@@ -2592,7 +2600,7 @@ struct Meander : Module
 		if (theMeanderState.theBassParms.enabled) 
 		{
 			++theMeanderState.theBassParms.bar_bass_counted_note;
-			if (theMeanderState.theBassParms.bar_bass_counted_note==2)  // experimenting with bass patterns
+			if ((theMeanderState.theBassParms.syncopate)&&(theMeanderState.theBassParms.bar_bass_counted_note==2))  // experimenting with bass patterns
 			  return;
 
 			if (theMeanderState.theBassParms.octave_enabled)
@@ -2624,9 +2632,19 @@ struct Meander : Module
 
 			 	outputs[OUT_BASS_CV_OUTPUT].setVoltage((theMeanderState.last_harmony_chord_root_note/12.0)-3.0 +theMeanderState.theBassParms.target_octave ,1);
 			}
-			outputs[OUT_BASS_GATE_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
+			if (!theMeanderState.theBassParms.accent)
+			{
+				outputs[OUT_BASS_GATE_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
+			}
+			else
+			{
+				if (theMeanderState.theBassParms.bar_bass_counted_note==1)  // experimenting with bass patterns
+					outputs[OUT_BASS_GATE_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
+				else
+					outputs[OUT_BASS_GATE_OUTPUT].setVoltage(0.8*theMeanderState.theBassParms.volume);
+			}	
 			
-			bassGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
+			bassTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 		}
 	}
   
@@ -2720,6 +2738,9 @@ struct Meander : Module
 	dsp::SchmittTrigger MelodyDestutterToggle;
 	dsp::SchmittTrigger MelodyEnableChordalToggle;
 	dsp::SchmittTrigger MelodyEnableScalerToggle;
+
+	dsp::SchmittTrigger BassSyncopateToggle;
+	dsp::SchmittTrigger BassAccentToggle;
 	
 	dsp::SchmittTrigger RunToggle;
 		
@@ -2729,19 +2750,20 @@ struct Meander : Module
 	bool CircleStepStates[MAX_STEPS]={};
 	bool CircleStepSetStates[MAX_STEPS]={};
 
-	rack::dsp::PulseGenerator gatePulse; 
+	rack::dsp::PulseGenerator harmonyTriggerPulse; 
+	rack::dsp::PulseGenerator melodyTriggerPulse; 
+	rack::dsp::PulseGenerator bassTriggerPulse; 
 
-	rack::dsp::PulseGenerator harmonyGatePulse; 
-	rack::dsp::PulseGenerator melodyGatePulse; 
-	rack::dsp::PulseGenerator bassGatePulse; 
-
-	rack::dsp::PulseGenerator barGatePulse; 
+	rack::dsp::PulseGenerator barTriggerPulse; 
 
 	bool time_sig_changed=false;
    
     	
 	void process(const ProcessArgs &args) override 
 	{
+		
+		if (!instanceRunning)
+			return;
 	
 		if (!initialized)
 			return;
@@ -2904,7 +2926,7 @@ struct Meander : Module
 					++bar_count;  // moved here so reset will start on first step rather than second
 					clockPulse1ts.trigger(trigger_length);
 					// Pulse the output gate 
-					barGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
+					barTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 				}
 			
 		        // i2ts
@@ -2944,7 +2966,7 @@ struct Meander : Module
 						doArp();
 					clockPulse4ts.trigger(trigger_length);
 					// Pulse the output gate 
-				//	barGatePulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
+				//	barTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
 				}
 					 
 		 		// i8ts
@@ -3024,10 +3046,10 @@ struct Meander : Module
 		pulse32ts = clockPulse32ts.process(1.0 / args.sampleRate);
 
 		// end the gate if pulse timer has expired
-		outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage( harmonyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+		outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage( harmonyTriggerPulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
 		if (theMeanderState.theMelodyParms.enabled && !theMeanderState.theMelodyParms.stutter_detected)
-		outputs[OUT_MELODY_TRIGGER_OUTPUT].setVoltage( melodyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
-		outputs[OUT_BASS_TRIGGER_OUTPUT].setVoltage( bassGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+		outputs[OUT_MELODY_TRIGGER_OUTPUT].setVoltage( melodyTriggerPulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+		outputs[OUT_BASS_TRIGGER_OUTPUT].setVoltage( bassTriggerPulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
 		
 		
 		outputs[OUT_CLOCK_BAR_OUTPUT].setVoltage((pulse1ts ? 10.0f : 0.0f));     // barts
@@ -3114,7 +3136,19 @@ struct Meander : Module
 		}
 		lights[LIGHT_LEDBUTTON_ARP_ENABLE_SCALER].value = theMeanderState.theArpParms.scaler ? 1.0f : 0.0f; 
 
-			
+		//****Bass
+
+		if (BassSyncopateToggle.process(params[BUTTON_BASS_SYNCOPATE_PARAM].getValue())) 
+		{
+			theMeanderState.theBassParms.syncopate = !theMeanderState.theBassParms.syncopate;
+		}
+		lights[LIGHT_LEDBUTTON_BASS_SYNCOPATE_PARAM].value = theMeanderState.theBassParms.syncopate ? 1.0f : 0.0f; 	
+
+		if (BassAccentToggle.process(params[BUTTON_BASS_ACCENT_PARAM].getValue())) 
+		{
+			theMeanderState.theBassParms.accent = !theMeanderState.theBassParms.accent;
+		}
+		lights[LIGHT_LEDBUTTON_BASS_ACCENT_PARAM].value = theMeanderState.theBassParms.accent ? 1.0f : 0.0f; 	
 		
 		//***************
 			 
@@ -3140,19 +3174,39 @@ struct Meander : Module
 			}
 		}
 			
-		if (!theMeanderState.userControllingHarmonyFromCircle)
-		for (int i=0; i<MAX_STEPS; ++i) {
-			if (CircleStepSetToggles[i].process(params[BUTTON_HARMONY_SETSTEP_1_PARAM+i].getValue())) {
-				CircleStepSetStates[i] = !CircleStepSetStates[i];
-				lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+i].value=CircleStepSetStates[i] ? 1.0f : 0.0f;
-				for (int j=0; j<MAX_STEPS; ++j) {
-					if (j!=i) {
-						CircleStepSetStates[j] = false;
-						lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+j].value=0.25f;
+		if (!running)
+		{
+			for (int i=0; i<theActiveHarmonyType.num_harmony_steps; ++i) {
+				if (CircleStepSetToggles[i].process(params[BUTTON_HARMONY_SETSTEP_1_PARAM+i].getValue())) {
+
+					int current_circle_position=0;
+					if (true)
+					{
+						int degreeStep=(theActiveHarmonyType.harmony_steps[i])%8;  
+						
+						//find this in semicircle
+						for (int j=0; j<7; ++j)
+						{
+							if  (theCircleOf5ths.theDegreeSemiCircle.degreeElements[j].Degree==degreeStep)
+							{
+								current_circle_position = theCircleOf5ths.theDegreeSemiCircle.degreeElements[j].CircleIndex; 
+								break;
+							}
+						}
 					}
-				}		
-			}
-		} 
+					userPlaysCircleDegree(current_circle_position, 0);  // testing play
+					CircleStepSetStates[i] = !CircleStepSetStates[i];
+					lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+i].value=CircleStepSetStates[i] ? 1.0f : 0.25f;
+					
+					for (int j=0; j<theActiveHarmonyType.num_harmony_steps; ++j) {
+						if (j!=i) {
+							CircleStepSetStates[j] = false;
+							lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+j].value=0.25f;
+						}
+					}
+				}
+			} 
+		}
 
 		float fvalue=0;
 
@@ -3246,6 +3300,8 @@ struct Meander : Module
 			
 		if (lowFreqClock.process())
 		{
+			if (!instanceRunning)
+				return;
 			// check controls for changes
 
 			if ((fvalue=std::round(params[CONTROL_TEMPOBPM_PARAM].getValue()))!=tempo)
@@ -3555,12 +3611,24 @@ struct Meander : Module
 	~Meander() 
 	{
 		
+		if (instanceRunning) {
+		//	 Release ownership of singleton
+			owned = false;
+		}
 	}
 
 
 	Meander() 
 	{
+
 		DEBUG("");  // clear debug log file
+
+				
+		if (!owned) {
+			// Take ownership of singleton
+			owned = true;
+		    instanceRunning = true;
+ 		}
 			
 		time_t rawtime;
   		time( &rawtime );
@@ -3631,7 +3699,7 @@ struct Meander : Module
 		configParam(CONTROL_BASS_DIVISOR_PARAM, 0.f, 3.f, 0.f, "");
 		configParam(CONTROL_BASS_TARGETOCTAVE_PARAM, 0.f, 3.f, 2.f, ""); 
 		configParam(BUTTON_BASS_ACCENT_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(BUTTON_BASS_SYNCOPATE__PARAM, 0.f, 1.f, 0.f, "");
+		configParam(BUTTON_BASS_SYNCOPATE_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_BASS_AGOGIC_PARAM, 0.f, 1.f, 0.f, "");
 					
 		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
@@ -3869,11 +3937,48 @@ struct SigDisplayWidget : TransparentWidget {
   }
 };
 //////////////////////////////////
+
+struct RSLabelCentered : LedDisplay {
+	std::shared_ptr<Font> font;
+	int fontSize;
+	std::string text;
+	NVGcolor color;
+
+//	RSLabelCentered(int x, int y, const char* str = "", int fontSize = 10, const NVGcolor& colour = COLOR_RS_GREY) {
+	RSLabelCentered(int x, int y, const char* str = "", int fontSize = 10, const NVGcolor& colour = nvgRGB(0x00, 0x00, 0x00)) {
+	//	font = APP->window->loadFont(asset::plugin(pluginInstance, "res/fonts/Ubuntu Condensed 400.ttf"));
+		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/DejaVuSansMono.ttf"));
+		this->fontSize = fontSize;
+		box.pos = Vec(x, y);
+		text = str;
+		color = colour;
+	}
+
+	void draw(const DrawArgs &args) override {
+		if(font->handle >= 0) {
+			bndSetFont(font->handle);
+
+			nvgFontSize(args.vg, fontSize);
+			nvgFontFaceId(args.vg, font->handle);
+			nvgTextLetterSpacing(args.vg, 0);
+			nvgTextAlign(args.vg, NVG_ALIGN_CENTER);
+
+			nvgBeginPath(args.vg);
+			nvgFillColor(args.vg, color);
+			nvgText(args.vg, 0, 0, text.c_str(), NULL);
+			nvgStroke(args.vg);
+
+			bndSetFont(APP->window->uiFont->handle);
+		}
+	}
+};
+
+///////////////////////////////
  
 
 struct MeanderWidget : ModuleWidget 
 {
-	
+	Meander* module;
 	struct CircleOf5thsDisplay : TransparentWidget 
 	{
 		Meander* module;
@@ -4286,6 +4391,27 @@ struct MeanderWidget : ModuleWidget
 				nvgClosePath(args.vg);
 			}	
 
+			nvgFontSize(args.vg, 12);
+			nvgFontFaceId(args.vg, textfont->handle);
+			nvgTextLetterSpacing(args.vg, -1);
+			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
+
+			pos=Vec(beginEdge+30, beginTop+105);  
+			snprintf(text, sizeof(text), "In");
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(beginEdge+30, beginTop+135);  
+			snprintf(text, sizeof(text), "In");
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(beginEdge+90, beginTop+105);  
+			snprintf(text, sizeof(text), "Position");
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			pos=Vec(beginEdge+80, beginTop+135);  
+			snprintf(text, sizeof(text), "Gate");
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
 			//************************
 
 			// display area 
@@ -4630,9 +4756,9 @@ struct MeanderWidget : ModuleWidget
 	
 		void draw(const DrawArgs &args) override 
 		{
-			if (!module)
-				return; 
-						
+		//	if (!module)
+		//		return; 
+								
 			DrawCircle5ths(args, root_key);  // has to be done each frame as panel redraws as SVG and needs to be blanked and cirecles redrawn
 			DrawDegreesSemicircle(args,  root_key);
 			updatePanelText(args);
@@ -4646,13 +4772,26 @@ struct MeanderWidget : ModuleWidget
 	{
 		DEBUG("MeanderWidget()");
 		setModule(module);
+		this->module = module;
+	
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander.svg")));
-			
+					
 		rack::random::init();  // must be called per thread
 
-		// if (module) 
-		 if (true) 
+	//	 if (module)   // during preview, module is null
+		 if (true)   // must be executed in order to see ModuleWidget panel display in preview
 		 {
+			if (module) 
+			if(!module->instanceRunning) {
+				box.size.x = mm2px(5.08 * 32);
+				int middle = box.size.x / 2 + 7;
+				addChild(new RSLabelCentered(middle+97, (box.size.y / 2)-20, "DISABLED", 28));	
+				addChild(new RSLabelCentered(middle+97, (box.size.y / 2)+50, "DISABLED", 28));	
+				addChild(new RSLabelCentered(middle+97, (box.size.y / 2) -11, "ONLY ONE INSTANCE OF MEANDER REQUIRED",7));
+				addChild(new RSLabelCentered(middle+97, (box.size.y / 2) +20, "ONLY ONE INSTANCE OF MEANDER REQUIRED",7));
+				return;
+			}
+
 			MeanderProgressionPresetLineDisplay *ProgressionPresetDisplay = createWidget<MeanderProgressionPresetLineDisplay>(mm2px(Vec(186.1, (128.93-37.5))));  // From SVG file  186.1, (panelheight - boxY - boxheight)
 		   	ProgressionPresetDisplay->module = module;
 			ProgressionPresetDisplay->box.size = mm2px(Vec(46, 7.3));  // from SVG file
@@ -4671,6 +4810,7 @@ struct MeanderWidget : ModuleWidget
 
 			CircleOf5thsDisplay *display = new CircleOf5thsDisplay();
 			display->module = module;
+			
 			display->box.pos = Vec(0, 0);
 			display->box.size = Vec(box.size.x, box.size.y);
 			addChild(display);
@@ -4902,7 +5042,11 @@ struct MeanderWidget : ModuleWidget
 				addParam(w); 
 			}
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  37.217)), module, Meander::BUTTON_BASS_ACCENT_PARAM));
-			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  45.217)), module, Meander::BUTTON_BASS_SYNCOPATE__PARAM));
+			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305,  37.217)), module, Meander::LIGHT_LEDBUTTON_BASS_ACCENT_PARAM));
+
+			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  45.217)), module, Meander::BUTTON_BASS_SYNCOPATE_PARAM));
+			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305,  45.217)), module, Meander::LIGHT_LEDBUTTON_BASS_SYNCOPATE_PARAM));
+
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(305,  53.217)), module, Meander::BUTTON_BASS_AGOGIC_PARAM));
 		
 			{
@@ -5141,11 +5285,12 @@ struct MeanderWidget : ModuleWidget
 			DEBUG("Warning! module is null in MeanderWidget()");
 		}
 	}    // end MeanderWidget(Meander* module)  
-
-	
-	// this could be deleted, I think, since I moved procedural code back to MeanderWidget() constructor
+ 
+		
 	void step() override   // note, this is a widget step() which is not deprecated and is a GUI call.  This advances UI by one "frame"
 	{  
+		if(!module) return;
+	
 		ModuleWidget::step();
 	} 
 };
