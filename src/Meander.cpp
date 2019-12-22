@@ -3961,7 +3961,7 @@ struct RSLabelCentered : LedDisplay {
 
 struct MeanderWidget : ModuleWidget 
 {
-	Meander* module;
+//	Meander* module;  // KNC debugging
 	struct CircleOf5thsDisplay : TransparentWidget 
 	{
 					
@@ -4748,10 +4748,10 @@ struct MeanderWidget : ModuleWidget
 	};  // end struct CircleOf5thsDisplay
 
 	MeanderWidget(Meander* module) 
-	{
+	{ 
 		DEBUG("MeanderWidget()");
 		setModule(module);
-		this->module = module;
+	//	this->module = module;  // KNC debugging
 	
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander.svg")));
 					
