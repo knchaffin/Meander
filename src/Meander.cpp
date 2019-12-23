@@ -7,7 +7,7 @@
 #include <time.h>
 
 #include <iostream>
-#include <fstream>
+#include <fstream> 
 #include <string>
 #include <mutex>
 
@@ -2020,7 +2020,7 @@ struct Meander : Module
 
 		nvgFontSize(ctx.vg, 12);
 		nvgFillColor(ctx.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
-		pos = Vec(-35, 20); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
+		pos = Vec(-35, 26); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
 		snprintf(text, sizeof(text), "%s           ",  theActiveHarmonyType.harmony_degrees_desc);
 		nvgText(ctx.vg, pos.x, pos.y, text, NULL);
 	
@@ -2039,7 +2039,9 @@ struct RootKeySelectLineDisplay : TransparentWidget {
 
 	void draw(const DrawArgs &ctx) override {
 
-		Vec pos = Vec(18,-11); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
+	//	Vec pos = Vec(18,-11); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
+		Vec pos = Vec(12,-11); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
+	
 	
 		nvgFontSize(ctx.vg,18 );
 		nvgFontFaceId(ctx.vg, font->handle);

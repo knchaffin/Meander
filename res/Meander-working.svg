@@ -93,7 +93,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -355,7 +355,7 @@
     </g>
     <g
        aria-label="Clock In"
-       transform="scale(0.93515337,1.0693433)"
+       transform="matrix(0.93515337,0,0,1.0693433,-4.2569833,-0.85139666)"
        style="font-style:normal;font-weight:normal;font-size:3.55476689px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.3332594"
        id="text526">
       <title
@@ -2729,16 +2729,6 @@
        d="m 8.8421381,42.781385 a 1.2038454,1.2038454 0 0 1 -1.203846,1.203845 1.2038454,1.2038454 0 0 1 -1.203845,-1.203845 1.2038454,1.2038454 0 0 1 1.203845,-1.203845 1.2038454,1.2038454 0 0 1 1.203846,1.203845 z"
        id="path998-6-4"
        inkscape:connector-curvature="0" />
-    <path
-       style="display:inline;opacity:1;fill:#999999;fill-opacity:1;stroke:#000000;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 11.954034,108.69702 a 1.2038454,1.2038454 0 0 1 -1.203845,1.20384 1.2038454,1.2038454 0 0 1 -1.2038449,-1.20384 1.2038454,1.2038454 0 0 1 1.2038449,-1.20385 1.2038454,1.2038454 0 0 1 1.203845,1.20385 z"
-       id="path998-6-8"
-       inkscape:connector-curvature="0" />
-    <path
-       style="display:inline;opacity:1;fill:#999999;fill-opacity:1;stroke:#000000;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 41.092705,108.69702 a 1.2038454,1.2038454 0 0 1 -1.203845,1.20384 1.2038454,1.2038454 0 0 1 -1.203845,-1.20384 1.2038454,1.2038454 0 0 1 1.203845,-1.20385 1.2038454,1.2038454 0 0 1 1.203845,1.20385 z"
-       id="path998-6-24"
-       inkscape:connector-curvature="0" />
     <flowRoot
        xml:space="preserve"
        id="flowRoot1956"
@@ -3094,7 +3084,7 @@
          id="tspan1829">Fractal Brownian Motion (fBm)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1;"
        x="365.81674"
        y="14.980446"
        id="text1761"><tspan
@@ -3102,7 +3092,7 @@
          id="tspan1759"
          x="365.81674"
          y="14.980446"
-         style="stroke-width:0.26458332">Harmony</tspan></text>
+         style="stroke-width:0.26458332;stroke:none;stroke-opacity:1;">Harmony</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -3323,15 +3313,6 @@
          x="208.87599"
          y="70.605026"
          style="stroke-width:0.26458332">V 7ths</tspan></text>
-    <rect
-       ry="1.4872619"
-       rx="7.9095163"
-       y="86.587318"
-       x="172.28294"
-       height="5.9490786"
-       width="63.276451"
-       id="rect1802"
-       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
     <rect
        style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.84999996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
        id="rect1804"
@@ -3557,24 +3538,88 @@
        y="96.324371"
        rx="3.6095319"
        ry="1.6140642" />
+    <text
+       xml:space="preserve"
+       style="display:inline;font-style:normal;font-weight:normal;font-size:7.76111126px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="108.97878"
+       y="67.19944"
+       id="text1789"><tspan
+         sodipodi:role="line"
+         id="tspan1787"
+         x="108.97878"
+         y="67.19944"
+         style="font-size:7.76111126px;stroke-width:0.26458332">Cm</tspan></text>
+    <text
+       xml:space="preserve"
+       style="display:inline;font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="106.14079"
+       y="75.429611"
+       id="text1771"><tspan
+         sodipodi:role="line"
+         id="tspan1769"
+         x="106.14079"
+         y="75.429611"
+         style="stroke-width:0.26458332">In </tspan></text>
+    <text
+       xml:space="preserve"
+       style="display:inline;font-style:normal;font-weight:normal;font-size:2.82222223px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="121.18211"
+       y="74.862007"
+       id="text1783"><tspan
+         sodipodi:role="line"
+         id="tspan1781"
+         x="121.18211"
+         y="74.862007"
+         style="font-size:2.82222223px;stroke-width:0.26458332">Position</tspan></text>
+    <text
+       id="text1775"
+       y="85.078766"
+       x="105.85698"
+       style="display:inline;font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.26458332"
+         y="85.078766"
+         x="105.85698"
+         id="tspan1773"
+         sodipodi:role="line">In </tspan></text>
+    <text
+       xml:space="preserve"
+       style="display:inline;font-style:normal;font-weight:normal;font-size:2.82222223px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="122.03352"
+       y="85.362572"
+       id="text1779"><tspan
+         sodipodi:role="line"
+         id="tspan1777"
+         x="122.03352"
+         y="85.362572"
+         style="font-size:2.82222223px;stroke-width:0.26458332">Gate</tspan></text>
     <rect
-       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
-       id="rect1858"
-       width="28.876402"
-       height="6.4562902"
-       x="24.01655"
-       y="75.890846"
-       rx="3.6095319"
-       ry="1.6140642" />
+       style="opacity:1;fill:#2f270a;fill-opacity:1;stroke:none;stroke-width:0.88815331;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1769"
+       width="64.13855"
+       height="8.5139666"
+       x="171.70464"
+       y="85.157623"
+       rx="1.8590784"
+       ry="1.7027842" />
     <rect
-       style="display:inline;opacity:1;fill:#2f270a;fill-opacity:1;stroke:#000000;stroke-width:0.85;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
-       id="rect1860"
-       width="63.276451"
-       height="5.9490786"
-       x="172.56674"
-       y="93.682289"
-       rx="7.9095163"
-       ry="1.4872619" />
+       ry="1.7027842"
+       rx="1.8508524"
+       y="94.522995"
+       x="171.70464"
+       height="8.5139666"
+       width="63.854748"
+       id="rect1774"
+       style="opacity:1;fill:#2f270a;fill-opacity:1;stroke:none;stroke-width:0.88618624;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+    <rect
+       style="opacity:1;fill:#2f270a;fill-opacity:1;stroke:none;stroke-width:0.79843593;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect1780"
+       width="29.798883"
+       height="6.5273743"
+       x="22.848539"
+       y="75.75663"
+       rx="3.9280586"
+       ry="0.85139781" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -3589,7 +3634,7 @@
     <circle
        style="display:inline;opacity:1;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.25393963;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path194"
-       cx="14.274313"
+       cx="8.5983353"
        cy="101.56306"
        r="3.5"
        inkscape:label="in_Clock">
@@ -3597,16 +3642,6 @@
          id="desc998">Clock input</desc>
       <title
          id="title996">in_Clock</title>
-    </circle>
-    <circle
-       style="display:inline;opacity:1;fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0.5082646;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path195"
-       cx="6.8646426"
-       cy="101.79298"
-       r="1.984375"
-       inkscape:label="light_Clock_In">
-      <title
-         id="title195">light_Clock_In</title>
     </circle>
     <circle
        style="display:inline;opacity:1;fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0.57200003;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -4849,6 +4884,30 @@
        inkscape:label="control_Harmony_Pattern">
       <title
          id="title1790">control_Harmony_Pattern</title>
+    </circle>
+    <circle
+       inkscape:label="in_Clock"
+       r="3.5"
+       cy="74.318367"
+       cx="116.15811"
+       id="circle1761"
+       style="display:inline;opacity:1;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.25393963;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+      <desc
+         id="desc1757">Clock input</desc>
+      <title
+         id="title1759">in_Clock</title>
+    </circle>
+    <circle
+       style="display:inline;opacity:1;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.25393963;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle1767"
+       cx="116.72571"
+       cy="84.251328"
+       r="3.5"
+       inkscape:label="in_Clock">
+      <desc
+         id="desc1763">Clock input</desc>
+      <title
+         id="title1765">in_Clock</title>
     </circle>
   </g>
 </svg>
