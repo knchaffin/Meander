@@ -1245,59 +1245,6 @@
          inkscape:connector-curvature="0" />
     </g>
     <g
-       aria-label="Destutter"
-       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       id="text1199"
-       transform="translate(-2.8195123,4.2536581)">
-      <title
-         id="title2321">text_Melody_Destutter</title>
-      <path
-         d="m 252.52915,22.330273 q 0,0.419613 -0.18397,0.760677 -0.1819,0.341064 -0.48576,0.529167 -0.21084,0.130224 -0.47129,0.188102 -0.25838,0.05788 -0.68212,0.05788 h -0.77722 v -3.077848 h 0.76895 q 0.45062,0 0.7152,0.06615 0.26665,0.06408 0.45062,0.177767 0.31419,0.196371 0.48989,0.522966 0.1757,0.326595 0.1757,0.775146 z m -0.42788,-0.0062 q 0,-0.361735 -0.12609,-0.609782 -0.12609,-0.248047 -0.37621,-0.390674 -0.1819,-0.103353 -0.38654,-0.142627 -0.20463,-0.04134 -0.48989,-0.04134 h -0.38447 v 2.375049 h 0.38447 q 0.29559,0 0.5147,-0.04341 0.22117,-0.04341 0.40514,-0.161231 0.22945,-0.146761 0.34313,-0.38654 0.11576,-0.239778 0.11576,-0.599446 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2302"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 255.09644,22.751953 h -1.70119 q 0,0.212907 0.0641,0.37207 0.0641,0.157096 0.1757,0.258382 0.10748,0.09922 0.25424,0.148828 0.14883,0.04961 0.3266,0.04961 0.23564,0 0.47336,-0.09302 0.23977,-0.09509 0.34106,-0.186035 h 0.0207 v 0.423747 q -0.19637,0.08268 -0.40101,0.138492 -0.20464,0.05581 -0.42995,0.05581 -0.57464,0 -0.8971,-0.310059 -0.32246,-0.312125 -0.32246,-0.8847 0,-0.566374 0.30799,-0.89917 0.31006,-0.332796 0.81442,-0.332796 0.46716,0 0.71934,0.272851 0.25425,0.272852 0.25425,0.775147 z m -0.37828,-0.297657 q -0.002,-0.305924 -0.15503,-0.473356 -0.15089,-0.167431 -0.46095,-0.167431 -0.31212,0 -0.49816,0.183968 -0.18397,0.183968 -0.20877,0.456819 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2304"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 257.33506,23.200504 q 0,0.31626 -0.26252,0.518831 -0.26045,0.202572 -0.71313,0.202572 -0.25632,0 -0.47129,-0.05995 -0.21291,-0.06201 -0.3576,-0.134358 V 23.29145 h 0.0207 q 0.18397,0.138492 0.40928,0.221175 0.2253,0.08061 0.43201,0.08061 0.25632,0 0.40101,-0.08268 0.14469,-0.08268 0.14469,-0.26045 0,-0.136425 -0.0785,-0.206705 -0.0786,-0.07028 -0.3018,-0.11989 -0.0827,-0.0186 -0.21704,-0.04341 -0.13229,-0.0248 -0.24184,-0.05374 -0.30386,-0.08062 -0.43202,-0.235645 -0.12609,-0.157096 -0.12609,-0.384472 0,-0.142627 0.0579,-0.268718 0.0599,-0.12609 0.17983,-0.225309 0.11576,-0.09715 0.29353,-0.152962 0.17983,-0.05788 0.40101,-0.05788 0.2067,0 0.41754,0.05168 0.21291,0.04961 0.35347,0.121956 v 0.415478 h -0.0207 q -0.14883,-0.109554 -0.36174,-0.183968 -0.2129,-0.07648 -0.41754,-0.07648 -0.21291,0 -0.35967,0.08268 -0.14676,0.08062 -0.14676,0.241846 0,0.142627 0.0889,0.214974 0.0868,0.07235 0.28112,0.117822 0.10749,0.02481 0.23978,0.04961 0.13436,0.0248 0.22324,0.04547 0.27079,0.06201 0.41755,0.212907 0.14676,0.152962 0.14676,0.405143 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2306"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 259.09206,23.845426 q -0.10956,0.02894 -0.23978,0.04754 -0.12816,0.0186 -0.22944,0.0186 -0.35347,0 -0.53744,-0.19017 -0.18397,-0.190169 -0.18397,-0.609781 v -1.227832 h -0.26251 v -0.326595 h 0.26251 v -0.663526 h 0.38861 v 0.663526 h 0.80202 v 0.326595 h -0.80202 v 1.052132 q 0,0.181901 0.008,0.285254 0.008,0.101285 0.0579,0.190169 0.0455,0.08268 0.12403,0.121956 0.0806,0.03721 0.24391,0.03721 0.0951,0 0.19844,-0.02687 0.10335,-0.02894 0.14883,-0.04754 h 0.0207 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2308"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 261.47744,23.866096 h -0.38861 v -0.256315 q -0.19637,0.15503 -0.3762,0.237712 -0.17983,0.08268 -0.39687,0.08268 -0.36381,0 -0.56638,-0.221175 -0.20257,-0.223242 -0.20257,-0.65319 v -1.498616 h 0.38861 v 1.314648 q 0,0.1757 0.0165,0.30179 0.0165,0.124024 0.0703,0.212907 0.0558,0.09095 0.1447,0.132292 0.0889,0.04134 0.25838,0.04134 0.15089,0 0.32866,-0.07855 0.17984,-0.07855 0.33486,-0.200505 v -1.723925 h 0.38861 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2310"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 263.44114,23.845426 q -0.10955,0.02894 -0.23977,0.04754 -0.12816,0.0186 -0.22945,0.0186 -0.35346,0 -0.53743,-0.19017 -0.18397,-0.190169 -0.18397,-0.609781 V 21.883789 H 261.988 v -0.326595 h 0.26252 v -0.663526 h 0.38861 v 0.663526 h 0.80201 v 0.326595 h -0.80201 v 1.052132 q 0,0.181901 0.008,0.285254 0.008,0.101285 0.0579,0.190169 0.0455,0.08268 0.12403,0.121956 0.0806,0.03721 0.24391,0.03721 0.0951,0 0.19844,-0.02687 0.10335,-0.02894 0.14882,-0.04754 h 0.0207 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2312"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 265.11133,23.845426 q -0.10956,0.02894 -0.23978,0.04754 -0.12816,0.0186 -0.22944,0.0186 -0.35347,0 -0.53744,-0.19017 -0.18397,-0.190169 -0.18397,-0.609781 v -1.227832 h -0.26251 v -0.326595 h 0.26251 v -0.663526 h 0.38861 v 0.663526 h 0.80202 v 0.326595 h -0.80202 v 1.052132 q 0,0.181901 0.008,0.285254 0.008,0.101285 0.0579,0.190169 0.0455,0.08268 0.12402,0.121956 0.0806,0.03721 0.24391,0.03721 0.0951,0 0.19844,-0.02687 0.10335,-0.02894 0.14883,-0.04754 h 0.0207 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2314"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 267.51531,22.751953 h -1.70118 q 0,0.212907 0.0641,0.37207 0.0641,0.157096 0.1757,0.258382 0.10748,0.09922 0.25424,0.148828 0.14883,0.04961 0.3266,0.04961 0.23564,0 0.47335,-0.09302 0.23978,-0.09509 0.34107,-0.186035 h 0.0207 v 0.423747 q -0.19637,0.08268 -0.40101,0.138492 -0.20464,0.05581 -0.42995,0.05581 -0.57464,0 -0.8971,-0.310059 -0.32246,-0.312125 -0.32246,-0.8847 0,-0.566374 0.30799,-0.89917 0.31006,-0.332796 0.81442,-0.332796 0.46716,0 0.71934,0.272851 0.25424,0.272852 0.25424,0.775147 z m -0.37827,-0.297657 q -0.002,-0.305924 -0.15503,-0.473356 -0.15089,-0.167431 -0.46095,-0.167431 -0.31213,0 -0.49816,0.183968 -0.18397,0.183968 -0.20877,0.456819 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2316"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 269.54517,21.98094 h -0.0207 q -0.0868,-0.02067 -0.16949,-0.02894 -0.0806,-0.01034 -0.19224,-0.01034 -0.17983,0 -0.34727,0.08061 -0.16743,0.07855 -0.32246,0.204639 v 1.639176 h -0.3886 v -2.308902 h 0.3886 v 0.341064 q 0.23151,-0.186035 0.40721,-0.262516 0.17777,-0.07855 0.36174,-0.07855 0.10128,0 0.14676,0.0062 0.0455,0.0041 0.13643,0.0186 z"
-         style="font-size:4.23333311px;stroke-width:0.26458332"
-         id="path2318"
-         inkscape:connector-curvature="0" />
-    </g>
-    <g
        aria-label="Accent"
        style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        id="text1293"
@@ -1603,7 +1550,7 @@
     </g>
     <path
        style="display:inline;fill:#000000;stroke:#ffffff;stroke-width:0.01455167px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 168.01227,15.089718 0.002,95.510342"
+       d="m 171.02467,16.620758 0.002,95.510342"
        id="path1160-6"
        inkscape:connector-curvature="0" />
     <g
@@ -3579,26 +3526,59 @@
          style="font-size:2.82222223px;stroke-width:0.26458332">Clock In 8X BPM</tspan></text>
     <text
        xml:space="preserve"
-       style="display:inline;font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="180.2123"
-       y="77.132401"
-       id="text1773"><tspan
-         sodipodi:role="line"
-         id="tspan1771"
-         x="180.2123"
-         y="77.132401"
-         style="stroke-width:0.26458332">Legato</tspan></text>
-    <text
-       xml:space="preserve"
-       style="display:inline;font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="208.87598"
-       y="77.132408"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="179.9285"
+       y="76.84861"
        id="text1777"><tspan
          sodipodi:role="line"
          id="tspan1775"
-         x="208.87598"
-         y="77.132408"
+         x="179.9285"
+         y="76.84861"
          style="stroke-width:0.26458332">Staccato</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="266.70493"
+       y="26.234598"
+       id="text1774"><tspan
+         sodipodi:role="line"
+         id="tspan1772"
+         x="266.70493"
+         y="30.096796"
+         style="stroke-width:0.26458332" /></text>
+    <text
+       id="text1773"
+       y="69.753639"
+       x="311.61118"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.26458332"
+         y="69.753639"
+         x="311.61118"
+         id="tspan1771"
+         sodipodi:role="line">Staccato</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="245.76984"
+       y="76.564812"
+       id="text1780"><tspan
+         sodipodi:role="line"
+         id="tspan1778"
+         x="245.76984"
+         y="76.564812"
+         style="stroke-width:0.26458332">Staccato</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="246.05365"
+       y="28.318993"
+       id="text1767"><tspan
+         sodipodi:role="line"
+         id="tspan1765"
+         x="246.05365"
+         y="28.318993"
+         style="stroke-width:0.26458332">Hold tied notes</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -4889,10 +4869,20 @@
          id="title1765">in_Clock</title>
     </circle>
     <circle
+       inkscape:label="control_Harmony_Pattern"
+       r="2.8591328"
+       cy="74.965271"
+       cx="173.95345"
+       id="circle1766"
+       style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+      <title
+         id="title1764">control_Harmony_Pattern</title>
+    </circle>
+    <circle
        style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="circle1762"
-       cx="174.23724"
-       cy="74.681473"
+       cx="305.91992"
+       cy="67.8703"
        r="2.8591328"
        inkscape:label="control_Harmony_Pattern">
       <title
@@ -4901,12 +4891,12 @@
     <circle
        inkscape:label="control_Harmony_Pattern"
        r="2.8591328"
-       cy="75.532867"
-       cx="202.61713"
-       id="circle1766"
+       cy="74.681473"
+       cx="240.64618"
+       id="circle1768"
        style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.32499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
       <title
-         id="title1764">control_Harmony_Pattern</title>
+         id="title1766">control_Harmony_Pattern</title>
     </circle>
   </g>
 </svg>
