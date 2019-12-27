@@ -317,7 +317,18 @@ struct Meander : Module
 			if (!running)
 			{
 				outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-1.0+octaveOffset,j);  // (note, channel)  sift down 1 ocatve/v
-				outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState.theHarmonyParms.volume);
+			//	outputs[OUT_HARMONY_VOLUME_OUTPUT].setVoltage(theMeanderState.theHarmonyParms.volume);
+			//	outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
+			//	outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
+				float durationFactor=1.0;
+				if (theMeanderState.theHarmonyParms.enable_legato)
+					durationFactor=1.0;
+				else
+				if (theMeanderState.theHarmonyParms.enable_staccato)
+					durationFactor=0.5;
+				
+				float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
+				harmonyGatePulse.trigger(note_duration);  
 			}
 		
 			if (j<4)
@@ -338,6 +349,8 @@ struct Meander : Module
 	{
 		DEBUG("doHarmony");
 		DEBUG("doHarmony() theActiveHarmonyType.min_steps=%d, theActiveHarmonyType.max_steps=%d", theActiveHarmonyType.min_steps, theActiveHarmonyType.max_steps );
+
+		outputs[OUT_HARMONY_VOLUME_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
 		
 		clock_t current_cpu_t= clock();  // cpu clock ticks since program began
 		double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
@@ -378,7 +391,20 @@ struct Meander : Module
 				outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-1.0,j);  // (note, channel)	
 					
 			}
-			outputs	[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
+		
+		    outputs[OUT_HARMONY_VOLUME_OUTPUT].setVoltage(theMeanderState.theHarmonyParms.volume);
+			outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
+			outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
+			
+			float durationFactor=1.0;
+			if (theMeanderState.theHarmonyParms.enable_legato)
+				durationFactor=1.0;
+			else
+			if (theMeanderState.theHarmonyParms.enable_staccato)
+				durationFactor=0.5;
+			
+			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
+			harmonyGatePulse.trigger(note_duration);  
 		}
      
 		DEBUG("theHarmonyTypes[%d].num_harmony_steps=%d", harmony_type, theActiveHarmonyType.num_harmony_steps);
@@ -600,7 +626,7 @@ struct Meander : Module
 		}
 		if (theMeanderState.theHarmonyParms.enabled)
 		{ 
-		//	outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
+			outputs[OUT_HARMONY_VOLUME_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
 
 			// output some fBm noise
 			outputs[OUT_FBM_GATE_OUTPUT].setChannels(1);  // set polyphony  
@@ -641,6 +667,8 @@ struct Meander : Module
 	void doMelody()
 	{
 		DEBUG("doMelody()");
+
+		outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState. theMelodyParms.volume);
 		clock_t current_cpu_t= clock();  // cpu clock ticks since program began
 		double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
 		//	DEBUG("current_cpu_time=%ld", (long)current_cpu_t);
@@ -886,7 +914,7 @@ struct Meander : Module
 	//	double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
 		//	DEBUG("current_cpu_time=%ld", (long)current_cpu_t);
 		//	DEBUG("current_cpu_time_double=%.3lf", (double)current_cpu_time_double);
-
+        outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(theMeanderState. theBassParms.volume);
 				
 		if (theMeanderState.theBassParms.enabled) 
 		{
@@ -1809,6 +1837,7 @@ struct Meander : Module
 			if (fvalue!=theMeanderState.theHarmonyParms.volume)
 			{
 				theMeanderState.theHarmonyParms.volume=fvalue;  
+				outputs[OUT_HARMONY_VOLUME_OUTPUT].setVoltage(theMeanderState.theHarmonyParms.volume);
 			}
 
 			fvalue=std::round(params[CONTROL_HARMONY_TARGETOCTAVE_PARAM].getValue());
@@ -1880,6 +1909,7 @@ struct Meander : Module
 			if (fvalue!=theMeanderState.theMelodyParms.volume)
 			{
 				theMeanderState.theMelodyParms.volume=fvalue;  
+				outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
 			}
 			
 			fvalue=std::round(params[CONTROL_MELODY_TARGETOCTAVE_PARAM].getValue());
@@ -1935,6 +1965,7 @@ struct Meander : Module
 			if (fvalue!=theMeanderState.theBassParms.volume)
 			{
 				theMeanderState.theBassParms.volume=fvalue;  
+				outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
 			}
 
 			fvalue=params[CONTROL_BASS_DIVISOR_PARAM].getValue();
