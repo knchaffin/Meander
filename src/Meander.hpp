@@ -232,7 +232,7 @@ struct HarmonyParms
 {
 	bool enabled=true;
 	float volume=10.0f;  // 0-10 V
-	int chord_on_note_divisor=1;  // 1, 2, 4, 8   doHarmony() on these boundaries
+	int note_length_divisor=1;  // 1, 2, 4, 8   doHarmony() on these boundaries
 	int target_octave=4;
 	double note_octave_range=1.0;
 	double note_avg_target=target_octave/10.0;  
@@ -249,6 +249,9 @@ struct HarmonyParms
 	int bar_harmony_chords_counted_note=0;
 	bool enable_all_7ths=false;
 	bool enable_V_7ths=false;
+    bool enable_staccato=false;
+	bool enable_legato=true;
+    int pending_step_edit=0;
 	struct note last[4];
 };  
 
@@ -277,6 +280,8 @@ struct MelodyParms
 	int last_chord_note_index=0;
 	int last_step=1; 
 	int bar_melody_counted_note=0;
+    bool enable_staccato=true;
+	bool enable_legato=false;
 	struct note last[1];
 }; 
 
@@ -286,7 +291,7 @@ struct ArpParms
 	bool chordal=true;
 	bool scaler=false;
 	int count=3;
-	int increment=16;  // 8, 16, 32
+	int note_length_divisor=16;  // 8, 16, 32
 	float decay=0;
 	int pattern=0;
 	int note_count=0;  // number of arp notes played per current melody note
@@ -300,13 +305,16 @@ struct BassParms
 {
 	bool enabled=true; 
 	int target_octave=2;
-	int bass_on_note_divisor=1;  // 1, 2, 4, 8   doHarmony() on these boundaries
+	int note_length_divisor=1;  // 1, 2, 4, 8   doHarmony() on these boundaries
 	bool octave_enabled=true;  // play bass as 2 notes an octave apart
 	float volume=10.0f;  // 0-10 V
 	int bar_bass_counted_note=0;
+    bool accent=false;
 	bool syncopate=false;
-	bool accent=false;
+	bool shuffle=false;
 	struct note last[4];
+    bool enable_staccato= true;
+	bool enable_legato=false;
 }; 
 
 
@@ -339,7 +347,7 @@ struct HarmonyType
 {
 	int    harmony_type;  // used by theActiveHarmonyType
 	char   harmony_type_desc[64]; 
-	char   harmony_degrees_desc[64]; 
+	char   harmony_degrees_desc[128]; 
 	int    num_harmony_steps=1;
 	int    min_steps=1;
 	int    max_steps=1;
@@ -355,19 +363,19 @@ int  circle_of_fifths[MAX_CIRCLE_STATIONS];
 int    home_circle_position;
 int    current_circle_position;
 int    last_circle_position;
-unsigned char circle_of_fifths_degrees[][MAXSHORTSTRLEN]= {
+char circle_of_fifths_degrees[][MAXSHORTSTRLEN]= {
 	"I", "V", "II", "vi", "iii", "vii", "IV"
 };
 
-unsigned char circle_of_fifths_arabic_degrees[][MAXSHORTSTRLEN]= {
+char circle_of_fifths_arabic_degrees[][MAXSHORTSTRLEN]= {
 	"", "I", "II", "III", "IV", "V", "IV", "VII"
 };
 
-unsigned char circle_of_fifths_degrees_UC[][MAXSHORTSTRLEN]= {
+char circle_of_fifths_degrees_UC[][MAXSHORTSTRLEN]= {
 	"I", "V", "II", "VI", "III", "VII", "IV"
 };
 
-unsigned char circle_of_fifths_degrees_LC[][MAXSHORTSTRLEN]= {
+char circle_of_fifths_degrees_LC[][MAXSHORTSTRLEN]= {
 	"i", "v", "ii", "vi", "iii", "vii", "iv"
 };
 
@@ -819,9 +827,10 @@ void init_harmony()
         theHarmonyTypes[3].harmony_steps[7]=6;
 	
     // (harmony_type==4)             /* custom                 */
-		theHarmonyTypes[4].num_harmony_steps=12;
+        strcpy(theHarmonyTypes[4].harmony_type_desc, "custom" );
+		theHarmonyTypes[4].num_harmony_steps=4;
 		theHarmonyTypes[4].min_steps=1;
-	    theHarmonyTypes[4].max_steps=theHarmonyTypes[4].num_harmony_steps;
+	    theHarmonyTypes[4].max_steps=16;
         for (int i=0;i<MAX_STEPS;++i)
            theHarmonyTypes[4].harmony_steps[i] = 1; // must not be 0
 		
