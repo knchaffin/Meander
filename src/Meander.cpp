@@ -1386,21 +1386,43 @@ struct Meander : Module
 		pulse16ts = clockPulse16ts.process(1.0 / args.sampleRate);
 		pulse32ts = clockPulse32ts.process(1.0 / args.sampleRate);
 
-		// end the gate if pulse timer has expired
-	
-		float harmonyGateLevel=theMeanderState.theHarmonyParms.volume; 
-		harmonyGateLevel=clamp(harmonyGateLevel, 1.1f, 10.f);  // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
-		outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage( harmonyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? harmonyGateLevel : 0.0 ); 
+		// end the gate if pulse timer has expired 
 
-		float melodyGateLevel=theMeanderState.theMelodyParms.volume; 
-		melodyGateLevel=clamp(melodyGateLevel, 1.1f, 10.f);   // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
-		outputs[OUT_MELODY_GATE_OUTPUT].setVoltage( melodyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? melodyGateLevel : 0.0 ); 
+		if (true) // standard gate voltages 
+		{
+			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage( harmonyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+			outputs[OUT_MELODY_GATE_OUTPUT].setVoltage( melodyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+			outputs[OUT_BASS_GATE_OUTPUT].setVoltage( bassGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
 
-		float bassGateLevel=theMeanderState.theBassParms.volume;
-		if (theMeanderState.theBassParms.note_accented)
-			bassGateLevel=10.0;
-		bassGateLevel=clamp(bassGateLevel, 1.1f, 10.f); // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
-		outputs[OUT_BASS_GATE_OUTPUT].setVoltage( bassGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ?bassGateLevel : 0.0 ); 
+			float bassVolumeLevel=theMeanderState.theBassParms.volume;
+			if (theMeanderState.theBassParms.accent)
+			{
+				if (theMeanderState.theBassParms.note_accented)
+					bassVolumeLevel=theMeanderState.theBassParms.volume;
+				else
+					bassVolumeLevel=0.5*theMeanderState.theBassParms.volume;
+				bassVolumeLevel=clamp(bassVolumeLevel, 0.0f, 10.f); 
+
+			}
+			outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(bassVolumeLevel);
+		}
+		else  // non-standard volume over gate voltages
+		{
+			float harmonyGateLevel=theMeanderState.theHarmonyParms.volume; 
+			harmonyGateLevel=clamp(harmonyGateLevel, 1.1f, 10.f);  // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
+			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage( harmonyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? harmonyGateLevel : 0.0 ); 
+
+			float melodyGateLevel=theMeanderState.theMelodyParms.volume; 
+			melodyGateLevel=clamp(melodyGateLevel, 1.1f, 10.f);   // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
+			outputs[OUT_MELODY_GATE_OUTPUT].setVoltage( melodyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? melodyGateLevel : 0.0 ); 
+
+			float bassGateLevel=theMeanderState.theBassParms.volume;
+			if (theMeanderState.theBassParms.note_accented)
+				bassGateLevel=10.0;
+			bassGateLevel=clamp(bassGateLevel, 1.1f, 10.f); // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
+			outputs[OUT_BASS_GATE_OUTPUT].setVoltage( bassGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ?bassGateLevel : 0.0 ); 
+		}
+				
 				
 		outputs[OUT_CLOCK_BAR_OUTPUT].setVoltage((pulse1ts ? 10.0f : 0.0f));     // barts
 		outputs[OUT_CLOCK_BEAT_OUTPUT].setVoltage((pulse4ts ? 10.0f : 0.0f));    // 4ts
