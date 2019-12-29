@@ -112,14 +112,9 @@ struct Meander : Module
 		BUTTON_ENABLE_HARMONY_V7THS_PARAM,
 
 		BUTTON_ENABLE_HARMONY_STACCATO_PARAM,
-		BUTTON_ENABLE_HARMONY_LEGATO_PARAM,
-
 		BUTTON_ENABLE_MELODY_STACCATO_PARAM,
-		BUTTON_ENABLE_MELODY_LEGATO_PARAM,
-
 		BUTTON_ENABLE_BASS_STACCATO_PARAM,
-		BUTTON_ENABLE_BASS_LEGATO_PARAM,
-		
+				
 		
 		NUM_PARAMS
 	};
@@ -229,14 +224,9 @@ struct Meander : Module
 		LIGHT_LEDBUTTON_BASS_SHUFFLE_PARAM,
 
 		LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM,
-		LIGHT_LEDBUTTON_ENABLE_HARMONY_LEGATO_PARAM,
-
 		LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM,
-		LIGHT_LEDBUTTON_ENABLE_MELODY_LEGATO_PARAM,
-
 		LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM,
-		LIGHT_LEDBUTTON_ENABLE_BASS_LEGATO_PARAM,
-
+		
 		NUM_LIGHTS
 	};
 
@@ -321,13 +311,13 @@ struct Meander : Module
 			//	outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
 			//	outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
 				float durationFactor=1.0;
-				if (theMeanderState.theHarmonyParms.enable_legato)
-					durationFactor=1.0;
-				else
 				if (theMeanderState.theHarmonyParms.enable_staccato)
 					durationFactor=0.5;
+				else
+					durationFactor=1.0;
 				
 				float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
+				harmonyGatePulse.reset();  // kill the pulse in case it is active
 				harmonyGatePulse.trigger(note_duration);  
 			}
 		
@@ -397,13 +387,14 @@ struct Meander : Module
 			outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
 			
 			float durationFactor=1.0;
-			if (theMeanderState.theHarmonyParms.enable_legato)
-				durationFactor=1.0;
-			else
+						
 			if (theMeanderState.theHarmonyParms.enable_staccato)
 				durationFactor=0.5;
+			else
+				durationFactor=1.0;
 			
 			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
+			harmonyGatePulse.reset();  // kill the pulse in case it is active
 			harmonyGatePulse.trigger(note_duration);  
 		}
      
@@ -641,12 +632,11 @@ struct Meander : Module
 		//	float staccato=0.5f;
 		//	float legato=0.99f; 
 			float durationFactor=1.0;
-			if (theMeanderState.theHarmonyParms.enable_legato)
-				durationFactor=1.0;
-			else
 			if (theMeanderState.theHarmonyParms.enable_staccato)
 				durationFactor=0.5;
-			
+			else
+				durationFactor=1.0;
+						
 			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
 		    harmonyGatePulse.trigger(note_duration);  
 		}
@@ -768,11 +758,10 @@ struct Meander : Module
 			//	float legato=0.99f;
 
 				float durationFactor=1.0;
-				if (theMeanderState.theHarmonyParms.enable_legato)
-					durationFactor=1.0;
-				else
-				if (theMeanderState.theHarmonyParms.enable_staccato)
+				if (theMeanderState.theMelodyParms.enable_staccato)
 					durationFactor=0.5;
+				else
+					durationFactor=1.0;
 				float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theMelodyParms.note_length_divisor);
 				melodyGatePulse.trigger(note_duration);  // Test 1s duration  need to use .process to detect this and then send it to output
 			}
@@ -903,9 +892,17 @@ struct Meander : Module
 		outputs[OUT_MELODY_CV_OUTPUT].setChannels(1);  // set polyphony  may need to deal with unset channel voltages
 		outputs[OUT_MELODY_CV_OUTPUT].setVoltage(((note_to_play/12.0) -4.0) ,0);  // (note, channel) -4 since midC=c4=0voutputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play -4 + theMeanderState.theMelodyParms.target_octave,0);  // (note, channel) -4 since midC=c4=0v
 	//	outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(volume);
-	    melodyGatePulse.trigger(1.0f);  // Test 1s duration  need to use .process to detect this and then send it to output	
+		melodyGatePulse.reset();  // kill the pulse in case it is active
+	 //   melodyGatePulse.trigger(1.0f);  // Test 1s duration  need to use .process to detect this and then send it to output	
+		float durationFactor=1.0;
+		if (theMeanderState.theMelodyParms.enable_staccato)
+			durationFactor=0.5;
+		else
+			durationFactor=1.0;
+		float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theArpParms.note_length_divisor);
+		melodyGatePulse.trigger(note_duration);  
 	}
-
+ 
 
 	void doBass()
 	{
@@ -953,37 +950,25 @@ struct Meander : Module
 
 			 	outputs[OUT_BASS_CV_OUTPUT].setVoltage((theMeanderState.last_harmony_chord_root_note/12.0)-3.0 +theMeanderState.theBassParms.target_octave ,1);
 			}
+
 			if (!theMeanderState.theBassParms.accent)  // need o redo with new gate procedure
 			{
-			//	outputs[OUT_BASS_GATE_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
-			//	bassTriggerPulse.trigger(1e-3f);  // 1ms duration  need to use .process to detect this and then send it to output
-		    //   bassGatePulse.trigger(1.0f);  // Test 1s duration  need to use .process to detect this and then send it to output
+				theMeanderState.theBassParms.note_accented=false; 
 			}
 			else
 			{
-			//	if (theMeanderState.theBassParms.bar_bass_counted_note==1)  // experimenting with bass patterns
-			//		outputs[OUT_BASS_GATE_OUTPUT].setVoltage(theMeanderState.theBassParms.volume);
-			//	else
-			//		outputs[OUT_BASS_GATE_OUTPUT].setVoltage(0.8*theMeanderState.theBassParms.volume);
+				if (theMeanderState.theBassParms.bar_bass_counted_note==1)  // experimenting with bass patterns
+					theMeanderState.theBassParms.note_accented=true; 
+				else
+					theMeanderState.theBassParms.note_accented=false; 
 			}	
 			
-		
-		 //   bassGatePulse.trigger(1.0f);  // Test 1s duration  need to use .process to detect this and then send it to output
-		//	bassGatePulse.trigger(.10f);  // Test 1s duration  need to use .process to detect this and then send it to output
-
-		//	float freq32s= (frequency*(32/time_sig_bottom));	  // for 32ts	
-		//	float time32s=1.0f/freq32s;
-		//	float note_duration=.5f*time32s*(time_sig_top*(32/time_sig_bottom)/theMeanderState.theBassParms.note_length_divisor);
-		//    float staccato=0.5f;
-		//	float legato=0.99f;
-
+			
 			float durationFactor=1.0;
-			if (theMeanderState.theHarmonyParms.enable_legato)
-				durationFactor=1.0;
-			else
-			if (theMeanderState.theHarmonyParms.enable_staccato)
+			if (theMeanderState.theBassParms.enable_staccato)
 				durationFactor=0.5;
-
+			else
+				durationFactor=1.0;
 			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theBassParms.note_length_divisor);
 		    bassGatePulse.trigger(note_duration);  // Test 1s duration  need to use .process to detect this and then send it to output
 		}
@@ -1076,23 +1061,20 @@ struct Meander : Module
 	dsp::SchmittTrigger HarmonyEnableV7thsToggle;
 
 	dsp::SchmittTrigger HarmonyEnableStaccatoToggle;
-	dsp::SchmittTrigger HarmonyEnableLegatoToggle;
-  
+	 
 	
 	dsp::SchmittTrigger MelodyDestutterToggle;
 	dsp::SchmittTrigger MelodyEnableChordalToggle;
 	dsp::SchmittTrigger MelodyEnableScalerToggle;
 
 	dsp::SchmittTrigger MelodyEnableStaccatoToggle;
-	dsp::SchmittTrigger MelodyEnableLegatoToggle;
-
+	
 	dsp::SchmittTrigger BassSyncopateToggle;
 	dsp::SchmittTrigger BassAccentToggle;
 	dsp::SchmittTrigger BassShuffleToggle;
 
 	dsp::SchmittTrigger BassEnableStaccatoToggle;
-	dsp::SchmittTrigger BassEnableLegatoToggle;
-	
+		
 	dsp::SchmittTrigger RunToggle;
 		
 	
@@ -1198,9 +1180,15 @@ struct Meander : Module
 		
 			if (!running)
 			{
+				harmonyGatePulse.reset();  // kill the pulse in case it is active
+				melodyGatePulse.reset();  // kill the pulse in case it is active
+				bassGatePulse.reset();  // kill the pulse in case it is active
 				outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 				outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
 				outputs[OUT_BASS_GATE_OUTPUT].setVoltage(0);
+				outputs[OUT_HARMONY_VOLUME_OUTPUT].setVoltage(0);
+				outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(0);
+				outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(0);
 			}
 		}
 
@@ -1398,19 +1386,43 @@ struct Meander : Module
 		pulse16ts = clockPulse16ts.process(1.0 / args.sampleRate);
 		pulse32ts = clockPulse32ts.process(1.0 / args.sampleRate);
 
-		// end the trigger if pulse timer has expired
-		if (false) // old
-		{
-	//	outputs[OUT_HARMONY_TRIGGER_OUTPUT].setVoltage( harmonyTriggerPulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
-	//	if (theMeanderState.theMelodyParms.enabled && !theMeanderState.theMelodyParms.stutter_detected)
-	//	outputs[OUT_MELODY_TRIGGER_OUTPUT].setVoltage( melodyTriggerPulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
-	//	outputs[OUT_BASS_TRIGGER_OUTPUT].setVoltage( bassTriggerPulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
-		}
+		// end the gate if pulse timer has expired 
 
-		// end the gate if pulse timer has expired
-		outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage( harmonyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
-		outputs[OUT_MELODY_GATE_OUTPUT].setVoltage( melodyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
-		outputs[OUT_BASS_GATE_OUTPUT].setVoltage( bassGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+		if (true) // standard gate voltages 
+		{
+			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage( harmonyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+			outputs[OUT_MELODY_GATE_OUTPUT].setVoltage( melodyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+			outputs[OUT_BASS_GATE_OUTPUT].setVoltage( bassGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? CV_MAX10 : 0.0 ); 
+
+			float bassVolumeLevel=theMeanderState.theBassParms.volume;
+			if (theMeanderState.theBassParms.accent)
+			{
+				if (theMeanderState.theBassParms.note_accented)
+					bassVolumeLevel=theMeanderState.theBassParms.volume;
+				else
+					bassVolumeLevel=0.5*theMeanderState.theBassParms.volume;
+				bassVolumeLevel=clamp(bassVolumeLevel, 0.0f, 10.f); 
+
+			}
+			outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(bassVolumeLevel);
+		}
+		else  // non-standard volume over gate voltages
+		{
+			float harmonyGateLevel=theMeanderState.theHarmonyParms.volume; 
+			harmonyGateLevel=clamp(harmonyGateLevel, 1.1f, 10.f);  // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
+			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage( harmonyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? harmonyGateLevel : 0.0 ); 
+
+			float melodyGateLevel=theMeanderState.theMelodyParms.volume; 
+			melodyGateLevel=clamp(melodyGateLevel, 1.1f, 10.f);   // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
+			outputs[OUT_MELODY_GATE_OUTPUT].setVoltage( melodyGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ? melodyGateLevel : 0.0 ); 
+
+			float bassGateLevel=theMeanderState.theBassParms.volume;
+			if (theMeanderState.theBassParms.note_accented)
+				bassGateLevel=10.0;
+			bassGateLevel=clamp(bassGateLevel, 1.1f, 10.f); // don't let gate on level drop below 1.0v so it will trigger ADSR etc.
+			outputs[OUT_BASS_GATE_OUTPUT].setVoltage( bassGatePulse.process( 1.0 / APP->engine->getSampleRate() ) ?bassGateLevel : 0.0 ); 
+		}
+				
 				
 		outputs[OUT_CLOCK_BAR_OUTPUT].setVoltage((pulse1ts ? 10.0f : 0.0f));     // barts
 		outputs[OUT_CLOCK_BEAT_OUTPUT].setVoltage((pulse4ts ? 10.0f : 0.0f));    // 4ts
@@ -1441,7 +1453,7 @@ struct Meander : Module
 			circleChanged=true;
 		}
 		lights[LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM].value = theMeanderState. theHarmonyParms.enable_V_7ths ? 1.0f : 0.0f; 
-
+//
 		if (HarmonyEnableStaccatoToggle.process(params[BUTTON_ENABLE_HARMONY_STACCATO_PARAM].getValue())) 
 		{
 			theMeanderState. theHarmonyParms.enable_staccato = !theMeanderState. theHarmonyParms.enable_staccato;
@@ -1449,18 +1461,12 @@ struct Meander : Module
 		}
 		lights[LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM].value = theMeanderState. theHarmonyParms.enable_staccato ? 1.0f : 0.0f; 
 
-		if (HarmonyEnableLegatoToggle.process(params[BUTTON_ENABLE_HARMONY_LEGATO_PARAM].getValue())) 
+		if (MelodyEnableStaccatoToggle.process(params[BUTTON_ENABLE_MELODY_STACCATO_PARAM].getValue())) 
 		{
-			theMeanderState. theHarmonyParms.enable_legato = !theMeanderState. theHarmonyParms.enable_legato;
+			theMeanderState. theMelodyParms.enable_staccato = !theMeanderState. theMelodyParms.enable_staccato;
 	
 		}
-		lights[LIGHT_LEDBUTTON_ENABLE_HARMONY_LEGATO_PARAM].value = theMeanderState. theHarmonyParms.enable_legato ? 1.0f : 0.0f; 
-
-		if (BassEnableToggle.process(params[BUTTON_ENABLE_BASS_PARAM].getValue())) 
-		{
-			theMeanderState.theBassParms.enabled = !theMeanderState.theBassParms.enabled;
-		}
-		lights[LIGHT_LEDBUTTON_BASS_ENABLE].value = theMeanderState.theBassParms.enabled ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM].value = theMeanderState. theMelodyParms.enable_staccato ? 1.0f : 0.0f; 
 
 		if (BassEnableStaccatoToggle.process(params[BUTTON_ENABLE_BASS_STACCATO_PARAM].getValue())) 
 		{
@@ -1468,14 +1474,16 @@ struct Meander : Module
 	
 		}
 		lights[LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM].value = theMeanderState. theBassParms.enable_staccato ? 1.0f : 0.0f; 
-
-		if (BassEnableLegatoToggle.process(params[BUTTON_ENABLE_BASS_LEGATO_PARAM].getValue())) 
+//
+		
+		if (BassEnableToggle.process(params[BUTTON_ENABLE_BASS_PARAM].getValue())) 
 		{
-			theMeanderState. theBassParms.enable_legato = !theMeanderState. theBassParms.enable_legato;
-	
+			theMeanderState.theBassParms.enabled = !theMeanderState.theBassParms.enabled;
 		}
-		lights[LIGHT_LEDBUTTON_ENABLE_BASS_LEGATO_PARAM].value = theMeanderState. theBassParms.enable_legato ? 1.0f : 0.0f; 
+		lights[LIGHT_LEDBUTTON_BASS_ENABLE].value = theMeanderState.theBassParms.enabled ? 1.0f : 0.0f; 
 
+		
+		
 		if (MelodyEnableToggle.process(params[BUTTON_ENABLE_MELODY_PARAM].getValue())) 
 		{
 			theMeanderState.theMelodyParms.enabled = !theMeanderState.theMelodyParms.enabled;
@@ -1502,21 +1510,7 @@ struct Meander : Module
 		}
 		lights[LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER].value = theMeanderState.theMelodyParms.scaler ? 1.0f : 0.0f; 
 
-		if (MelodyEnableStaccatoToggle.process(params[BUTTON_ENABLE_MELODY_STACCATO_PARAM].getValue())) 
-		{
-			theMeanderState. theMelodyParms.enable_staccato = !theMeanderState. theMelodyParms.enable_staccato;
-	
-		}
-		lights[LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM].value = theMeanderState. theMelodyParms.enable_staccato ? 1.0f : 0.0f; 
-
-		if (MelodyEnableLegatoToggle.process(params[BUTTON_ENABLE_MELODY_LEGATO_PARAM].getValue())) 
-		{
-			theMeanderState. theMelodyParms.enable_legato = !theMeanderState. theMelodyParms.enable_legato;
-	
-		}
-		lights[LIGHT_LEDBUTTON_ENABLE_MELODY_LEGATO_PARAM].value = theMeanderState. theMelodyParms.enable_legato ? 1.0f : 0.0f; 
-
-
+				
 
 		if (ArpEnableToggle.process(params[BUTTON_ENABLE_ARP_PARAM].getValue())) 
 		{
@@ -2142,7 +2136,6 @@ struct Meander : Module
 		configParam(CONTROL_MELODY_TARGETOCTAVE_PARAM, 1.f, 6.f, 3.f, "");
 		configParam(CONTROL_MELODY_ALPHA_PARAM, 0.f, 1.f, .9f, "");
 		configParam(CONTROL_MELODY_RANGE_PARAM, 0.f, 3.f, 1.f, "");
-		configParam(BUTTON_ENABLE_MELODY_LEGATO_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_ENABLE_MELODY_STACCATO_PARAM, 0.f, 1.f, 1.f, "");
 
 		configParam(BUTTON_ENABLE_HARMONY_PARAM, 0.f, 1.f, 0.f, "");
@@ -2156,7 +2149,6 @@ struct Meander : Module
 		configParam(CONTROL_HARMONY_DIVISOR_PARAM, 0.f, 3.f, 0.f, "");
 		configParam(BUTTON_ENABLE_HARMONY_ALL7THS_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_ENABLE_HARMONY_V7THS_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(BUTTON_ENABLE_HARMONY_LEGATO_PARAM, 0.f, 1.f, 1.f, "");
 		configParam(BUTTON_ENABLE_HARMONY_STACCATO_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(CONTROL_HARMONYPRESETS_PARAM, 1.0f, (float)MAX_AVAILABLE_HARMONY_PRESETS, 1.0f, "");
 
@@ -2175,7 +2167,6 @@ struct Meander : Module
 		configParam(BUTTON_BASS_ACCENT_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_BASS_SYNCOPATE_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_BASS_SHUFFLE_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(BUTTON_ENABLE_BASS_LEGATO_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(BUTTON_ENABLE_BASS_STACCATO_PARAM, 0.f, 1.f, 1.f, ""); 
 							
 		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "");
@@ -3448,11 +3439,9 @@ struct MeanderWidget : ModuleWidget
 			addParam(createParamCentered<LEDButton>(mm2px(Vec(203.849, 69)), module, Meander::BUTTON_ENABLE_HARMONY_V7THS_PARAM));
 			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(203.849, 69)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM));
 
-			
-			addParam(createParamCentered<LEDButton>(mm2px(Vec(173.849, 75)), module, Meander::BUTTON_ENABLE_HARMONY_LEGATO_PARAM));
-			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(173.849, 75)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_LEGATO_PARAM));
-			addParam(createParamCentered<LEDButton>(mm2px(Vec(203.849, 75)), module, Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM));
-			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(203.849, 75)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM));
+						
+			addParam(createParamCentered<LEDButton>(mm2px(Vec(173.849, 75)), module, Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM));
+			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(173.849, 75)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM));
 
 		
 			{
@@ -3510,6 +3499,9 @@ struct MeanderWidget : ModuleWidget
 				w->snap=true;
 				addParam(w); 
 			} 
+			
+			addParam(createParamCentered<LEDButton>(mm2px(Vec(305, 70)), module, Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM));
+			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305, 70)), module, Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM));
 
 			{
 				auto w= createParamCentered<Trimpot>(mm2px(Vec(358, 19)), module, Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM);
@@ -3545,6 +3537,9 @@ struct MeanderWidget : ModuleWidget
 				w->snap=true;
 				addParam(w); 
 			}
+
+			addParam(createParamCentered<LEDButton>(mm2px(Vec(240.274, 75)), module, Meander::BUTTON_ENABLE_MELODY_STACCATO_PARAM));
+			addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.274, 75)), module, Meander::LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM));
 		
 			{
 				auto w= createParamCentered<Trimpot>(mm2px(Vec(240.256, 82.807)), module, Meander::CONTROL_ARP_INCREMENT_PARAM);

@@ -250,8 +250,7 @@ struct HarmonyParms
 	bool enable_all_7ths=false;
 	bool enable_V_7ths=false;
     bool enable_staccato=false;
-	bool enable_legato=true;
-    int pending_step_edit=0;
+	int pending_step_edit=0;
 	struct note last[4];
 };  
 
@@ -281,7 +280,6 @@ struct MelodyParms
 	int last_step=1; 
 	int bar_melody_counted_note=0;
     bool enable_staccato=true;
-	bool enable_legato=false;
 	struct note last[1];
 }; 
 
@@ -309,12 +307,12 @@ struct BassParms
 	bool octave_enabled=true;  // play bass as 2 notes an octave apart
 	float volume=10.0f;  // 0-10 V
 	int bar_bass_counted_note=0;
-    bool accent=false;
+    bool accent=false;  // enables accents
 	bool syncopate=false;
 	bool shuffle=false;
 	struct note last[4];
     bool enable_staccato= true;
-	bool enable_legato=false;
+    bool note_accented=false;  // is current played note accented
 }; 
 
 
