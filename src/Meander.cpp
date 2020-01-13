@@ -1868,7 +1868,7 @@ struct Meander : Module
 							// process misc input ports
 										
 							case IN_TIMESIGNATURETOP_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=0.01)
 									{
 										float ratio=(fvalue/10.0);
 										float range=(13);
@@ -1884,7 +1884,7 @@ struct Meander : Module
 									break;
 							
 							case IN_TIMESIGNATUREBOTTOM_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=0.01)
 									{
 										float ratio=(fvalue/10.0);
 										int exp=(int)(ratio*3);
@@ -1933,7 +1933,7 @@ struct Meander : Module
 								break;
 
 							case IN_HARMONY_VOLUME_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=0.01)
 								if (fvalue!=theMeanderState.theHarmonyParms.volume)
 								{
 									fvalue=clamp(fvalue, 0., 10.);
@@ -1966,7 +1966,7 @@ struct Meander : Module
 								break;
 							
 							case IN_HARMONY_TARGETOCTAVE_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=0.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+ (int)(ratio*5);
@@ -1984,7 +1984,7 @@ struct Meander : Module
 								break;
 
 							case IN_HARMONY_ALPHA_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=0.01)
 								{
 									float newValue=(fvalue/10.0);
 									newValue=clamp(newValue, 0., 1.);
@@ -1997,7 +1997,7 @@ struct Meander : Module
 								break;
 							
 							case IN_HARMONY_RANGE_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=0.01)
 								{
 									float ratio=(fvalue/10.0);
 									float newValue=ratio*3;
@@ -2010,14 +2010,14 @@ struct Meander : Module
 										theMeanderState.theHarmonyParms.range_top=    theMeanderState.theHarmonyParms.note_avg_target + (theMeanderState.theHarmonyParms.note_octave_range/10.0);
 										theMeanderState.theHarmonyParms.range_bottom= theMeanderState.theHarmonyParms.note_avg_target - (theMeanderState.theHarmonyParms.note_octave_range/10.0);
 										theMeanderState.theHarmonyParms.r1=(theMeanderState.theHarmonyParms.range_top-theMeanderState.theHarmonyParms.range_bottom); 
-										
+
 										params[CONTROL_HARMONY_RANGE_PARAM].setValue(newValue);
 									}
 								}
 								break;
 
 							case IN_HARMONY_DIVISOR_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=0.01)
 								{
 									float ratio=(fvalue/10.0);
 									int exp=(int)(ratio*3);
@@ -2092,7 +2092,7 @@ struct Meander : Module
 								break;
 
 							case IN_HARMONYPRESETS_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=0.01)
 								{
 									float ratio=(fvalue/10.0);
 									float newValue=1.+ (ratio*(MAX_AVAILABLE_HARMONY_PRESETS-1));
@@ -2125,7 +2125,7 @@ struct Meander : Module
 								break;
 
 							case IN_MELODY_VOLUME_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								if (fvalue!=theMeanderState.theMelodyParms.volume)
 								{
 									fvalue=clamp(fvalue, 0., 10.);
@@ -2136,7 +2136,7 @@ struct Meander : Module
 								break;
 
 							case IN_MELODY_NOTE_LENGTH_DIVISOR_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int exp=(int)(ratio*3);
@@ -2152,7 +2152,7 @@ struct Meander : Module
 								break;
 
 							case IN_MELODY_TARGETOCTAVE_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+ (int)(ratio*5);
@@ -2170,7 +2170,7 @@ struct Meander : Module
 								break;
 
 							case IN_MELODY_ALPHA_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float newValue=(fvalue/10.0);
 									newValue=clamp(newValue, 0., 1.);
@@ -2183,7 +2183,7 @@ struct Meander : Module
 								break;
 							
 							case IN_MELODY_RANGE_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									float newValue=ratio*3;
@@ -2294,7 +2294,7 @@ struct Meander : Module
 								break;
 
 							case IN_ARP_COUNT_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=(int)(ratio*7);
@@ -2310,7 +2310,7 @@ struct Meander : Module
 
 
 							case IN_ARP_INCREMENT_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int exp=(int)(ratio*3);
@@ -2326,7 +2326,7 @@ struct Meander : Module
 								break;
 
 							case IN_ARP_DECAY_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float newValue=(fvalue/10.0);
 									newValue=clamp(newValue, 0., 1.);
@@ -2408,7 +2408,7 @@ struct Meander : Module
 								break;
 
 							case IN_BASS_VOLUME_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								if (fvalue!=theMeanderState.theBassParms.volume)
 								{
 									fvalue=clamp(fvalue, 0., 10.);
@@ -2419,7 +2419,7 @@ struct Meander : Module
 								break;
 
 							case IN_BASS_TARGETOCTAVE_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+ (int)(ratio*5);
@@ -2433,7 +2433,7 @@ struct Meander : Module
 								break;
 
 							case IN_BASS_DIVISOR_EXT_CV:
-								if (fvalue>=0)
+								if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int exp=(int)(ratio*3);
@@ -2537,7 +2537,7 @@ struct Meander : Module
 							// process fBn input ports	
 
 							case IN_HARMONY_FBM_OCTAVES_EXT_CV:
-							if (fvalue>=0)
+							if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+(int)(ratio*5);
@@ -2552,7 +2552,7 @@ struct Meander : Module
 								break;
 
 							case IN_HARMONY_FBM_PERIOD_EXT_CV:
-							if (fvalue>=0)
+							if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+(int)(ratio*100);
@@ -2567,7 +2567,7 @@ struct Meander : Module
 								break;
 
 							case IN_MELODY_FBM_OCTAVES_EXT_CV:
-							if (fvalue>=0)
+							if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+(int)(ratio*5);
@@ -2582,7 +2582,7 @@ struct Meander : Module
 								break;
 
 							case IN_MELODY_FBM_PERIOD_EXT_CV:
-							if (fvalue>=0)
+							if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+(int)(ratio*100);
@@ -2597,7 +2597,7 @@ struct Meander : Module
 								break;
 
 							case IN_ARP_FBM_OCTAVES_EXT_CV:
-							if (fvalue>=0)
+							if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+(int)(ratio*5);
@@ -2612,7 +2612,7 @@ struct Meander : Module
 								break;
 
 							case IN_ARP_FBM_PERIOD_EXT_CV:
-							if (fvalue>=0)
+							if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=1+(int)(ratio*100);
@@ -2629,7 +2629,7 @@ struct Meander : Module
 						    // handle mode and root input changes
 						  
 						    case IN_ROOT_KEY_EXT_CV:
-						    if (fvalue>=0)
+						    if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=(int)(ratio*11);
@@ -2649,7 +2649,7 @@ struct Meander : Module
 					        	break;
 
 							case IN_SCALE_EXT_CV:
-						    if (fvalue>=0)
+						    if (fvalue>=.01)
 								{
 									float ratio=(fvalue/10.0);
 									int newValue=(int)(ratio*6);
