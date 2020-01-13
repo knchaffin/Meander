@@ -24,11 +24,22 @@ using namespace rack;
 #define MAX_HARMONIC_DEGREES 7
 #define MAX_AVAILABLE_HARMONY_PRESETS 51  // change this as new harmony presets are created
 
-ParamWidget* CircleOf5thsOuterButton[MAX_CIRCLE_STATIONS];  
-LightWidget* CircleOf5thsOuterButtonLight[MAX_CIRCLE_STATIONS]; 
-LightWidget* CircleOf5thsInnerLight[MAX_CIRCLE_STATIONS];  // root_key lights
-ParamWidget* CircleOf5thsSelectStepButton[MAX_STEPS];        
-LightWidget* CircleOf5thsSelectStepButtonLight[MAX_STEPS];   
+#define MAX_PARAMS 200
+rack::math::Rect  ParameterRect[MAX_PARAMS];  // warning, don't exceed the dimension
+
+#define MAX_INPORTS 100
+rack::math::Rect  InportRect[MAX_INPORTS];  // warning, don't exceed the dimension
+float lastInputPortValue[MAX_INPORTS];
+
+#define MAX_OUTPORTS 100
+rack::math::Rect  OutportRect[MAX_OUTPORTS];  // warning, don't exceed the dimension
+
+struct TinyPJ301MPort : SvgPort {
+	TinyPJ301MPort() {
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/TinyPJ301M.svg")));
+	}
+};
+
 
 int time_sig_top, time_sig_bottom = 4;
 
@@ -91,7 +102,7 @@ struct CircleOf5ths
 
 
 bool circleChanged=true;
-int harmonyStepsChanged=0; 
+int harmonyPresetChanged=0; 
 
 int semiCircleDegrees[]={1, 5, 2, 6, 3, 7, 4};  // default order if starting at C
 int circleDegreeLookup[]= {0, 0, 2, 4, 6, 1, 3, 5};  // to convert from arabic roman equivalents to circle degrees
@@ -826,10 +837,10 @@ void init_harmony()
 	
     // (harmony_type==4)             /* custom                 */
         strcpy(theHarmonyTypes[4].harmony_type_desc, "custom" );
-		theHarmonyTypes[4].num_harmony_steps=4;
+	    theHarmonyTypes[4].num_harmony_steps=16;
 		theHarmonyTypes[4].min_steps=1;
-	    theHarmonyTypes[4].max_steps=16;
-        for (int i=0;i<MAX_STEPS;++i)
+	    theHarmonyTypes[4].max_steps=theHarmonyTypes[4].num_harmony_steps;
+        for (int i=0;i<theHarmonyTypes[4].num_harmony_steps;++i)
            theHarmonyTypes[4].harmony_steps[i] = 1; // must not be 0
 		
     // (harmony_type==5)             /* elementary classical 2 */
