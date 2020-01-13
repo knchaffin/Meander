@@ -2005,6 +2005,12 @@ struct Meander : Module
 									if (newValue!=theMeanderState.theHarmonyParms.note_octave_range)
 									{
 										theMeanderState.theHarmonyParms.note_octave_range=newValue;  
+
+										theMeanderState.theHarmonyParms.note_avg_target=theMeanderState.theHarmonyParms.target_octave/10.0;
+										theMeanderState.theHarmonyParms.range_top=    theMeanderState.theHarmonyParms.note_avg_target + (theMeanderState.theHarmonyParms.note_octave_range/10.0);
+										theMeanderState.theHarmonyParms.range_bottom= theMeanderState.theHarmonyParms.note_avg_target - (theMeanderState.theHarmonyParms.note_octave_range/10.0);
+										theMeanderState.theHarmonyParms.r1=(theMeanderState.theHarmonyParms.range_top-theMeanderState.theHarmonyParms.range_bottom); 
+										
 										params[CONTROL_HARMONY_RANGE_PARAM].setValue(newValue);
 									}
 								}
@@ -2185,6 +2191,12 @@ struct Meander : Module
 									if (newValue!=theMeanderState.theMelodyParms.note_octave_range)
 									{
 										theMeanderState.theMelodyParms.note_octave_range=newValue;  
+
+										theMeanderState.theMelodyParms.note_avg_target=theMeanderState.theMelodyParms.target_octave/10.0;
+										theMeanderState.theMelodyParms.range_top=    theMeanderState.theMelodyParms.note_avg_target + (theMeanderState.theMelodyParms.note_octave_range/10.0);
+										theMeanderState.theMelodyParms.range_bottom= theMeanderState.theMelodyParms.note_avg_target - (theMeanderState.theMelodyParms.note_octave_range/10.0);
+										theMeanderState.theMelodyParms.r1=(theMeanderState.theMelodyParms.range_top-theMeanderState.theMelodyParms.range_bottom); 
+
 										params[CONTROL_MELODY_RANGE_PARAM].setValue(newValue);
 									}
 								}
