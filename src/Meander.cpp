@@ -1619,6 +1619,7 @@ struct Meander : Module
 					theMeanderState.userControllingHarmonyFromCircle=true;
 					theMeanderState. theHarmonyParms.enabled=false;
 					lights[LIGHT_LEDBUTTON_HARMONY_ENABLE].value = theMeanderState. theHarmonyParms.enabled ? 1.0f : 0.0f; 
+					doHarmony();
 				}
 
 			
@@ -4272,7 +4273,7 @@ struct MeanderWidget : ModuleWidget
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(beginEdge+82, beginTop+105);   
-			snprintf(text, sizeof(text), "Position");
+			snprintf(text, sizeof(text), "Degree");
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 			pos=Vec(beginEdge+76, beginTop+135);  
