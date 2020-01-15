@@ -336,6 +336,7 @@ struct MeanderState
 	bool userControllingHarmonyFromCircle=false;
 	int last_harmony_chord_root_note=0;
 	int last_harmony_step=0;
+	int circleDegree=1;
 }	theMeanderState;
 
  
