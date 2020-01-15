@@ -660,6 +660,7 @@ struct Meander : Module
 				int note_to_play=current_chord_notes[j];
 				DEBUG("    h_note_to_play=%d %s", note_to_play, note_desig[note_to_play%MAX_NOTES]);
 				
+			//	if (true)
 				if (theMeanderState.theHarmonyParms.enabled) 
 				{
 					if (j<4)
@@ -673,6 +674,7 @@ struct Meander : Module
 						played_notes_circular_buffer[bar_note_count++]=theMeanderState.theHarmonyParms.last[j];
 					}
 				
+					if (theMeanderState.theHarmonyParms.enabled) 
 					outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel)
 				}
 		}
@@ -1722,14 +1724,12 @@ struct Meander : Module
 			extHarmonyIn=circleDegree;
 		
 			float octave=(float)((int)(circleDegree));
-
-		//	circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0);
-
+		
 		//	DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
 
 		    if (gateValue==circleDegree)  // MarkovSeq ot other 1-7V 
 			{
-				octave=1;
+				octave=theMeanderState. theHarmonyParms.target_octave-1;
 				DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
 				if ((std::abs(circleDegree-1.)<.01)) theMeanderState.circleDegree=1;
 				else
