@@ -1713,8 +1713,10 @@ struct Meander : Module
 		float gateValue=0;
 		if (  (inputs[IN_HARMONY_CIRCLE_GATE_EXT_CV].isConnected())
 			&&((gateValue=inputs[IN_HARMONY_CIRCLE_GATE_EXT_CV].getVoltage()))
-			&&((circleDegree=inputs[IN_HARMONY_CIRCLE_POSITION_EXT_CV].getVoltage())>=0) )  
+			&&((circleDegree=inputs[IN_HARMONY_CIRCLE_POSITION_EXT_CV].getVoltage())>=0) 
+			&&(circleDegree!=theMeanderState. theHarmonyParms.lastCircleDegreeIn) )  
 		{
+			theMeanderState. theHarmonyParms.lastCircleDegreeIn=circleDegree;
 			DEBUG("IN_HARMONY_CIRCLE_GATE_EXT_CV is connected and circleDegree=%f", circleDegree);
 
 			extHarmonyIn=circleDegree;

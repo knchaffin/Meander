@@ -263,6 +263,7 @@ struct HarmonyParms
     bool enable_staccato=false;
 	int pending_step_edit=0;
 	struct note last[4];
+	float lastCircleDegreeIn=0;
 };  
 
 struct MelodyParms  
