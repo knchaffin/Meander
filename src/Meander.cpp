@@ -1721,27 +1721,60 @@ struct Meander : Module
 		
 			float octave=(float)((int)(circleDegree));
 
-			circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0);
+		//	circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0);
 
-			DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
-					
-			if ((std::abs(circleDegree-0)<.01)) circleDegree=1;
-			if ((std::abs(circleDegree-.167)<.01)) circleDegree=2;
-			if ((std::abs(circleDegree-.334)<.01)) circleDegree=3;
-			if ((std::abs(circleDegree-.417)<.01)) circleDegree=4;
-			if ((std::abs(circleDegree-.584)<.01)) circleDegree=5;
-			if ((std::abs(circleDegree-.751)<.01)) circleDegree=6;
-			if ((std::abs(circleDegree-.917)<.01)) circleDegree=7;
-			if (circleDegree<1)
-			  	circleDegree=1;
-			if (circleDegree>7)
-			  	circleDegree=7;
-			DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)circleDegree);
+		//	DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
+
+		    if (gateValue==circleDegree)  // MarkovSeq ot other 1-7V 
+			{
+				octave=1;
+				DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
+				if ((std::abs(circleDegree-1.)<.01)) theMeanderState.circleDegree=1;
+				else
+				if ((std::abs(circleDegree-2.)<.01)) theMeanderState.circleDegree=2;
+				else
+				if ((std::abs(circleDegree-3.)<.01)) theMeanderState.circleDegree=3;
+				else
+				if ((std::abs(circleDegree-4.)<.01)) theMeanderState.circleDegree=4;
+				else
+				if ((std::abs(circleDegree-5.)<.01)) theMeanderState.circleDegree=5;
+				else
+				if ((std::abs(circleDegree-6.)<.01)) theMeanderState.circleDegree=6;
+				else
+				if ((std::abs(circleDegree-7.)<.01)) theMeanderState.circleDegree=7;
+			}
+			else  // keyboard  C-B
+			{
+				circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0);
+				DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
+				if ((std::abs(circleDegree-0)<.01))    theMeanderState.circleDegree=1;
+				else
+				if ((std::abs(circleDegree-.167)<.01)) theMeanderState.circleDegree=2;
+				else
+				if ((std::abs(circleDegree-.334)<.01)) theMeanderState.circleDegree=3;
+				else
+				if ((std::abs(circleDegree-.417)<.01)) theMeanderState.circleDegree=4;
+				else
+				if ((std::abs(circleDegree-.584)<.01)) theMeanderState.circleDegree=5;
+				else
+				if ((std::abs(circleDegree-.751)<.01)) theMeanderState.circleDegree=6;
+				else
+				if ((std::abs(circleDegree-.917)<.01)) theMeanderState.circleDegree=7;
+			}
+			
+
+			if (theMeanderState.circleDegree<1)
+				theMeanderState.circleDegree=1;
+			if (theMeanderState.circleDegree>7)
+				theMeanderState.circleDegree=7;
+			
+
+			DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
 
 			int step=1;
 			for (int i=0; i<MAX_STEPS; ++i)
 			{
-				if (theActiveHarmonyType.harmony_steps[i]==circleDegree)
+				if (theActiveHarmonyType.harmony_steps[i]==theMeanderState.circleDegree)
 				{
 					step=i;
 					break;
@@ -1753,7 +1786,7 @@ struct Meander : Module
 			int theCirclePosition=0;
 			for (int i=0; i<7; ++i)
 			{
-				if (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree==circleDegree)
+				if (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree==theMeanderState.circleDegree)
 				{
 					theCirclePosition=theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].CircleIndex;
 					break;
