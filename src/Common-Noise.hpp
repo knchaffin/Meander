@@ -691,7 +691,6 @@ static double pnoise3(double vec[])
 // -1 to +1 noise
 double fBm1DNoise(double x,double InversePersistence,double Lacunarity,int n_octaves)
 {
- //DEBUG("fBm1DNoise()");
   
    if (n_octaves<1) n_octaves=1;
    if (n_octaves>6) n_octaves=6;
@@ -708,7 +707,6 @@ double fBm1DNoise(double x,double InversePersistence,double Lacunarity,int n_oct
    for (i=0;i<n_octaves;i++)
    {
       val = pnoise1(p);
-   // DEBUG("val=%lf", val);
       sum += val / scale;
       scale *= InversePersistence;
       p[0] *= Lacunarity;
@@ -1161,7 +1159,6 @@ double FastfBm4DNoise(double x,double y,double z,double w,int n_octaves, bool *N
 
 void initPerlin(void)
 {
-        DEBUG("initPerlin()");
         int i, j;
 
         for (i=0; i< 256; ++i)

@@ -333,11 +333,11 @@ struct Meander : Module
 
 	void userPlaysCirclePosition(int circle_position, float octaveOffset)  // C=0
 	{
-		DEBUG("userPlaysCirclePosition(%d)", circle_position);
+		if (doDebug) DEBUG("userPlaysCirclePosition(%d)", circle_position); 
 		outputs[OUT_HARMONY_CV_OUTPUT].setChannels(3);  // set polyphony
 		
 		
-		DEBUG("circle_position=%d", circle_position);
+		if (doDebug) DEBUG("circle_position=%d", circle_position);
 	
 		theMeanderState.last_harmony_chord_root_note=circle_of_fifths[circle_position];
 
@@ -360,16 +360,16 @@ struct Meander : Module
  
 		int current_chord_note=0;
 		int root_key_note=circle_of_fifths[circle_position]; 
-		DEBUG("root_key_note=%d %s", root_key_note, note_desig[root_key_note%12]); 
+		if (doDebug) DEBUG("root_key_note=%d %s", root_key_note, note_desig[root_key_note%12]); 
 		int circle_chord_type= theCircleOf5ths.Circle5ths[circle_position].chordType;
 		theMeanderState.theHarmonyParms.last_chord_type=circle_chord_type;
-		DEBUG("circle_chord_type=%d", circle_chord_type);
+		if (doDebug) DEBUG("circle_chord_type=%d", circle_chord_type);
 		int num_chord_members=chord_type_num_notes[circle_chord_type];
-		DEBUG("num_chord_members=%d", num_chord_members);
+		if (doDebug) DEBUG("num_chord_members=%d", num_chord_members);
 		for (int j=0;j<num_chord_members;++j) 
 		{
 			current_chord_note=(int)((int)root_key_note+(int)chord_type_intervals[circle_chord_type][j]);
-			DEBUG("  current_chord_note=%d %s", current_chord_note, note_desig[current_chord_note%12]);
+			if (doDebug) DEBUG("  current_chord_note=%d %s", current_chord_note, note_desig[current_chord_note%12]);
 			int note_to_play=current_chord_note+(octaveOffset*12);
 			// don't play the notes immediately but rather wait and let doHarmony do it at the appropriate time
 			if (!running)
@@ -402,15 +402,15 @@ struct Meander : Module
 
 	void doHarmony()
 	{
-		DEBUG("doHarmony");
-		DEBUG("doHarmony() theActiveHarmonyType.min_steps=%d, theActiveHarmonyType.max_steps=%d", theActiveHarmonyType.min_steps, theActiveHarmonyType.max_steps );
+		if (doDebug) DEBUG("doHarmony");
+		if (doDebug) DEBUG("doHarmony() theActiveHarmonyType.min_steps=%d, theActiveHarmonyType.max_steps=%d", theActiveHarmonyType.min_steps, theActiveHarmonyType.max_steps );
 
 		outputs[OUT_HARMONY_VOLUME_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
 		
 		clock_t current_cpu_t= clock();  // cpu clock ticks since program began
 		double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
 		
-		DEBUG("\nHarmony: barCount=%d Time=%.3lf", bar_count, (double)current_cpu_time_double);
+		if (doDebug) DEBUG("\nHarmony: barCount=%d Time=%.3lf", bar_count, (double)current_cpu_time_double);
 													
 		current_melody_note += 1.0/12.0;
 		current_melody_note=fmod(current_melody_note, 1.0f);	
@@ -433,7 +433,7 @@ struct Meander : Module
 		}
 		else  // theMeanderState.userControllingHarmonyFromCircle
 		{
-			DEBUG("doHarmony() theMeanderState.userControllingHarmonyFromCircle %d", theMeanderState. theHarmonyParms.last[0]);
+			if (doDebug) DEBUG("doHarmony() theMeanderState.userControllingHarmonyFromCircle %d", theMeanderState. theHarmonyParms.last[0]);
 			outputs[OUT_HARMONY_CV_OUTPUT].setChannels(3);  // set polyphony
 			for (int j=0;j<3;++j) 
 			{
@@ -461,7 +461,7 @@ struct Meander : Module
 			harmonyGatePulse.trigger(note_duration);  
 		}
      
-		DEBUG("theHarmonyTypes[%d].num_harmony_steps=%d", harmony_type, theActiveHarmonyType.num_harmony_steps);
+		if (doDebug) DEBUG("theHarmonyTypes[%d].num_harmony_steps=%d", harmony_type, theActiveHarmonyType.num_harmony_steps);
 		int step=(bar_count%theActiveHarmonyType.num_harmony_steps);  // 0-(n-1)
  
 
@@ -482,8 +482,8 @@ struct Meander : Module
 		if ((harmony_type==31)||(harmony_type==42)||(harmony_type==43)||(harmony_type==44)||(harmony_type==45)||(harmony_type==46)||(harmony_type==47)||(harmony_type==48))  // Markov chains
 		{
 			float rnd = rack::random::uniform();
-			DEBUG("rnd=%.2f",rnd);
-		    DEBUG("Markov theMeanderState.theHarmonyParms.last_circle_step=%d", theMeanderState.theHarmonyParms.last_circle_step);
+			if (doDebug) DEBUG("rnd=%.2f",rnd);
+		    if (doDebug) DEBUG("Markov theMeanderState.theHarmonyParms.last_circle_step=%d", theMeanderState.theHarmonyParms.last_circle_step);
 
 			if (theMeanderState.theHarmonyParms.last_circle_step==-1)
 			{
@@ -525,53 +525,53 @@ struct Meander : Module
 					
 					bottom=probabilityTargetTop[i];
 				}
-				DEBUG("Markov Probabilities:");
+				if (doDebug) DEBUG("Markov Probabilities:");
 				for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
 				{
 					if (harmony_type==31)
 					{
-						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
 					}
 					else
 					if (harmony_type==42)
 					{
-						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
 					}
 					else
 					if (harmony_type==43)
 					{
-						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
 					}
 					else
 					if (harmony_type==44)
 					{
-						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
 					}
 					else
 					if (harmony_type==45)
 					{
-						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
 					}
 					else
 					if (harmony_type==46)
 					{
-						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
 					}
 					else
 					if (harmony_type==47)
 					{
-						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixTraditional1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixTraditional1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
 					}
 					else
 					if (harmony_type==48)
 					{
-						DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
 					}					
 
 					if ((rnd>probabilityTargetBottom[i])&&(rnd<= probabilityTargetTop[i]))
 					{
 						step=i-1;
-						DEBUG("step=%d", step);
+						if (doDebug) DEBUG("step=%d", step);
 					}
 				}
 			
@@ -581,10 +581,10 @@ struct Meander : Module
 		
     	
 
-		DEBUG("step=%d", step);
+		if (doDebug) DEBUG("step=%d", step);
 
 		int degreeStep=(theActiveHarmonyType.harmony_steps[step])%8;  
-		DEBUG("degreeStep=%d", degreeStep);
+		if (doDebug) DEBUG("degreeStep=%d", degreeStep);
 	
 		theMeanderState.theHarmonyParms.last_circle_step=step;  // used for Markov chain
 
@@ -598,7 +598,7 @@ struct Meander : Module
 			}
 			if (i==7)
 			{
-	    	   DEBUG("  warning circleposition could not be found 2");
+	    	   if (doDebug) DEBUG("  warning circleposition could not be found 2");
 			}
 		}
 		
@@ -609,8 +609,8 @@ struct Meander : Module
 			lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].value=1.0f;
 		}
 
-		DEBUG("current_circle_position=%d root=%d %s", current_circle_position, circle_of_fifths[current_circle_position], note_desig[circle_of_fifths[current_circle_position]]);		
-		DEBUG("theCircleOf5ths.Circle5ths[current_circle_position].chordType=%d", theCircleOf5ths.Circle5ths[current_circle_position].chordType);
+		if (doDebug) DEBUG("current_circle_position=%d root=%d %s", current_circle_position, circle_of_fifths[current_circle_position], note_desig[circle_of_fifths[current_circle_position]]);		
+		if (doDebug) DEBUG("theCircleOf5ths.Circle5ths[current_circle_position].chordType=%d", theCircleOf5ths.Circle5ths[current_circle_position].chordType);
 		
 		
 		double period=1.0/theMeanderState.theHarmonyParms.period; // 1/seconds
@@ -636,9 +636,9 @@ struct Meander : Module
 		else
 			outputs[OUT_HARMONY_CV_OUTPUT].setChannels(3);  // set polyphony
 		
-		DEBUG("step_chord_type=%d", step_chord_type);
+		if (doDebug) DEBUG("step_chord_type=%d", step_chord_type);
 		int num_chord_members=chord_type_num_notes[step_chord_type]; 
-		DEBUG("num_chord_members=%d", num_chord_members);
+		if (doDebug) DEBUG("num_chord_members=%d", num_chord_members);
 		
 		if (!theMeanderState.userControllingHarmonyFromCircle) // otherwise let these be set by usercontrolsharmony..
 		{
@@ -647,18 +647,18 @@ struct Meander : Module
 			theMeanderState.last_harmony_step=step;
 		}
 
-		DEBUG("theMeanderState.last_harmony_chord_root_note=%d %s", theMeanderState.last_harmony_chord_root_note, note_desig[theMeanderState.last_harmony_chord_root_note%MAX_NOTES]);
+		if (doDebug) DEBUG("theMeanderState.last_harmony_chord_root_note=%d %s", theMeanderState.last_harmony_chord_root_note, note_desig[theMeanderState.last_harmony_chord_root_note%MAX_NOTES]);
 
-		DEBUG("1st 3 step_chord_notes=%d %s, %d %s, %d %s", step_chord_notes[step][0], note_desig[step_chord_notes[step][0]%MAX_NOTES], step_chord_notes[step][1], note_desig[step_chord_notes[step][1]%MAX_NOTES], step_chord_notes[step][2], note_desig[step_chord_notes[step][2]%MAX_NOTES]);
+		if (doDebug) DEBUG("1st 3 step_chord_notes=%d %s, %d %s, %d %s", step_chord_notes[step][0], note_desig[step_chord_notes[step][0]%MAX_NOTES], step_chord_notes[step][1], note_desig[step_chord_notes[step][1]%MAX_NOTES], step_chord_notes[step][2], note_desig[step_chord_notes[step][2]%MAX_NOTES]);
 			
 		for (int j=0;j<num_chord_members;++j) 
 		{
-				DEBUG("num_step_chord_notes[%d]=%d", step, num_step_chord_notes[step]);
+				if (doDebug) DEBUG("num_step_chord_notes[%d]=%d", step, num_step_chord_notes[step]);
 				current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState. theHarmonyParms.note_avg*num_step_chord_notes[step])+j]; // do not create inversion
-				DEBUG("current_chord_notes[%d]=%d %s", j, current_chord_notes[j], note_desig[current_chord_notes[j]%MAX_NOTES]);
+				if (doDebug) DEBUG("current_chord_notes[%d]=%d %s", j, current_chord_notes[j], note_desig[current_chord_notes[j]%MAX_NOTES]);
 				
 				int note_to_play=current_chord_notes[j];
-				DEBUG("    h_note_to_play=%d %s", note_to_play, note_desig[note_to_play%MAX_NOTES]);
+				if (doDebug) DEBUG("    h_note_to_play=%d %s", note_to_play, note_desig[note_to_play%MAX_NOTES]);
 				
 			//	if (true)
 				if (theMeanderState.theHarmonyParms.enabled) 
@@ -711,13 +711,13 @@ struct Meander : Module
 
 	void doMelody()
 	{
-		DEBUG("doMelody()");
+		if (doDebug) DEBUG("doMelody()");
 
 		outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState. theMelodyParms.volume);
 		clock_t current_cpu_t= clock();  // cpu clock ticks since program began
 		double current_cpu_time_double= (double)(current_cpu_t) / (double)CLOCKS_PER_SEC;
 	
-		DEBUG("Melody: Time=%.3lf",  (double)current_cpu_time_double);
+		if (doDebug) DEBUG("Melody: Time=%.3lf",  (double)current_cpu_time_double);
 
 		++theMeanderState.theMelodyParms.bar_melody_counted_note;
 
@@ -770,7 +770,7 @@ struct Meander : Module
 			}
 		}
 				
-		DEBUG("    melody note_to_play=%d %s", note_to_play, note_desig[note_to_play%MAX_NOTES]);
+		if (doDebug) DEBUG("    melody note_to_play=%d %s", note_to_play, note_desig[note_to_play%MAX_NOTES]);
 
 		if (true)	// do it even if melody notes will not be played, so arp will have roots
 		{   
@@ -819,7 +819,7 @@ struct Meander : Module
 
 	void doArp() 
 	{
-		DEBUG("doArp()");
+		if (doDebug) DEBUG("doArp()");
 	
 	    if (theMeanderState.theArpParms.note_count>=theMeanderState.theArpParms.count)
 	  		return;
@@ -858,8 +858,8 @@ struct Meander : Module
 		volume *= volume_factor;
 
 		
-		DEBUG("theMeanderState.theMelodyParms.last_chord_note_index=%d", theMeanderState.theMelodyParms.last_chord_note_index);
-		DEBUG("num_step_chord_notes[%d]=%d", theMeanderState.theMelodyParms.last_step, num_step_chord_notes[theMeanderState.theMelodyParms.last_step]);
+		if (doDebug) DEBUG("theMeanderState.theMelodyParms.last_chord_note_index=%d", theMeanderState.theMelodyParms.last_chord_note_index);
+		if (doDebug) DEBUG("num_step_chord_notes[%d]=%d", theMeanderState.theMelodyParms.last_step, num_step_chord_notes[theMeanderState.theMelodyParms.last_step]);
 				
 		int note_to_play=100; // bogus
 
@@ -877,7 +877,7 @@ struct Meander : Module
 					if (root_key_notes[root_key][x]==theMeanderState.theMelodyParms.last[0].note)
 					{
 						note_to_play=root_key_notes[root_key][x+arp_note];
-						DEBUG("note fount at index=%d root_key_notes[root_key][x]=%d", x, root_key_notes[root_key][x]);
+						if (doDebug) DEBUG("note fount at index=%d root_key_notes[root_key][x]=%d", x, root_key_notes[root_key][x]);
 						break;
 					}
 				}
@@ -886,33 +886,33 @@ struct Meander : Module
 			if (true)  // new // BSP search  .  
 			{
 				int note_to_search_for=theMeanderState.theMelodyParms.last[0].note;
-				DEBUG("BSP  note_to_search_for=%d",  note_to_search_for);
+				if (doDebug) DEBUG("BSP  note_to_search_for=%d",  note_to_search_for);
 				int num_to_search=num_root_key_notes[root_key];
-				DEBUG("BSP num_to_search=%d", num_to_search);
+				if (doDebug) DEBUG("BSP num_to_search=%d", num_to_search);
 				int start_search_index=0;
 				int end_search_index=num_root_key_notes[root_key]-1;
 				int pass=0;
 				int partition_index=0;
 				while (pass<8)
 				{
-					DEBUG("start_search_index=%d end_search_index=%d", start_search_index, end_search_index);
+					if (doDebug) DEBUG("start_search_index=%d end_search_index=%d", start_search_index, end_search_index);
 					partition_index=(end_search_index+start_search_index)/2;
-					DEBUG("BSP start_search_index=%d end_search_index=%d partition_index=%d", start_search_index, end_search_index, partition_index);
+					if (doDebug) DEBUG("BSP start_search_index=%d end_search_index=%d partition_index=%d", start_search_index, end_search_index, partition_index);
 					if ( note_to_search_for>root_key_notes[root_key][partition_index])
 					{
 						start_search_index=partition_index;
-						DEBUG(">BSP root_key_notes[root_key][partition_index]=%d", root_key_notes[root_key][partition_index]);
+						if (doDebug) DEBUG(">BSP root_key_notes[root_key][partition_index]=%d", root_key_notes[root_key][partition_index]);
 					}
 					else
 					if ( note_to_search_for<root_key_notes[root_key][partition_index])
 					{
 						end_search_index=partition_index;
-						DEBUG("<BSP root_key_notes[root_key][partition_index]=%d", root_key_notes[root_key][partition_index]);
+						if (doDebug) DEBUG("<BSP root_key_notes[root_key][partition_index]=%d", root_key_notes[root_key][partition_index]);
 					}
 					else
 					{
 						/* we found it */
-						DEBUG("value %d found at index %d", root_key_notes[root_key][partition_index], partition_index);
+						if (doDebug) DEBUG("value %d found at index %d", root_key_notes[root_key][partition_index], partition_index);
 						pass=8;
 						break;
 					}
@@ -954,7 +954,7 @@ struct Meander : Module
 
 	void doBass()
 	{
-		DEBUG("doBass()");
+		if (doDebug) DEBUG("doBass()");
 
 	    outputs[OUT_BASS_VOLUME_OUTPUT].setVoltage(theMeanderState. theBassParms.volume);
 				
@@ -970,7 +970,7 @@ struct Meander : Module
 				outputs[OUT_BASS_CV_OUTPUT].setChannels(2);  // set polyphony  may need to deal with unset channel voltages
 			else
 				outputs[OUT_BASS_CV_OUTPUT].setChannels(1);  // set polyphony  may need to deal with unset channel voltages
-			DEBUG("    bass note to play=%d %s", theMeanderState.last_harmony_chord_root_note, note_desig[theMeanderState.last_harmony_chord_root_note%MAX_NOTES]);
+			if (doDebug) DEBUG("    bass note to play=%d %s", theMeanderState.last_harmony_chord_root_note, note_desig[theMeanderState.last_harmony_chord_root_note%MAX_NOTES]);
 				
 			theMeanderState.theBassParms.last[0].note=theMeanderState.last_harmony_chord_root_note+ (theMeanderState.theBassParms.target_octave*12);  
 			theMeanderState.theBassParms.last[0].noteType=NOTE_TYPE_BASS;
@@ -1601,7 +1601,7 @@ struct Meander : Module
 			if (CircleStepToggles[i].process(params[BUTTON_CIRCLESTEP_C_PARAM+i].getValue()))  // circle button clicked
 			{
 				int current_circle_position=i;
-				DEBUG("harmony step edit-pt3 current_circle_position=%d", current_circle_position);
+				if (doDebug) DEBUG("harmony step edit-pt3 current_circle_position=%d", current_circle_position);
 
 				for (int j=0; j<12; ++j) 
 				{
@@ -1632,13 +1632,13 @@ struct Meander : Module
 					if  (theCircleOf5ths.theDegreeSemiCircle.degreeElements[j].CircleIndex==current_circle_position)
 					{
 						int theDegree=theCircleOf5ths.theDegreeSemiCircle.degreeElements[j].Degree;
-						DEBUG("harmony step edit-pt4 theDegree=%d", theDegree);
+						if (doDebug) DEBUG("harmony step edit-pt4 theDegree=%d", theDegree);
 						if ((theDegree>=1)&&(theDegree<=7))
 						{
 							if (theMeanderState.theHarmonyParms.pending_step_edit)
 							{
-								DEBUG("harmony step edit-pt5 theMeanderState.theHarmonyParms.pending_step_edit=%d", theMeanderState.theHarmonyParms.pending_step_edit);
-								DEBUG("harmony step edit-pt6 theDegree=%d found", theDegree);
+								if (doDebug) DEBUG("harmony step edit-pt5 theMeanderState.theHarmonyParms.pending_step_edit=%d", theMeanderState.theHarmonyParms.pending_step_edit);
+								if (doDebug) DEBUG("harmony step edit-pt6 theDegree=%d found", theDegree);
 								theHarmonyTypes[harmony_type].harmony_steps[theMeanderState.theHarmonyParms.pending_step_edit-BUTTON_HARMONY_SETSTEP_1_PARAM]=theDegree;
 								//
 								strcpy(theHarmonyTypes[harmony_type].harmony_degrees_desc,"");
@@ -1664,7 +1664,7 @@ struct Meander : Module
 			{
 				if (CircleStepSetToggles[i].process(params[BUTTON_HARMONY_SETSTEP_1_PARAM+i].getValue())) 
 				{
-					DEBUG("harmony step edit-pt1 step=%d clicked", i);
+					if (doDebug) DEBUG("harmony step edit-pt1 step=%d clicked", i);
 					int selectedStep=i;
 					theMeanderState.theHarmonyParms.pending_step_edit=BUTTON_HARMONY_SETSTEP_1_PARAM+selectedStep;
 
@@ -1679,7 +1679,7 @@ struct Meander : Module
 							if  (theCircleOf5ths.theDegreeSemiCircle.degreeElements[j].Degree==degreeStep)
 							{
 								current_circle_position = theCircleOf5ths.theDegreeSemiCircle.degreeElements[j].CircleIndex; 
-								DEBUG("harmony step edit-pt2 current_circle_position=%d", current_circle_position);
+								if (doDebug) DEBUG("harmony step edit-pt2 current_circle_position=%d", current_circle_position);
 								break;
 							}
 						}
@@ -1719,7 +1719,7 @@ struct Meander : Module
 			&&(circleDegree!=theMeanderState. theHarmonyParms.lastCircleDegreeIn) )  
 		{
 			theMeanderState. theHarmonyParms.lastCircleDegreeIn=circleDegree;
-			DEBUG("IN_HARMONY_CIRCLE_GATE_EXT_CV is connected and circleDegree=%f", circleDegree);
+			if (doDebug) DEBUG("IN_HARMONY_CIRCLE_GATE_EXT_CV is connected and circleDegree=%f", circleDegree);
 
 			extHarmonyIn=circleDegree;
 		
@@ -1730,7 +1730,7 @@ struct Meander : Module
 		    if (gateValue==circleDegree)  // MarkovSeq ot other 1-7V 
 			{
 				octave=theMeanderState. theHarmonyParms.target_octave-1;
-				DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
+				if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
 				if ((std::abs(circleDegree-1.)<.01)) theMeanderState.circleDegree=1;
 				else
 				if ((std::abs(circleDegree-2.)<.01)) theMeanderState.circleDegree=2;
@@ -1748,7 +1748,7 @@ struct Meander : Module
 			else  // keyboard  C-B
 			{
 				circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0);
-				DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
+				if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
 				if ((std::abs(circleDegree-0)<.01))    theMeanderState.circleDegree=1;
 				else
 				if ((std::abs(circleDegree-.167)<.01)) theMeanderState.circleDegree=2;
@@ -1771,7 +1771,7 @@ struct Meander : Module
 				theMeanderState.circleDegree=7;
 			
 
-			DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
+			if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
 
 			int step=1;
 			for (int i=0; i<MAX_STEPS; ++i)
@@ -1831,7 +1831,7 @@ struct Meander : Module
 			if ((fvalue=std::round(params[CONTROL_TEMPOBPM_PARAM].getValue()))!=tempo)
 			{
 				tempo = fvalue;
-				DEBUG("tempo changed to %d", (int)tempo);
+				if (doDebug) DEBUG("tempo changed to %d", (int)tempo);
 			}
 		
 
@@ -1874,7 +1874,7 @@ struct Meander : Module
 			{
 				circle_root_key=(int)fvalue;
 				root_key=circle_of_fifths[circle_root_key];
-				DEBUG("root_key changed to %d = %s", root_key, note_desig[root_key]);
+				if (doDebug) DEBUG("root_key changed to %d = %s", root_key, note_desig[root_key]);
 				for (int i=0; i<12; ++i)
 					lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+i].value=0.0f;
 				lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+circle_root_key].value=1.0f;
@@ -1885,7 +1885,7 @@ struct Meander : Module
 			if ((fvalue=std::round(params[CONTROL_SCALE_PARAM].getValue()))!=mode)
 			{
 				mode = fvalue;
-				DEBUG("mode changed to %d", mode);
+				if (doDebug) DEBUG("mode changed to %d", mode);
 				circleChanged=true;
 			}
 
@@ -2135,7 +2135,7 @@ struct Meander : Module
 									newValue=clamp(newValue, 1., (float)MAX_AVAILABLE_HARMONY_PRESETS);
 									if ((int)newValue!=harmony_type)
 									{
-										DEBUG("getVoltage harmony type=%d", (int)newValue);
+										if (doDebug) DEBUG("getVoltage harmony type=%d", (int)newValue);
 										harmonyPresetChanged=(int)newValue;  // don't changed until between sequences.  The new harmony_type is in harmonyPresetChanged
 									}
 									else
@@ -2674,8 +2674,8 @@ struct Meander : Module
 									{
 										circle_root_key=(int)newValue;
 										root_key=circle_of_fifths[circle_root_key];
-										params[CONTROL_ROOT_KEY_PARAM].setValue(circle_root_key)
-										DEBUG("root_key changed to %d = %s", root_key, note_desig[root_key]);
+										params[CONTROL_ROOT_KEY_PARAM].setValue(circle_root_key);
+										if (doDebug) DEBUG("root_key changed to %d = %s", root_key, note_desig[root_key]);
 										for (int i=0; i<12; ++i)
 											lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+i].value=0.0f;
 										lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+circle_root_key].value=1.0f;
@@ -2766,15 +2766,15 @@ struct Meander : Module
 
 			if ((fvalue=std::round(params[CONTROL_HARMONYPRESETS_PARAM].getValue()))!=harmony_type)
 			{
-				DEBUG(" getValue harmony type=%d", (int)fvalue);
+				if (doDebug) DEBUG(" getValue harmony type=%d", (int)fvalue);
 			   	harmonyPresetChanged=(int)fvalue;  // don't changed until between sequences.  The new harmony_type is in harmonyPresetChanged
 			}
 
 			fvalue=std::round(params[CONTROL_HARMONY_STEPS_PARAM].getValue());
 			if ((fvalue!=theActiveHarmonyType.num_harmony_steps)&&(fvalue>=theActiveHarmonyType.min_steps)&&(fvalue<=theActiveHarmonyType.max_steps)&&(fvalue!=theActiveHarmonyType.num_harmony_steps))
 			{
-				DEBUG("theActiveHarmonyType.min_steps=%d, theActiveHarmonyType.max_steps=%d", theActiveHarmonyType.min_steps, theActiveHarmonyType.max_steps );
-				DEBUG("theActiveHarmonyType.num_harmony_steps changed to %d %s", (int)fvalue, "test");  // need actual descriptor
+				if (doDebug) DEBUG("theActiveHarmonyType.min_steps=%d, theActiveHarmonyType.max_steps=%d", theActiveHarmonyType.min_steps, theActiveHarmonyType.max_steps );
+				if (doDebug) DEBUG("theActiveHarmonyType.num_harmony_steps changed to %d %s", (int)fvalue, "test");  // need actual descriptor
 				if ((fvalue>=theActiveHarmonyType.min_steps)&&(fvalue<=theActiveHarmonyType.max_steps))
 					theActiveHarmonyType.num_harmony_steps=(int)fvalue;  
 			}
@@ -2917,10 +2917,10 @@ struct Meander : Module
 			// reconstruct initially and when dirty
 			if (circleChanged)  
 			{	
-				DEBUG("circleChanged");	
+				if (doDebug) DEBUG("circleChanged");	
 				
 				notate_mode_as_signature_root_key=((root_key-(mode_natural_roots[mode_root_key_signature_offset[mode]]))+12)%12;
-				DEBUG("notate_mode_as_signature_root_key=%d", notate_mode_as_signature_root_key);
+				if (doDebug) DEBUG("notate_mode_as_signature_root_key=%d", notate_mode_as_signature_root_key);
 				
 				if ((notate_mode_as_signature_root_key==1)   // Db
 				  ||(notate_mode_as_signature_root_key==3)   // Eb
@@ -2969,7 +2969,7 @@ struct Meander : Module
 	Meander() 
 	{
 
-		DEBUG("");  // clear debug log file
+		if (doDebug) DEBUG("");  // clear debug log file
 
 				
 		if (!owned) {
@@ -3364,14 +3364,14 @@ struct MeanderWidget : ModuleWidget
 
 		void DrawCircle5ths(const DrawArgs &args, int root_key) 
 		{
-			DEBUG("DrawCircle5ths()");
+			if (doDebug) DEBUG("DrawCircle5ths()");
 			
 			for (int i=0; i<MAX_CIRCLE_STATIONS; ++i)
 			{
 					// draw root_key annulus sector
 
 					int relativeCirclePosition = ((i - circle_root_key + mode)+12) % MAX_CIRCLE_STATIONS;
-					DEBUG("\nrelativeCirclePosition-1=%d", relativeCirclePosition);
+					if (doDebug) DEBUG("\nrelativeCirclePosition-1=%d", relativeCirclePosition);
 
 					nvgBeginPath(args.vg);
 					float opacity = 128;
@@ -3407,7 +3407,7 @@ struct MeanderWidget : ModuleWidget
 					nvgFillColor(args.vg, nvgRGBA(0x00, 0x00, 0x00, 0xff));
 					char text[32];
 					snprintf(text, sizeof(text), "%s", CircleNoteNames[i]);
-					DEBUG("radialDirection= %.3f %.3f", theCircleOf5ths.Circle5ths[i].radialDirection.x, theCircleOf5ths.Circle5ths[i].radialDirection.y);
+					if (doDebug) DEBUG("radialDirection= %.3f %.3f", theCircleOf5ths.Circle5ths[i].radialDirection.x, theCircleOf5ths.Circle5ths[i].radialDirection.y);
 					Vec TextPosition=theCircleOf5ths.CircleCenter.plus(theCircleOf5ths.Circle5ths[i].radialDirection.mult(theCircleOf5ths.MiddleCircleRadius*.93f));
 					nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 					nvgText(args.vg, TextPosition.x, TextPosition.y, text, NULL);
@@ -3417,7 +3417,7 @@ struct MeanderWidget : ModuleWidget
 
 		void DrawDegreesSemicircle(const DrawArgs &args, int root_key) 
 		{
-			DEBUG("DrawDegreesSemicircle()");
+			if (doDebug) DEBUG("DrawDegreesSemicircle()");
 			int chord_type=0;
 
 			for (int i=0; i<MAX_HARMONIC_DEGREES; ++i)
@@ -3470,7 +3470,7 @@ struct MeanderWidget : ModuleWidget
 					if ((chord_type==1)||(chord_type==6)) // minor or diminished
 						snprintf(text, sizeof(text), "%s", circle_of_fifths_degrees_LC[(i - theCircleOf5ths.theDegreeSemiCircle.RootKeyCircle5thsPosition+7)%7]);
 					
-					DEBUG("radialDirection= %.3f %.3f", theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].radialDirection.x, theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].radialDirection.y);
+					if (doDebug) DEBUG("radialDirection= %.3f %.3f", theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].radialDirection.x, theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].radialDirection.y);
 					Vec TextPosition=theCircleOf5ths.CircleCenter.plus(theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].radialDirection.mult(theCircleOf5ths.OuterCircleRadius*.92f));
 					nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 					nvgText(args.vg, TextPosition.x, TextPosition.y, text, NULL);
@@ -3478,7 +3478,7 @@ struct MeanderWidget : ModuleWidget
 					{
 						Vec TextPositionBdim=Vec(TextPosition.x+9, TextPosition.y-4);
 						sprintf(text, "o");
-						DEBUG(text);
+						if (doDebug) DEBUG(text);
 						nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 						nvgFontSize(args.vg, 8);
 						nvgText(args.vg, TextPositionBdim.x, TextPositionBdim.y, text, NULL);
@@ -3696,7 +3696,7 @@ struct MeanderWidget : ModuleWidget
 			
 				float panelWidth=mm2px(406);
 				float panelHeight=mm2px(129);
-				DEBUG("panel size (WxH) in px=%.2f x %.2f", panelWidth, panelHeight);  // panel size (WxH) in px=1198.82 x 380.91
+				if (doDebug) DEBUG("panel size (WxH) in px=%.2f x %.2f", panelWidth, panelHeight);  // panel size (WxH) in px=1198.82 x 380.91
 				int gridWidthDivisions=(int)(panelWidth/10.0);  // 112
 				int gridHeightDivisions=(int)(panelHeight/10.0); // 38
 				float gridWidth=10.0;
@@ -4487,7 +4487,7 @@ struct MeanderWidget : ModuleWidget
 			for (int i=0; ((i<bar_note_count)&&(i<256)); ++i)
 			{
 				int display_note=played_notes_circular_buffer[i].note;
-				DEBUG("display_note=%d %s", display_note, note_desig[display_note%12]);
+				if (doDebug) DEBUG("display_note=%d %s", display_note, note_desig[display_note%12]);
 			 
 				int scale_note=0;
 				if (strstr(note_desig[display_note%12],"C"))
@@ -4510,13 +4510,13 @@ struct MeanderWidget : ModuleWidget
 				else
 				if (strstr(note_desig[display_note%12],"B"))
 					scale_note=6;
-				DEBUG("scale_note=%d", scale_note%12);
+				if (doDebug) DEBUG("scale_note=%d", scale_note%12);
 			  
 				int octave=(display_note/12)-2;
-				DEBUG("octave=%d", octave);
+				if (doDebug) DEBUG("octave=%d", octave);
 			
 				display_note_position = 108.0-(octave*21.0)-(scale_note*3.0)-7.5;
-				DEBUG("display_note_position=%d", (int)display_note_position);
+				if (doDebug) DEBUG("display_note_position=%d", (int)display_note_position);
 			
 				
 				float note_x_spacing= 230.0/(32*time_sig_top/time_sig_bottom);  // experimenting with note spacing function of time_signature.  barts_count_limit is not in scope, needs to be global
@@ -4664,7 +4664,7 @@ struct MeanderWidget : ModuleWidget
 
 
 					
-			DEBUG("UpdatePanel()-end");
+			if (doDebug) DEBUG("UpdatePanel()-end");
 		}
 
 	
@@ -4681,7 +4681,7 @@ struct MeanderWidget : ModuleWidget
 
 	MeanderWidget(Meander* module)   // all plugins I've looked at use this constructor with module*, event though docs show it deprecated.  
 	{ 
-		DEBUG("MeanderWidget()");
+		if (doDebug) DEBUG("MeanderWidget()");
 		setModule(module);  // most plugins do this
 		this->module = module;  // KNC debugging  most plugins do not do this.  It was introduced in singleton implementation
 	
