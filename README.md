@@ -10,7 +10,7 @@ though it is basically a complex application (which Meander is and has been over
 terms of the load it puts on the CPU and DSP.  Meander has its own internal clock, so no inputs are required in order to start 
 making music.
 
-## Warning:
+## Caveat:
 Anything I say here about music theory and practice as well as how I have implemented that theory and practice in Meander is my own understanding, which is surely not absolutely correct and musicians might choose to debate with me on that.  There are also a lot of exceptions to the "rules" in music.  If fact, it is these exceptions that give composers and musicians their own distinctive sound.  In the end, it is all about what sounds good or entertaining or evokes certain feelings.  From my perspective, there are no absolute rules in music.  So, take what I say with a grain of salt. 
 
 Meander is limited to western music heptatonic (7) note scales, primarily so that the chord rules can be uniformly applied. Meander is founded on the 7 modes and 12 roots (~keys) for 84 combinations of mode and root.  The Circle of 5ths is the visualization device for seeing the mode and root scales.  The proper key signature notation is displayed inside of the circle of 5ths.
