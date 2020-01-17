@@ -3,13 +3,13 @@ Meander plugin module for VCV Rack.
 
 ![Meander](./res/Meander.png)
 
-##**Meander** is fundamentally a musical "expert" system that has quite a few rules for what makes western music sound good and
+## Meander is fundamentally a musical "expert" system that has quite a few rules for what makes western music sound good and
 applies those rules to "sequence" other modules.  Meander has no audio sound generation or modification capabilities, so even
 though it is basically a complex application (which Meander is and has been over its 30+ year history), it is lightweight in
 terms of the load it puts on the CPU and DSP.  Meander has its own internal clock, so no inputs are required in order to start 
 making music.
 
-##**Warning:**  Anything I say here about music theory and practice as well as how I have implemented that theory and practice in Meander is my own understanding, which is surely not absolutely correct and musicians might choose to debate with me on that.  There are also a lot of exceptions to the "rules" in music.  If fact, it is these exceptions that give composers and musicians their own distinctive sound.  In the end, it is all about what sounds good or entertaining or evokes certain feelings.  From my perspective, there are no absolute rules in music.  So, take what I say with a grain of salt. 
+## Warning:  Anything I say here about music theory and practice as well as how I have implemented that theory and practice in Meander is my own understanding, which is surely not absolutely correct and musicians might choose to debate with me on that.  There are also a lot of exceptions to the "rules" in music.  If fact, it is these exceptions that give composers and musicians their own distinctive sound.  In the end, it is all about what sounds good or entertaining or evokes certain feelings.  From my perspective, there are no absolute rules in music.  So, take what I say with a grain of salt. 
 
 Meander is limited to western music heptatonic (7) note scales, primarily so that the chord rules can be uniformly applied. Meander is founded on the 7 modes and 12 roots (~keys) for 84 combinations of mode and root.  The Circle of 5ths is the visualization device for seeing the mode and root scales.  The proper key signature notation is displayed inside of the circle of 5ths.
 
@@ -29,7 +29,7 @@ A big aspect of Meander is that the harmony, melody and bass parts meander accor
 
 Each of the three parts is discussed following in more detail:
 
-##**Harmony**
+## Harmony
 
 Harmony is made up of chords made up of notes from the mode and root that is selected, as well as determined by the current circle of 5ths degree position chord type.  A harmonic progression is the movement on the circle in steps over time.  At the bottom of the Harmony sub-panel is the "Presets" control which allows you to select between 50+ ready-made harmonic progressions.  Each progression is made up of from 1 to 16 steps, designated by the Roman numberal degrees, corresponding to to the degree positions on the circle for the current mode and root.  I.E., the same progression can be played in any of the 84 mode and root "scales".  As the pogression plays, you can watch the circle and see which chords are playing for each step.
 
@@ -39,7 +39,7 @@ The fBm fractal noise results in harmony meandering, by allowing chords to wande
 
 The "Chords on 1/ " control determine when the chords play.  1/1=whole note, 1/2=half note, 1/4=quarter note, and so forth.
 
-##**Melody**
+## Melody
 
 Melody is driven by the harmony part chords.  The melody notes can either be chordal where they are members of the current playing or last chord played, or they can be scaler where they are members of the current scale (mode and root).  Meander does not use "accidentals or naturals" notes that are not members of the current scale.
 
