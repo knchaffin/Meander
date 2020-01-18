@@ -3930,7 +3930,7 @@ struct MeanderWidget : ModuleWidget
 				nvgMoveTo(args.vg, 
 				pos.x, pos.y);
 				pos=pos.plus(Vec(190,0));
-				nvgLineTo(args.vg, pos.x, pos.y);
+				nvgLineTo(args.vg, pos.x, pos.y);  
 				nvgStrokeColor(args.vg, nvgRGB(0, 0, 0));
 				nvgStrokeWidth(args.vg, 1.0);
 				nvgStroke(args.vg);

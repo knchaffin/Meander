@@ -127,7 +127,7 @@ int NumHarmonicProgressionSteps=4;  // what is this?
 int mode_step_intervals[7][13]=
 {  // num mode scale notes, semitones to next note  7 modes
 	{ 7, 2,2,2,1,2,2,1,0,0,0,0,0},                // Lydian  	        
-	{ 7, 2,2,1,2,2,2,1,0,0,0,0,0},                // Major/Ionian     
+	{ 7, 2,2,1,2,2,2,1,0,0,0,0,0},                // Major/Ionian      
 	{ 7, 2,2,1,2,2,1,2,0,0,0,0,0},                // Mixolydian	   
 	{ 7, 2,1,2,2,2,1,2,0,0,0,0,0},                // Dorian           
 	{ 7, 2,1,2,2,1,2,2,0,0,0,0,0},                // NMinor/Aeolian   
