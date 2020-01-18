@@ -678,13 +678,14 @@ struct Meander : Module
 					outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel)
 				}
 		}
+
 		if (theMeanderState.theHarmonyParms.enabled)
 		{ 
 			outputs[OUT_HARMONY_VOLUME_OUTPUT].setVoltage(theMeanderState. theHarmonyParms.volume);
 
 			// output some fBm noise
 			outputs[OUT_FBM_HARMONY_OUTPUT].setChannels(1);  // set polyphony  
-			outputs[OUT_FBM_HARMONY_OUTPUT].setVoltage((float)clamp((10.f*fBmrand), 0.f, 10.f) ,0); // rescale fBm output to 0-10V so it can be used better for CV
+		//	outputs[OUT_FBM_HARMONY_OUTPUT].setVoltage((float)clamp((10.f*fBmrand), 0.f, 10.f) ,0); // rescale fBm output to 0-10V so it can be used better for CV
 
 			float durationFactor=1.0;
 			if (theMeanderState.theHarmonyParms.enable_staccato)
@@ -695,6 +696,8 @@ struct Meander : Module
 			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
 		    harmonyGatePulse.trigger(note_duration);  
 		}
+
+		outputs[OUT_FBM_HARMONY_OUTPUT].setVoltage((float)clamp((10.f*fBmrand), 0.f, 10.f) ,0); // rescale fBm output to 0-10V so it can be used better for CV.  Output even if harmony disabled
 
 		++circle_step_index;
 		if (circle_step_index>=theActiveHarmonyType.num_harmony_steps)
@@ -1727,92 +1730,100 @@ struct Meander : Module
 		
 		//	DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
 
+		    bool degreeChanged=true; // assume true unless determined false below
+
 		    if (gateValue==circleDegree)  // MarkovSeq ot other 1-7V 
 			{
 				octave=theMeanderState. theHarmonyParms.target_octave-1;
 				if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
-				if ((std::abs(circleDegree-1.)<.01)) theMeanderState.circleDegree=1;
+				if ((std::abs(circleDegree-1.)<.1)) theMeanderState.circleDegree=1;
 				else
-				if ((std::abs(circleDegree-2.)<.01)) theMeanderState.circleDegree=2;
+				if ((std::abs(circleDegree-2.)<.1)) theMeanderState.circleDegree=2;
 				else
-				if ((std::abs(circleDegree-3.)<.01)) theMeanderState.circleDegree=3;
+				if ((std::abs(circleDegree-3.)<.1)) theMeanderState.circleDegree=3;
 				else
-				if ((std::abs(circleDegree-4.)<.01)) theMeanderState.circleDegree=4;
+				if ((std::abs(circleDegree-4.)<.1)) theMeanderState.circleDegree=4;
 				else
-				if ((std::abs(circleDegree-5.)<.01)) theMeanderState.circleDegree=5;
+				if ((std::abs(circleDegree-5.)<.1)) theMeanderState.circleDegree=5;
 				else
-				if ((std::abs(circleDegree-6.)<.01)) theMeanderState.circleDegree=6;
+				if ((std::abs(circleDegree-6.)<.1)) theMeanderState.circleDegree=6;
 				else
-				if ((std::abs(circleDegree-7.)<.01)) theMeanderState.circleDegree=7;
+				if ((std::abs(circleDegree-7.)<.1)) theMeanderState.circleDegree=7;
+				else
+					degreeChanged=false;	
 			}
 			else  // keyboard  C-B
 			{
-				circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0);
+				circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0f);
 				if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV circleDegree=%f", circleDegree);
-				if ((std::abs(circleDegree-0)<.01))    theMeanderState.circleDegree=1;
+				if ((std::abs(circleDegree)<.005f))    theMeanderState.circleDegree=1;
 				else
-				if ((std::abs(circleDegree-.167)<.01)) theMeanderState.circleDegree=2;
+				if ((std::abs(circleDegree-.167f)<.005f)) theMeanderState.circleDegree=2;
 				else
-				if ((std::abs(circleDegree-.334)<.01)) theMeanderState.circleDegree=3;
+				if ((std::abs(circleDegree-.333f)<.005f)) theMeanderState.circleDegree=3;
 				else
-				if ((std::abs(circleDegree-.417)<.01)) theMeanderState.circleDegree=4;
+				if ((std::abs(circleDegree-.417f)<.005f)) theMeanderState.circleDegree=4;
 				else
-				if ((std::abs(circleDegree-.584)<.01)) theMeanderState.circleDegree=5;
+				if ((std::abs(circleDegree-.583f)<.005f)) theMeanderState.circleDegree=5;
 				else
-				if ((std::abs(circleDegree-.751)<.01)) theMeanderState.circleDegree=6;
+				if ((std::abs(circleDegree-.750f)<.005f)) theMeanderState.circleDegree=6;
 				else
-				if ((std::abs(circleDegree-.917)<.01)) theMeanderState.circleDegree=7;
+				if ((std::abs(circleDegree-.917f)<.005f)) theMeanderState.circleDegree=7;
+				else
+					degreeChanged=false;	
+				
 			}
 			
+            if (degreeChanged)
+			{
+				if (theMeanderState.circleDegree<1)
+					theMeanderState.circleDegree=1;
+				if (theMeanderState.circleDegree>7)
+					theMeanderState.circleDegree=7;
+				
 
-			if (theMeanderState.circleDegree<1)
-				theMeanderState.circleDegree=1;
-			if (theMeanderState.circleDegree>7)
-				theMeanderState.circleDegree=7;
+				if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
+
+				int step=1;
+				for (int i=0; i<MAX_STEPS; ++i)
+				{
+					if (theActiveHarmonyType.harmony_steps[i]==theMeanderState.circleDegree)
+					{
+						step=i;
+						break;
+					}
+				}
+
+				theMeanderState.last_harmony_step=step;
+
+				int theCirclePosition=0;
+				for (int i=0; i<7; ++i)
+				{
+					if (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree==theMeanderState.circleDegree)
+					{
+						theCirclePosition=theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].CircleIndex;
+						break;
+					}
+				}
+
+				last_circle_position=theCirclePosition;
+
+				userPlaysCirclePosition(theCirclePosition, octave); 
+
+				if (running)
+				{
+					theMeanderState.userControllingHarmonyFromCircle=true;
+					theMeanderState. theHarmonyParms.enabled=false;
+				}
+
+				for (int i=0; i<12; ++i) 
+				{
+					CircleStepStates[i] = false;
+					lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+i].value=CircleStepStates[i] ? 1.0f : 0.0f;	
+				}
 			
-
-			if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
-
-			int step=1;
-			for (int i=0; i<MAX_STEPS; ++i)
-			{
-				if (theActiveHarmonyType.harmony_steps[i]==theMeanderState.circleDegree)
-				{
-					step=i;
-					break;
-				}
+				lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+theCirclePosition].value=1.0f;
 			}
-
-			theMeanderState.last_harmony_step=step;
-
-			int theCirclePosition=0;
-			for (int i=0; i<7; ++i)
-			{
-				if (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree==theMeanderState.circleDegree)
-				{
-					theCirclePosition=theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].CircleIndex;
-					break;
-				}
-			}
-
-			last_circle_position=theCirclePosition;
-
-			userPlaysCirclePosition(theCirclePosition, octave); 
-
-			if (running)
-			{
-				theMeanderState.userControllingHarmonyFromCircle=true;
-				theMeanderState. theHarmonyParms.enabled=false;
-			}
-
-			for (int i=0; i<12; ++i) 
-			{
-				CircleStepStates[i] = false;
-				lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+i].value=CircleStepStates[i] ? 1.0f : 0.0f;	
-			}
-		
-			lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+theCirclePosition].value=1.0f;
-
 			
 		}
 		
@@ -4085,7 +4096,7 @@ struct MeanderWidget : ModuleWidget
 				snprintf(labeltext, sizeof(labeltext), "Period Sec. (1-100)");
 				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_FBM_PERIOD_PARAM].pos, labeltext, theMeanderState.theMelodyParms.period, 1);
 
-				snprintf(labeltext, sizeof(labeltext), "Arp");
+				snprintf(labeltext, sizeof(labeltext), "32nds");
 				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_ARP_FBM_OCTAVES_PARAM].pos.plus(Vec(47,-13)), labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "Octaves (1-6)");
@@ -4192,7 +4203,7 @@ struct MeanderWidget : ModuleWidget
 				snprintf(labeltext, sizeof(labeltext), "Harmony");
 				drawOutport(args, OutportRect[Meander::OUT_FBM_HARMONY_OUTPUT].pos, labeltext, 0, 1);
 
-				snprintf(labeltext, sizeof(labeltext), "Arp");
+				snprintf(labeltext, sizeof(labeltext), "32nds");
 				drawOutport(args, OutportRect[Meander::OUT_FBM_ARP_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "Bar");
