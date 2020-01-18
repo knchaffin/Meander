@@ -1,5 +1,5 @@
 # Meander
-Meander plugin module for VCV Rack.  
+Meander plugin module for VCV Rack.   
 
 ![Meander](./res/Meander.png)
 
