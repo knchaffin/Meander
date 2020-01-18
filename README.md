@@ -33,7 +33,7 @@ Each of the three parts is discussed following in more detail:
 
 ## Harmony
 
-Harmony is made up of chords made up of notes from the mode and root that is selected, as well as determined by the current circle of 5ths degree position chord type.  A harmonic progression is the movement on the circle in steps over time.  At the bottom of the Harmony sub-panel is the "Presets" control which allows you to select between 50+ ready-made harmonic progressions.  Each progression is made up of from 1 to 16 steps, designated by the Roman numberal degrees, corresponding to to the degree positions on the circle for the current mode and root.  I.E., the same progression can be played in any of the 84 mode and root "scales".  As the pogression plays, you can watch the circle and see which chords are playing for each step.
+Harmony is made up of chords made up of notes from the mode and root that is selected, as well as determined by the current circle of 5ths degree position chord type.  A harmonic progression is the movement on the circle in steps over time.  At the bottom of the Harmony sub-panel is the "Presets" control which allows you to select between 50+ ready-made harmonic progressions.  Each progression is made up of from 1 to 16 steps, designated by the Roman numberal degrees, corresponding to to the degree positions on the circle for the current mode and root.  I.E., the same progression can be played in any of the 84 mode and root "scales".  As the pogression plays, you can watch the circle and see which chords are playing for each step.  Each preset has an initial number of "steps".  You can manually reduce the number of steps via the "Steps" knob, but you cannot increase it past the max value for that preset. The minimum number of steps is 1.  Sometimes some interesting music can be created by setting the steps to 1, in which case the harmony stays on the root position of the circle, but may still meander through inversions.
 
 The music theory behind the circle-of-fifths is beyond this manual, but the basic theory is that chords next to each other on the colored part of the circle always share one note between them.  Each degree going CW around the circle represents a 5th interval, thus the name circle of fifths. Going CCW, the interval is a 4th.  The shared note between two chords going CW is a 5th above the tonic of the first chord.  Basically, the further away from each other two chords are on the circle, the more dissonance there will be.  A common progression is to start out on the I position and then jump several position CW on the circle and then walk back CCW on the circle back to the I position.  Each step CCW gives a feeling of resolution of tension back to the I position.  Theee are a myriad ways to form the progression, but there are a few progressions that almost all popular western music is composed of.  Meander has 50+ such presets.  One of the most common progressions in popular music is I-V-vi-IV , which is #26 in the presets.  That same progression can be played in any of the 84 mode and root combinations, but may have s distinctly different feel in a different mode.  Not all music is based on chord progressions, but a lot is, particularly popular music.
 
@@ -41,11 +41,51 @@ The fBm fractal noise results in harmony meandering, by allowing chords to wande
 
 The "Chords on 1/ " control determine when the chords play.  1/1=whole note, 1/2=half note, 1/4=quarter note, and so forth.
 
+Harmony notes can be played staccato or legato (default).  Staccato notes have a duration of about half of the interval between the notes.  Legato notes run into each other with no silence between sequential notes.
+
+### Manual Control of the Circle:
+
+You can click on the buttons inside any of the circle of 5ths segments.  When you do this the harmony part stepping is disabled and Meander plays whichever circle degree you clicked on.  Click again on "Harmony Enable" to have Meander resume the progression steps.  You can click on the grayed out circle positions but they will not usually sound pleasant as they are outside of the current circle of 5ths degree members. When you click on a colored degree segment, Meander will also add the melody, arp and bass parts for that chord, if those parts are enabled.
+
+You can also control the circle of 5hs position by using the "Degree" and "Gate" inputs inside of the circle.  You can setup one of two types of degree cntrol.
+  - Attach a keyboard (such as TWELVE-KEY or an external MIDI keyboard via MIDI-CC and connect the CV and Gate outs from those to the circle inputs.  Pressing any white music key that produces a >= 0V CV  (C4"will also disable the harmony part and will set the circle degree to the following degrees. C=I,D=II,E=III,F=IV,G=V,A=VI and B=VII.  That degree chord will be played at the octave of the key pressed.  Meander will generate the melody, arp and bass from this circle position chord.  You can watch the circle display to see which segment is active and what the actual chord played is.
+  - Attach a CV in the range of 1V-7V to both the circle Degree and Gate input.  The voltage will then set the circle to the corresponding degrees 1V=I, 2V=II, ... 7V=VII .  And the chord will be played and Meander will generate the melody, arp and bass parts from that chord.  This CV could come from a sequencer such as MarkovSeq, or it could come from a LFO etc. Again, clicking on "Harmony Enable" will result in Meander resume stepping the progression.
+  
+### Limited Editing (no save) of the progression 
+
+To edit, click on Run to turn off Meander playing.  Click on a green "Set Step" button.  Click on circle degree degree buttons until you find one you like as Meander plays your click selections. Click on another Set Step button and repeat the prcess.  You can step through the modified progression by clicking on the lit Set Step buttons sequentially.  At any point you can click on the circle degree buttons to change that step if you do not like it.  Click on Run again and Meander will use the edited values for the progression until another preset is selected or you end your Rack session.  A future release of Meander may allow saving of editing progressions.
+
+
 ## Melody
 
 Melody is driven by the harmony part chords.  The melody notes can either be chordal where they are members of the current playing or last chord played, or they can be scaler where they are members of the current scale (mode and root).  Meander does not use "accidentals or naturals" notes that are not members of the current scale.
 
 The "Note Length 1/" control determines whether the melody plays on whole, half, quarter, eighths, sixteenths, or 32nd notes.
 
+There is one parameter button called "Hold tied notes".  This means that the note gate is not retriggered if the note is a repeat of the previous note (the notes are tied).  It is a matter of taste as to how you should set this.
+
+Melody notes can be played staccato (default) or legato.  Staccato notes have a duration of about half of the interval between the notes.  Legato notes run into each other with no silence between sequential notes.
+
 The Arp or Arpeggiator settings are part of the melody.  In an arpeggiation, the melody note is the first note in the arpeggio and the other notes are either chordal (current chord members) or scaler (current scale members) and follow the "Pattern" control of notes moving up or down or up and then down by 0, 1 or 2 notes per step.  The Arp "Count" is the number of arpeggio notes which are separated by 1/n notes.  For example, if the melody note is every 1/4 note, you can fit up to 3 arp notes of 1/16 length between every melody note.  The Arp "Decay" control causes the arp notes volume to decay each note.  It is up to you to make use of the arp note volume by either the melody volume, or the volume over gate.
 
+See the harmony section for description of the Note Length, Target Oct. Variability and Octave Range parameters.
+
+## Bass
+
+Bass is driven by the harmony part and does not meander.  The root note of the current or last played chord is used as the bass note.  This note is transposed to the bass "Target Oct."  If bass "Octaves" button is selected, two bass notes an octave apart are played, with the 2nd bass note being an octave above the "Target Oct."  Bass notes are played every/as "Bass on 1/" values in the same way as with the harmony and melody:  1/1=whole note, 1/4= quarter note, etc.
+
+Bass notes can be played staccato (default) or legato.  Staccato notes have a duration of about half of the interval between the notes.  Legato notes run into each other with no silence between sequential notes.
+
+Bass"Accent" and "Syncopate" both require you to use the bass volume or volume over gate to modulate the bass volume per note.  Shuffle is a rhythmic syncopation only and does not requre volume modulation.
+
+## fBm 1/f Noise
+
+This sub-panel allows you to set the parameters for the harmony and melody arp fBm generator.  There are two parameters for each.  "Octaves" determines how many octaves of 1/f noise are created.  The more octaves, the more the fBm varies.  "Period Sec." determines the approximate time period over which the fBm varies.  Harmony is typically set to vary over long periods, with the default at 60 seconds.  Melody typically varies over a shorter time period, with the default being 10 seconds.  The Arp fBm paraameters do not determine arp meandering but rather are generated and output for user use as CV.
+
+The fBm sub-panel has 3 CV outputs that range from OV-10.0V.  These are strictly for viewing in a scope module or for using as any type of time varying CV use as the user might desire, such as controlling a VCF, etc.  These output signals are determined by the fBm sub-panel Octaves and Period parameters.  I.E., the Harmony fBm output is typically useful for controlling things over the duration of song or several bars.  The Melody fBM output is typically useful for controlling things within a bar. The Arp fBm output has a minimum Period of 1 second and is when combined with more Octaves results in a lot of variation over a short time period. The Harmony fBm is output each time a harmony chord is played (or created if harmony is disabled).  Likewise, the melody fBm is output each time a melody note is played.  The arp fBm is output once every 1/32nd note.
+
+fBm can safely be ignored until and if you are interested it exlporing the possibilities.  Remember that you can double click on any Meander parameter control knob to restore it to the default values. 
+
+## Score
+
+The upper right portion of the panel is used to display the notes that are playing in standard musical notation on the bass and treble clef staffs. Chord notes are in red, bass notes are in green. Melody notes are in black and arp notes are in blue.  Note, You have to look at the key signature to determine if notes played are sharps or flats.  Since Meander does not allow accidentals, notes are always displayed without sharp or flat designation, even if they are played sharp or flat per the chosen scale.  This is the common practice in musical scores.  The score display displays one measure of notes and then starts over.  Depending on the note lengths per part,there could be many notes displayed per bar.
