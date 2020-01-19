@@ -1814,6 +1814,7 @@ struct Meander : Module
 				{
 					theMeanderState.userControllingHarmonyFromCircle=true;
 					theMeanderState. theHarmonyParms.enabled=false;
+					doHarmony();
 				}
 
 				for (int i=0; i<12; ++i) 
