@@ -1165,7 +1165,8 @@ struct Meander : Module
 			return;
 
 		//Run
-		if (RunToggle.process(params[BUTTON_RUN_PARAM].getValue()) || inputs[IN_RUN_EXT_CV].getVoltage()) 
+	
+		if (RunToggle.process(params[BUTTON_RUN_PARAM].getValue() || inputs[IN_RUN_EXT_CV].getVoltage()))  
 		{ 
 			if (!running)
 				bar_note_count=0;  // reinitialize if running just starting
@@ -1238,11 +1239,12 @@ struct Meander : Module
 		}
 
 		resetLight -= resetLight / lightLambda / args.sampleRate;
-		lights[LIGHT_LEDBUTTON_RESET].value = resetLight;
+		lights[LIGHT_LEDBUTTON_RESET].value = resetLight; 
 		reset_pulse = resetPulse.process(1.0 / args.sampleRate);
   		outputs[OUT_RESET_OUT].setVoltage((reset_pulse ? 10.0f : 0.0f));
         
-		if (step_button_trig.process(params[BUTTON_PROG_STEP_PARAM].getValue() || inputs[IN_PROG_STEP_EXT_CV].getVoltage() )) 
+	
+		if ((step_button_trig.process(params[BUTTON_PROG_STEP_PARAM].getValue() || (  inputs[IN_PROG_STEP_EXT_CV].isConnected()  &&  (inputs[IN_PROG_STEP_EXT_CV].getVoltage() > 0.))))) 
 		{
 			if (theMeanderState.theHarmonyParms.enabled)
 			{
@@ -1793,7 +1795,7 @@ struct Meander : Module
         float circleDegree=0;
 		float gateValue=0;
 		if (  (inputs[IN_HARMONY_CIRCLE_GATE_EXT_CV].isConnected())
-			&&((gateValue=inputs[IN_HARMONY_CIRCLE_GATE_EXT_CV].getVoltage()))
+			&&((gateValue=inputs[IN_HARMONY_CIRCLE_GATE_EXT_CV].getVoltage())>0)
 			&&((circleDegree=inputs[IN_HARMONY_CIRCLE_POSITION_EXT_CV].getVoltage())>=0) 
 			&&(circleDegree!=theMeanderState.theHarmonyParms.lastCircleDegreeIn) )  
 		{
