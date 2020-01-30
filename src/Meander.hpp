@@ -1601,7 +1601,8 @@ void setup_harmony()
 					if (circleDegree==4)  // IV
 					{
 						if (thisStepChordType==0)  // maj
-							thisStepChordType=2;   // dom7  
+						//	thisStepChordType=2;   // dom7  
+							thisStepChordType=3;   // maj7  
 					}
 					else
 					if (circleDegree==5)  // V
