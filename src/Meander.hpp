@@ -1590,23 +1590,9 @@ void setup_harmony()
 					theCircleOf5ths.Circle5ths[circle_position].chordType=thisStepChordType;
 				}
 				else
-				if (theMeanderState.theHarmonyParms.enable_all_7ths)
+				if (theMeanderState.theHarmonyParms.enable_all_7ths)  // actually only use most popular 7ths
 				{ 
-					//  DEBUG("circleDegree=%d", circleDegree);
-					if (circleDegree==1)  // I
-					{
-						if (thisStepChordType==0)  // maj
-						//	thisStepChordType=3;   // maj7  
-							thisStepChordType=2;   // dom7 
-					}
-					else
 					if (circleDegree==2)  // II
-					{
-						if (thisStepChordType==1)  // min
-							thisStepChordType=4;   // min7  
-					}
-					else
-					if (circleDegree==3)  // III
 					{
 						if (thisStepChordType==1)  // min
 							thisStepChordType=4;   // min7  
@@ -1615,7 +1601,6 @@ void setup_harmony()
 					if (circleDegree==4)  // IV
 					{
 						if (thisStepChordType==0)  // maj
-						//	thisStepChordType=3;   // maj7  
 							thisStepChordType=2;   // dom7  
 					}
 					else
@@ -1625,16 +1610,10 @@ void setup_harmony()
 							thisStepChordType=2;   // dom7  
 					}
 					else
-					if (circleDegree==6)  // VI
-					{
-						if (thisStepChordType==1)  // min
-							thisStepChordType=4;   // min7  
-					}
-					else
 					if (circleDegree==7)  // VII
 					{
-						if (thisStepChordType==6)  // min
-							thisStepChordType=5;   // min7  
+						if (thisStepChordType==6)  // dim
+							thisStepChordType=5;   // dim7  
 					}
 					theCircleOf5ths.Circle5ths[circle_position].chordType=thisStepChordType;
 				}
