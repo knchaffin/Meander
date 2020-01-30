@@ -541,7 +541,7 @@ void init_vars()
 	strcpy(note_desig_sharps[7],"G");
 	strcpy(note_desig_sharps[8],"G#");
 	strcpy(note_desig_sharps[9],"A");
-	strcpy(note_desig_sharps[10],"A#");
+	strcpy(note_desig_sharps[10],"A#"); 
 	strcpy(note_desig_sharps[11],"B");
 
 	strcpy(note_desig_flats[0],"C");
@@ -591,7 +591,7 @@ void init_vars()
 	chord_type_intervals[1][0]=0;
 	chord_type_intervals[1][1]=3;
 	chord_type_intervals[1][2]=7;
-	strcpy(chord_type_name[2],"7th");
+	strcpy(chord_type_name[2],"7th");  // usually a dominant 7th chord is a major triad with minor 7th
 	chord_type_num_notes[2]=4;
 	chord_type_intervals[2][0]=0;
 	chord_type_intervals[2][1]=4;
@@ -1208,8 +1208,8 @@ void init_harmony()
 		
 		
 		// (harmony_type==29)             /* Black */  // 
-		strcpy(theHarmonyTypes[29].harmony_type_desc, "Black" );
-		strcpy(theHarmonyTypes[29].harmony_degrees_desc, "I-I-V-V" );
+		strcpy(theHarmonyTypes[29].harmony_type_desc, "Black Stones" );
+		strcpy(theHarmonyTypes[29].harmony_degrees_desc, "I-VII-III-VII-I-I-I-I" );
 	    if (doDebug)  DEBUG(theHarmonyTypes[29].harmony_type_desc);
         theHarmonyTypes[29].num_harmony_steps=16;  // 1-8
 		theHarmonyTypes[29].min_steps=1;
@@ -1570,32 +1570,84 @@ void setup_harmony()
 	 
 	   if (doDebug)  DEBUG("  circle_position=%d  num_root_key_notes[circle_position]=%d", circle_position, num_root_key_notes[circle_position]);
 
+	   int thisStepChordType=theCircleOf5ths.Circle5ths[circle_position].chordType;
+
+		if (true)  // attempting to handle 7ths
+		{
+			if  ((theMeanderState.theHarmonyParms.enable_all_7ths)|| (theMeanderState.theHarmonyParms.enable_V_7ths))  // override V chord to 7th
+			//	 ((theMeanderState.theHarmonyParms.enable_V_7ths)&&(circleDegree==5)))  // override V chord to 7th
+			{	
+				if ((theMeanderState.theHarmonyParms.enable_V_7ths)&&(circleDegree==5))
+				{
+					if (thisStepChordType==0)  // maj
+						thisStepChordType=2; // 7dom  .  A dom7 sounds better than a maj7
+					else
+					if (thisStepChordType==1)  // min
+						thisStepChordType=4; // 7min
+					else
+					if (thisStepChordType==6)  // dim
+						thisStepChordType=5; // dim7
+					theCircleOf5ths.Circle5ths[circle_position].chordType=thisStepChordType;
+				}
+				else
+				if (theMeanderState.theHarmonyParms.enable_all_7ths)
+				{ 
+					//  DEBUG("circleDegree=%d", circleDegree);
+					if (circleDegree==1)  // I
+					{
+						if (thisStepChordType==0)  // maj
+						//	thisStepChordType=3;   // maj7  
+							thisStepChordType=2;   // dom7 
+					}
+					else
+					if (circleDegree==2)  // II
+					{
+						if (thisStepChordType==1)  // min
+							thisStepChordType=4;   // min7  
+					}
+					else
+					if (circleDegree==3)  // III
+					{
+						if (thisStepChordType==1)  // min
+							thisStepChordType=4;   // min7  
+					}
+					else
+					if (circleDegree==4)  // IV
+					{
+						if (thisStepChordType==0)  // maj
+						//	thisStepChordType=3;   // maj7  
+							thisStepChordType=2;   // dom7  
+					}
+					else
+					if (circleDegree==5)  // V
+					{
+						if (thisStepChordType==0)  // maj
+							thisStepChordType=2;   // dom7  
+					}
+					else
+					if (circleDegree==6)  // VI
+					{
+						if (thisStepChordType==1)  // min
+							thisStepChordType=4;   // min7  
+					}
+					else
+					if (circleDegree==7)  // VII
+					{
+						if (thisStepChordType==6)  // min
+							thisStepChordType=5;   // min7  
+					}
+					theCircleOf5ths.Circle5ths[circle_position].chordType=thisStepChordType;
+				}
+				
+			}
+		}
+
        for(j=0;j<num_root_key_notes[circle_position];++j)
         {
 			int root_key_note=root_key_notes[circle_of_fifths[circle_position]][j];
 			if (doDebug)  DEBUG("root_key_note=%d %s", root_key_note, note_desig[root_key_note%MAX_NOTES]);
 			
 			int thisStepChordType=theCircleOf5ths.Circle5ths[circle_position].chordType;
-
-			if (true)  // attempting to handle 7ths
-			{
-				if  ((theMeanderState.theHarmonyParms.enable_all_7ths)|| // override all chord to 7th
-				    ((theMeanderState.theHarmonyParms.enable_V_7ths)&&(circleDegree==5)))  // override V chord to 7th
-				{	
-					if (true)
-					{
-						if (thisStepChordType==0)  // maj
-							thisStepChordType=3; // 7maj
-						else
-						if (thisStepChordType==1)  // min
-							thisStepChordType=4; // 7min
-						else
-						if (thisStepChordType==6)  // dim
-							thisStepChordType=5; // dim7
-						theCircleOf5ths.Circle5ths[circle_position].chordType=thisStepChordType;
-					}
-				}
-			}
 			
           	if ((root_key_note%MAX_NOTES)==circle_of_fifths[circle_position])
 		    {
