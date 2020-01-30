@@ -112,3 +112,14 @@ Meander does it's best to handle on the fly changes while playing without having
 Whereas most harmonic progression presets are deterministic in the degree steps, any preset with "Markov" in the descriptions is stochastic and uses a 1st order Markov transition matrix for the degree steps, with the probabilites reflecting common patterns in the composer's works, if there is a name such as Bach in the description.  As such, whereas these progressions may repeat portions over time, it is unlikely to every play the same progression twice. There are a few other presets that have Rand or Random in their description that does a simpler non-Markov stochastic progression step.
 
 All knob or state buttons can accept an external CV signal to vary the parameter over all allowed values.  The input CV should be from 0V-10.0V .  Meander will normalize the CV input ratio to 0.0-1.0 and then multiply this ratio times the parameter range and add to the minimum value to determine the new parameter value.  Only acceptable values will be set that are a reflection of the configParam() min and max.  The new value is displayed on the panel for your convenience.  If an exernal CV is > 0 V., it has control of the param.  If the external CV is <=0, control is returned to the Meander parameter knobs.  For buttons, the external CV should be 0V for the off state and >=1V for the on state.
+
+## Significant Version Changes
+
+# V1.0.4
+- All button parameter internal variable states are now saved and restored in save and autosave and load via json.
+- Run and Reset logic was improved to behave predictably.
+- "All 7ths" was changed to "~Nice 7ths".  Attempts to only play nice sounding 7ths, but that is really difficult in all modes and root notes.  Dom7 was substitued for maj7 in some circumstances.  V 7ths sounds better.
+
+# V1.0.3
+- Added a STEP button inside of the circle of 5ths to allow the harmony progression to be manually advanced, or via CV.
+- Panel cleanup.
