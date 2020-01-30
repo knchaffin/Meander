@@ -115,11 +115,11 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ## Significant Version Changes
 
-# V1.0.4
+### V1.0.4
 - All button parameter internal variable states are now saved and restored in save and autosave and load via json.
 - Run and Reset logic was improved to behave predictably.
 - "All 7ths" was changed to "~Nice 7ths".  Attempts to only play "nice" sounding 7ths, which are V7, ii7, viidim7 and IVM7.  These sound a lot more harmonious and less dissonant.
 
-# V1.0.3
+### V1.0.3
 - Added a STEP button inside of the circle of 5ths to allow the harmony progression to be manually advanced, or via CV.
 - Panel cleanup.
