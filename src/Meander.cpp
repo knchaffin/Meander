@@ -407,7 +407,7 @@ struct Meander : Module
 		}
 	}
 
-	void doHarmony()
+	void doHarmony(int barChordNumber=1)
 	{
 		if (doDebug) DEBUG("doHarmony");
 		if (doDebug) DEBUG("doHarmony() theActiveHarmonyType.min_steps=%d, theActiveHarmonyType.max_steps=%d", theActiveHarmonyType.min_steps, theActiveHarmonyType.max_steps );
@@ -472,118 +472,154 @@ struct Meander : Module
 		int step=(bar_count%theActiveHarmonyType.num_harmony_steps);  // 0-(n-1)
  
 
+ 		if ((harmony_type==22)&&(step==0)&&(barChordNumber==0))  // random coming home
+		{
+			float rnd = rack::random::uniform();
+			int temp_num_harmony_steps=1 + (int)((rnd*(theHarmonyTypes[22].num_harmony_steps-1)));
+			bar_count += (theHarmonyTypes[22].num_harmony_steps-temp_num_harmony_steps);
+		}
+
 		if (randomize_harmony) // this could be used to randomize any progression
 		{
-			float rnd = rack::random::uniform();
-			step = (int)((rnd*theActiveHarmonyType.num_harmony_steps));
-			step=step%theActiveHarmonyType.num_harmony_steps;
-		}
-		else
-		if (harmony_type==23) // this could be used to randomize any progression
-		{
-			float rnd = rack::random::uniform();
-			step = (int)((rnd*theActiveHarmonyType.num_harmony_steps));
-			step=step%theActiveHarmonyType.num_harmony_steps;
-		}
-		else
-		if ((harmony_type==31)||(harmony_type==42)||(harmony_type==43)||(harmony_type==44)||(harmony_type==45)||(harmony_type==46)||(harmony_type==47)||(harmony_type==48))  // Markov chains
-		{
-			float rnd = rack::random::uniform();
-			if (doDebug) DEBUG("rnd=%.2f",rnd);
-		   
-
-			if (theMeanderState.theHarmonyParms.last_circle_step==-1)
+			if (barChordNumber==0)
 			{
-				step=0;
+				float rnd = rack::random::uniform();
+				step = (int)((rnd*theActiveHarmonyType.num_harmony_steps));
+				step=step%theActiveHarmonyType.num_harmony_steps;
 			}
 			else
 			{
-				float probabilityTargetBottom[8]={0};  // skip first array index since this is 1 based
-				float probabilityTargetTop[8]={0};     // skip first array index since this is 1 based
-				float bottom=0;
-				step=1;
-				for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
-				{
-					probabilityTargetBottom[i]=bottom;
-					if (harmony_type==31)
-						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
-					else
-					if (harmony_type==42)
-						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i];
-					else
-					if (harmony_type==43)
-						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
-					else
-					if (harmony_type==44)
-						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i];
-					else
-					if (harmony_type==45)
-						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
-					else
-					if (harmony_type==46)
-						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
-					else
-					if (harmony_type==47)
-						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixTraditional1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
-					else
-					if (harmony_type==48)
-						probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i];
-										
-					
-					bottom=probabilityTargetTop[i];
-				}
-				if (doDebug) DEBUG("Markov Probabilities:");
-				for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
-				{
-					if (harmony_type==31)
-					{
-						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
-					}
-					else
-					if (harmony_type==42)
-					{
-						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
-					}
-					else
-					if (harmony_type==43)
-					{
-						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
-					}
-					else
-					if (harmony_type==44)
-					{
-						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
-					}
-					else
-					if (harmony_type==45)
-					{
-						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
-					}
-					else
-					if (harmony_type==46)
-					{
-						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
-					}
-					else
-					if (harmony_type==47)
-					{
-						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixTraditional1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
-					}
-					else
-					if (harmony_type==48)
-					{
-						if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
-					}					
-
-					if ((rnd>probabilityTargetBottom[i])&&(rnd<= probabilityTargetTop[i]))
-					{
-						step=i-1;
-						if (doDebug) DEBUG("step=%d", step);
-					}
-				}
-			
+				step=theMeanderState.theHarmonyParms.last_circle_step;
 			}
-		
+		}
+		else
+		if (harmony_type==22) // random coming home
+		{
+			if (barChordNumber!=0)
+			{
+				step=theMeanderState.theHarmonyParms.last_circle_step;
+			}
+		}
+		else
+		if (harmony_type==23) // random order
+		{
+			if (barChordNumber==0)
+			{
+				float rnd = rack::random::uniform();
+				step = (int)((rnd*theActiveHarmonyType.num_harmony_steps));
+				step=step%theActiveHarmonyType.num_harmony_steps;
+			}
+			else
+			{
+				step=theMeanderState.theHarmonyParms.last_circle_step;
+			}
+		}
+		else
+		if ((harmony_type==31)||(harmony_type==42)||(harmony_type==43)||(harmony_type==44)||(harmony_type==45)||(harmony_type==46)||(harmony_type==47)||(harmony_type==48))  // Markov chains
+		{   
+			if (barChordNumber==0)
+			{
+				float rnd = rack::random::uniform();
+				if (doDebug) DEBUG("rnd=%.2f",rnd);
+			
+
+				if (theMeanderState.theHarmonyParms.last_circle_step==-1)
+				{
+					step=0;
+				}
+				else
+				{
+					float probabilityTargetBottom[8]={0};  // skip first array index since this is 1 based
+					float probabilityTargetTop[8]={0};     // skip first array index since this is 1 based
+					float bottom=0;
+					step=1;
+					for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
+					{
+						probabilityTargetBottom[i]=bottom;
+						if (harmony_type==31)
+							probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+						else
+						if (harmony_type==42)
+							probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+						else
+						if (harmony_type==43)
+							probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+						else
+						if (harmony_type==44)
+							probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+						else
+						if (harmony_type==45)
+							probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+						else
+						if (harmony_type==46)
+							probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+						else
+						if (harmony_type==47)
+							probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrixTraditional1[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+						else
+						if (harmony_type==48)
+							probabilityTargetTop[i]=bottom+MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i];
+											
+						
+						bottom=probabilityTargetTop[i];
+					}
+					if (doDebug) DEBUG("Markov Probabilities:");
+					for (int i=1; i<8; ++i)  // skip first array index since this is 1 based
+					{
+						if (harmony_type==31)
+						{
+							if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						}
+						else
+						if (harmony_type==42)
+						{
+							if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBach2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						}
+						else
+						if (harmony_type==43)
+						{
+							if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						}
+						else
+						if (harmony_type==44)
+						{
+							if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixMozart2[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						}
+						else
+						if (harmony_type==45)
+						{
+							if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixPalestrina1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						}
+						else
+						if (harmony_type==46)
+						{
+							if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixBeethoven1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						}
+						else
+						if (harmony_type==47)
+						{
+							if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrixTraditional1[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						}
+						else
+						if (harmony_type==48)
+						{
+							if (doDebug) DEBUG("i=%d: p=%.2f b=%.2f t=%.2f", i, MarkovProgressionTransitionMatrix_I_IV_V[theMeanderState.theHarmonyParms.last_circle_step+1][i], probabilityTargetBottom[i], probabilityTargetTop[i]);
+						}					
+
+						if ((rnd>probabilityTargetBottom[i])&&(rnd<= probabilityTargetTop[i]))
+						{
+							step=i-1;
+							if (doDebug) DEBUG("step=%d", step);
+						}
+					}
+				
+				}
+			}
+			else
+			{
+				step=theMeanderState.theHarmonyParms.last_circle_step;
+			}
+			
 		}
 		
     	
@@ -681,8 +717,6 @@ struct Meander : Module
 						if (bar_note_count<256)
 						played_notes_circular_buffer[bar_note_count++]=theMeanderState.theHarmonyParms.last[j];
 					}
-				
-					if (theMeanderState.theHarmonyParms.enabled) 
 					outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel)
 				}
 		}
@@ -693,8 +727,7 @@ struct Meander : Module
 
 			// output some fBm noise
 			outputs[OUT_FBM_HARMONY_OUTPUT].setChannels(1);  // set polyphony  
-		//	outputs[OUT_FBM_HARMONY_OUTPUT].setVoltage((float)clamp((10.f*fBmrand), 0.f, 10.f) ,0); // rescale fBm output to 0-10V so it can be used better for CV
-
+		
 			float durationFactor=1.0;
 			if (theMeanderState.theHarmonyParms.enable_staccato)
 				durationFactor=0.5;
@@ -711,7 +744,7 @@ struct Meander : Module
 		if (circle_step_index>=theActiveHarmonyType.num_harmony_steps)
 			circle_step_index=0;
 
-		if ((harmony_type==22)&&(step==0))
+		if ((harmony_type==22)&&(step==0)&&(barChordNumber==0))  // random coming home
 		{
 			float rnd = rack::random::uniform();
 			int temp_num_harmony_steps=1 + (int)((rnd*(theHarmonyTypes[22].num_harmony_steps-1)));
@@ -1412,7 +1445,7 @@ struct Meander : Module
 			userPlaysCirclePosition(current_circle_position, theMeanderState.theHarmonyParms.target_octave-3); 
 			if (running)
 			{
-				doHarmony();
+				doHarmony(0);
 			}
 
 			for (int i=0; i<12; ++i) 
@@ -1463,6 +1496,7 @@ struct Meander : Module
 		    if (clockTick)
 			{
 				bool melodyPlayed=false;   // set to prevent arp note being played on the melody beat
+				int barChordNumber=(int)((int)(barts_count*theMeanderState.theHarmonyParms.note_length_divisor)/(int)32);
 				// bar
 				if (barts_count == 0) 
 				{
@@ -1470,7 +1504,7 @@ struct Meander : Module
 					theMeanderState.theBassParms.bar_bass_counted_note=0;
 					bar_note_count=0;
 					if (theMeanderState.theHarmonyParms.note_length_divisor==1)
-						doHarmony();
+						doHarmony(barChordNumber);
 					if (theMeanderState.theBassParms.note_length_divisor==1)
 						doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==1)
@@ -1487,7 +1521,7 @@ struct Meander : Module
 				if (i2ts_count == 0)
 				{
 					if (theMeanderState.theHarmonyParms.note_length_divisor==2)
-						doHarmony();
+						doHarmony(barChordNumber);
 					if (theMeanderState.theBassParms.note_length_divisor==2)
 						doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==2)
@@ -1514,7 +1548,7 @@ struct Meander : Module
 				if (i4ts_count == 0)
 				{
 					if (theMeanderState.theHarmonyParms.note_length_divisor==4)
-						doHarmony();
+						doHarmony(barChordNumber);
 					if (theMeanderState.theBassParms.note_length_divisor==4)
 						doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==4)
@@ -1544,7 +1578,7 @@ struct Meander : Module
 				if (i8ts_count == 0)
 				{
 					if (theMeanderState.theHarmonyParms.note_length_divisor==8)
-						doHarmony();
+						doHarmony(barChordNumber);
 					if (theMeanderState.theBassParms.note_length_divisor==8)
 						doBass();
 					if (theMeanderState.theMelodyParms.note_length_divisor==8)
@@ -1620,7 +1654,7 @@ struct Meander : Module
 			
 				if (barts_count == (barts_count_limit-1))  // do this after all processing so bar_count does not get incremented too early
 				{
-					barts_count = 0;  // but gets incremented below
+					barts_count = 0;  
 					theMeanderState.theMelodyParms.bar_melody_counted_note=0;
 					theMeanderState.theBassParms.bar_bass_counted_note=0;
 					bar_note_count=0;

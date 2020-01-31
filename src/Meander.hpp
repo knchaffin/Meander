@@ -1096,7 +1096,7 @@ void init_harmony()
 	
 		// (harmony_type==22)             /* random coming home */  // I + n and descend by 4ths
 		strcpy(theHarmonyTypes[22].harmony_type_desc, "random coming home" );
-		strcpy(theHarmonyTypes[22].harmony_degrees_desc, "I - IV - vii - iii - vi - ii - V" );
+		strcpy(theHarmonyTypes[22].harmony_degrees_desc, "I - VI - II - V" );
 	    if (doDebug)  DEBUG(theHarmonyTypes[22].harmony_type_desc);
         theHarmonyTypes[22].num_harmony_steps=4;  // 1-7
 		theHarmonyTypes[22].min_steps=1;
