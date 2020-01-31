@@ -4910,14 +4910,19 @@ struct MeanderWidget : ModuleWidget
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
 
-			if ((theMeanderState.theHarmonyParms.enable_all_7ths)||(theMeanderState.theHarmonyParms.last_chord_type==3)||(theMeanderState.theHarmonyParms.last_chord_type==4)||(theMeanderState.theHarmonyParms.last_chord_type==5))
+			// write last harmony note played 4
+		//	if ((theMeanderState.theHarmonyParms.enable_all_7ths)||(theMeanderState.theHarmonyParms.last_chord_type==3)||(theMeanderState.theHarmonyParms.last_chord_type==4)||(theMeanderState.theHarmonyParms.last_chord_type==5))
 			{
 				pos=convertSVGtoNVG(221.7, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[3].note%12)], theMeanderState.theHarmonyParms.last[3].note/12);
+				if ((theMeanderState.theHarmonyParms.last_chord_type==2)||(theMeanderState.theHarmonyParms.last_chord_type==3)||(theMeanderState.theHarmonyParms.last_chord_type==4)||(theMeanderState.theHarmonyParms.last_chord_type==5))
+					snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[3].note%12)], theMeanderState.theHarmonyParms.last[3].note/12);
+				else
+					snprintf(text, sizeof(text), "%s", "   ");
 				nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
 				nvgText(args.vg, pos.x, pos.y, text, NULL);
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
 			}
+
 					
 			// write last bass note played 
 			pos=convertSVGtoNVG(319.1, 121.0, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
