@@ -27,7 +27,16 @@ rack::math::Rect  ParameterRect[MAX_PARAMS];  // warning, don't exceed the dimen
 
 #define MAX_INPORTS 100
 rack::math::Rect  InportRect[MAX_INPORTS];  // warning, don't exceed the dimension
-float lastInputPortValue[MAX_INPORTS];
+
+struct inPortState
+{
+	bool inTransition=false;
+	float lastValue=-999.;
+};
+
+
+//float lastInputPortValue[MAX_INPORTS];
+struct inPortState inportStates[MAX_INPORTS];
 
 #define MAX_OUTPORTS 100
 rack::math::Rect  OutportRect[MAX_OUTPORTS];  // warning, don't exceed the dimension
@@ -262,6 +271,7 @@ struct HarmonyParms
 	int pending_step_edit=0;
 	struct note last[4];
 	float lastCircleDegreeIn=0;
+	int STEP_inport_connected_to_Meander_trigger_port=0;
 };  
 
 struct MelodyParms  
@@ -291,6 +301,7 @@ struct MelodyParms
 	int bar_melody_counted_note=0;
     bool enable_staccato=true;
 	struct note last[1];
+	float lastMelodyDegreeIn=0.0f;
 }; 
 
 struct ArpParms
@@ -336,6 +347,7 @@ struct MeanderState
 	int last_harmony_chord_root_note=0;
 	int last_harmony_step=0;
 	int circleDegree=1;
+	bool userControllingMelody=false;
 }	theMeanderState;
 
  
@@ -1595,26 +1607,26 @@ void setup_harmony()
 					if (circleDegree==2)  // II
 					{
 						if (thisStepChordType==1)  // min
-							thisStepChordType=4;   // min7  
+							thisStepChordType=4;   // 7thmin  
 					}
 					else
 					if (circleDegree==4)  // IV
 					{
 						if (thisStepChordType==0)  // maj
-						//	thisStepChordType=2;   // dom7  
-							thisStepChordType=3;   // maj7  
+						//	thisStepChordType=2;   // 7thdom  
+							thisStepChordType=3;   // 7thmaj  
 					}
 					else
 					if (circleDegree==5)  // V
 					{
 						if (thisStepChordType==0)  // maj
-							thisStepChordType=2;   // dom7  
+							thisStepChordType=2;   // 7thdom  
 					}
 					else
 					if (circleDegree==7)  // VII
 					{
 						if (thisStepChordType==6)  // dim
-							thisStepChordType=5;   // dim7  
+							thisStepChordType=5;   // 7thdim  
 					}
 					theCircleOf5ths.Circle5ths[circle_position].chordType=thisStepChordType;
 				}
