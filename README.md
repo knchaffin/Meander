@@ -124,7 +124,7 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ### V1.0.5
 - Added CV Degree and Gate inputs to melody section.  Allows playing of the melody engine via octal radix degree.octave values from sequencers or standard note values from a MIDI keyboard or modules such as TWELVE-KEY.
-- Changed Harmony circle Degree and Gate inputs format to accept same control as the melody.  Allows playing of the harmony  engine via octal radix degree.octal values from sequencers or standard note values from a MIDI keyboard or modules such as TWELVE-KEY.
+- Changed Harmony circle Degree and Gate inputs format to accept same control as the melody.  Allows playing of the harmony  engine via octal radix degree.octave values from sequencers or standard note values from a MIDI keyboard or modules such as TWELVE-KEY.
 - Harmony STEP input can now properly control stochastic progressions such as those with "Markov", "random" or "rand" in their names.
 - Harmony circle "STEP" can now be advanced via the Meander "1ms Clocked Trigger Pulses".  Warning, this introduces a 1/32nd note delay in the harmonic progression.  In most cases this is not noticeable, but beware.  
 - All play modes now handle 7th chords if selected.
