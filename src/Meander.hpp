@@ -23,10 +23,8 @@ using namespace rack;
 #define MAX_AVAILABLE_HARMONY_PRESETS 51  // change this as new harmony presets are created
 
 #define MAX_PARAMS 200
-rack::math::Rect  ParameterRect[MAX_PARAMS];  // warning, don't exceed the dimension
-
 #define MAX_INPORTS 100
-rack::math::Rect  InportRect[MAX_INPORTS];  // warning, don't exceed the dimension
+#define MAX_OUTPORTS 100
 
 struct inPortState
 {
@@ -35,11 +33,7 @@ struct inPortState
 };
 
 
-//float lastInputPortValue[MAX_INPORTS];
 struct inPortState inportStates[MAX_INPORTS];
-
-#define MAX_OUTPORTS 100
-rack::math::Rect  OutportRect[MAX_OUTPORTS];  // warning, don't exceed the dimension
 
 struct TinyPJ301MPort : SvgPort {
 	TinyPJ301MPort() {

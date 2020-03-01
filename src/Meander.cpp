@@ -3658,7 +3658,7 @@ struct Meander : Module
 
 	}  // end Meander()
 	
-};
+};  // end of struct Meander
 
  
 struct RootKeySelectLineDisplay : TransparentWidget {
@@ -3895,11 +3895,13 @@ struct RSLabelCentered : LedDisplay {
 
 ///////////////////////////////
  
-
+ 
 struct MeanderWidget : ModuleWidget 
 {
-//	Meander* module;   // not referenced.  Remove eventually
-
+	rack::math::Rect  ParameterRect[MAX_PARAMS];  // warning, don't exceed the dimension
+    rack::math::Rect  InportRect[MAX_INPORTS];  // warning, don't exceed the dimension
+    rack::math::Rect  OutportRect[MAX_OUTPORTS];  // warning, don't exceed the dimension
+ 
 	ParamWidget* paramWidgets[Meander::NUM_PARAMS]={0};  // keep track of all ParamWidgets as they are created so they can be moved around later  by the enum parmam ID
 	LightWidget* lightWidgets[Meander::NUM_LIGHTS]={0};  // keep track of all LightWidgets as they are created so they can be moved around later  by the enum parmam ID
 
@@ -3908,7 +3910,10 @@ struct MeanderWidget : ModuleWidget
 
 	struct CircleOf5thsDisplay : TransparentWidget 
 	{
-					
+		rack::math::Rect*  ParameterRectLocal;   // warning, don't exceed the dimension
+		rack::math::Rect*  InportRectLocal; 	 // warning, don't exceed the dimension
+		rack::math::Rect*  OutportRectLocal;     // warning, don't exceed the dimension
+						
 		int frame = 0;
 		std::shared_ptr<Font> textfont;
 		std::shared_ptr<Font> musicfont; 
@@ -4335,10 +4340,10 @@ struct MeanderWidget : ModuleWidget
 					if (i==0)
 					{
 						sprintf(labeltext, "Set Step");
-						drawLabelAbove(args, ParameterRect[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext, 15.);  
+						drawLabelAbove(args, ParameterRectLocal[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext, 15.);  
 					}
 					sprintf(labeltext, "%d", i+1);
-					drawLabelLeft(args, ParameterRect[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext);  
+					drawLabelLeft(args,ParameterRectLocal[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext);  
 				}
 
               
@@ -4347,42 +4352,42 @@ struct MeanderWidget : ModuleWidget
 				// update harmony panel begin
 		
 				snprintf(labeltext, sizeof(labeltext), "%s", "Harmony Enable");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_HARMONY_PARAM].pos, labeltext, 0, -1);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_HARMONY_PARAM].pos, labeltext, 0, -1);
 				snprintf(labeltext, sizeof(labeltext), "%s", "Volume (0-10.0)");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_VOLUME_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.volume, 1);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_VOLUME_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.volume, 1);
 						    
 				snprintf(labeltext, sizeof(labeltext), "Steps (%d-%d)", theActiveHarmonyType.min_steps, theActiveHarmonyType.max_steps);
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_STEPS_PARAM].pos, labeltext, (float)theActiveHarmonyType.num_harmony_steps, 0);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_STEPS_PARAM].pos, labeltext, (float)theActiveHarmonyType.num_harmony_steps, 0);
 				
 				snprintf(labeltext, sizeof(labeltext), "%s", "Target Oct.(1-6)");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_TARGETOCTAVE_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.target_octave, 0);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_TARGETOCTAVE_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.target_octave, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Variability (0-1)");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_ALPHA_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.alpha, 2);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_ALPHA_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.alpha, 2);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "+-Octave Range (0-3)");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_RANGE_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.note_octave_range, 2);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_RANGE_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.note_octave_range, 2);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Notes on 1/");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_DIVISOR_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.note_length_divisor, 0);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_DIVISOR_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.note_length_divisor, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "~Nice 7ths");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_HARMONY_ALL7THS_PARAM].pos, labeltext, 0, -1);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_HARMONY_ALL7THS_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "V 7ths");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_HARMONY_V7THS_PARAM].pos, labeltext, 0, -1);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_HARMONY_V7THS_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Staccato");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM].pos, labeltext, 0, -1);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Presets");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONYPRESETS_PARAM].pos, labeltext, 0, -1);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONYPRESETS_PARAM].pos, labeltext, 0, -1);
 				
 				snprintf(labeltext, sizeof(labeltext), "%s", " STEP");
-				drawHarmonyControlParamLine(args, ParameterRect[Meander::BUTTON_PROG_STEP_PARAM].pos, labeltext, 0, -1);
+				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_PROG_STEP_PARAM].pos, labeltext, 0, -1);
  
 				//  do the progression displays
-				pos = ParameterRect[Meander::CONTROL_HARMONYPRESETS_PARAM].pos.plus(Vec(0,20));
+				pos =ParameterRectLocal[Meander::CONTROL_HARMONYPRESETS_PARAM].pos.plus(Vec(0,20));
 							
 				nvgBeginPath(args.vg);
 				nvgFillColor(args.vg, nvgRGBA( 0x2f,  0x27, 0x0a, 0xff));
@@ -4448,43 +4453,43 @@ struct MeanderWidget : ModuleWidget
 				// update melody panel begin
 		
 				snprintf(labeltext, sizeof(labeltext), "%s", "Melody Enable");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_MELODY_PARAM].pos, labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_MELODY_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Degree(1-7)");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_MELODY_PARAM].pos.plus(Vec(92,-8)), labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_MELODY_PARAM].pos.plus(Vec(92,-8)), labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Gate");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_MELODY_PARAM].pos.plus(Vec(92,6)), labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_MELODY_PARAM].pos.plus(Vec(92,6)), labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Chordal");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_MELODY_CHORDAL_PARAM].pos, labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_MELODY_CHORDAL_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Scaler");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_MELODY_SCALER_PARAM].pos, labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_MELODY_SCALER_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Volume (0-10.0)");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_VOLUME_PARAM].pos, labeltext, theMeanderState.theMelodyParms.volume, 1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_MELODY_VOLUME_PARAM].pos, labeltext, theMeanderState.theMelodyParms.volume, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Hold tied");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_MELODY_DESTUTTER_PARAM].pos, labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_MELODY_DESTUTTER_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Notes on 1/");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM].pos, labeltext, theMeanderState.theMelodyParms.note_length_divisor, 0);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM].pos, labeltext, theMeanderState.theMelodyParms.note_length_divisor, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Target Oct.(1-6)");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_TARGETOCTAVE_PARAM].pos, labeltext, theMeanderState.theMelodyParms.target_octave, 0);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_MELODY_TARGETOCTAVE_PARAM].pos, labeltext, theMeanderState.theMelodyParms.target_octave, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Variability (0-1)");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_ALPHA_PARAM].pos, labeltext, theMeanderState.theMelodyParms.alpha, 2);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_MELODY_ALPHA_PARAM].pos, labeltext, theMeanderState.theMelodyParms.alpha, 2);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "+-Octave Range (0-3)");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_RANGE_PARAM].pos, labeltext, theMeanderState.theMelodyParms.note_octave_range, 2);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_MELODY_RANGE_PARAM].pos, labeltext, theMeanderState.theMelodyParms.note_octave_range, 2);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Staccato");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_MELODY_STACCATO_PARAM].pos, labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_MELODY_STACCATO_PARAM].pos, labeltext, 0, -1);
 
 				// draw division line
-				pos =  ParameterRect[Meander::BUTTON_ENABLE_ARP_PARAM].pos.plus(Vec(-20,-2));
+				pos = ParameterRectLocal[Meander::BUTTON_ENABLE_ARP_PARAM].pos.plus(Vec(-20,-2));
 				nvgMoveTo(args.vg, 
 				pos.x, pos.y);
 				pos=pos.plus(Vec(190,0));
@@ -4495,27 +4500,27 @@ struct MeanderWidget : ModuleWidget
 				//
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Arp Enable");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_ARP_PARAM].pos, labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_ARP_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Count (0-31)");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_ARP_COUNT_PARAM].pos, labeltext, theMeanderState.theArpParms.count, 0);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_ARP_COUNT_PARAM].pos, labeltext, theMeanderState.theArpParms.count, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Notes on 1/");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_ARP_INCREMENT_PARAM].pos, labeltext, theMeanderState.theArpParms.note_length_divisor, 0);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_ARP_INCREMENT_PARAM].pos, labeltext, theMeanderState.theArpParms.note_length_divisor, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Decay (0-1.0)");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_ARP_DECAY_PARAM].pos, labeltext, theMeanderState.theArpParms.decay, 2);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_ARP_DECAY_PARAM].pos, labeltext, theMeanderState.theArpParms.decay, 2);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Chordal");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_ARP_CHORDAL_PARAM].pos, labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_ARP_CHORDAL_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Scaler");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_ARP_SCALER_PARAM].pos, labeltext, 0, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_ARP_SCALER_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Pattern (-3-+3");
-				drawMelodyControlParamLine(args, ParameterRect[Meander::CONTROL_ARP_PATTERN_PARAM].pos, labeltext, theMeanderState.theArpParms.pattern, -1);
+				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_ARP_PATTERN_PARAM].pos, labeltext, theMeanderState.theArpParms.pattern, -1);
 
-				pos = ParameterRect[Meander::CONTROL_ARP_PATTERN_PARAM].pos.plus(Vec(102,0));
+				pos =ParameterRectLocal[Meander::CONTROL_ARP_PATTERN_PARAM].pos.plus(Vec(102,0));
 							
 				nvgBeginPath(args.vg);
 			
@@ -4581,31 +4586,31 @@ struct MeanderWidget : ModuleWidget
 				
 		
 				snprintf(labeltext, sizeof(labeltext), "%s", "Bass Enable");
-				drawBassControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_BASS_PARAM].pos, labeltext, 0, -1);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_BASS_PARAM].pos, labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Volume (0-10)");
-				drawBassControlParamLine(args, ParameterRect[Meander::CONTROL_BASS_VOLUME_PARAM].pos, labeltext, theMeanderState.theBassParms.volume, 1);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::CONTROL_BASS_VOLUME_PARAM].pos, labeltext, theMeanderState.theBassParms.volume, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Target Oct.(1-6)");
-				drawBassControlParamLine(args, ParameterRect[Meander::CONTROL_BASS_TARGETOCTAVE_PARAM].pos, labeltext, theMeanderState.theBassParms.target_octave, 0);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::CONTROL_BASS_TARGETOCTAVE_PARAM].pos, labeltext, theMeanderState.theBassParms.target_octave, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Notes on 1/");
-				drawBassControlParamLine(args, ParameterRect[Meander::CONTROL_BASS_DIVISOR_PARAM].pos, labeltext, theMeanderState.theBassParms.note_length_divisor, 0);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::CONTROL_BASS_DIVISOR_PARAM].pos, labeltext, theMeanderState.theBassParms.note_length_divisor, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Staccato");
-				drawBassControlParamLine(args, ParameterRect[Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM].pos, labeltext, theMeanderState.theBassParms.enable_staccato, -1);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM].pos, labeltext, theMeanderState.theBassParms.enable_staccato, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Accent");
-				drawBassControlParamLine(args, ParameterRect[Meander::BUTTON_BASS_ACCENT_PARAM].pos, labeltext, theMeanderState.theBassParms.accent, -1);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::BUTTON_BASS_ACCENT_PARAM].pos, labeltext, theMeanderState.theBassParms.accent, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Syncopate");
-				drawBassControlParamLine(args, ParameterRect[Meander::BUTTON_BASS_SYNCOPATE_PARAM].pos, labeltext, theMeanderState.theBassParms.syncopate, -1);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::BUTTON_BASS_SYNCOPATE_PARAM].pos, labeltext, theMeanderState.theBassParms.syncopate, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Shuffle");
-				drawBassControlParamLine(args, ParameterRect[Meander::BUTTON_BASS_SHUFFLE_PARAM].pos, labeltext, theMeanderState.theBassParms.shuffle, -1);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::BUTTON_BASS_SHUFFLE_PARAM].pos, labeltext, theMeanderState.theBassParms.shuffle, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Octaves");
-				drawBassControlParamLine(args, ParameterRect[Meander::BUTTON_BASS_OCTAVES_PARAM].pos, labeltext, theMeanderState.theBassParms.octave_enabled, -1);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::BUTTON_BASS_OCTAVES_PARAM].pos, labeltext, theMeanderState.theBassParms.octave_enabled, -1);
 
 
 
@@ -4634,34 +4639,34 @@ struct MeanderWidget : ModuleWidget
 				nvgStrokeWidth(args.vg, 2.0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "fBm 1/f Noise");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM].pos.plus(Vec(30,-25)), labeltext, 0, -1);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM].pos.plus(Vec(30,-25)), labeltext, 0, -1);
 				
 				snprintf(labeltext, sizeof(labeltext), "%s", "Harmony");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM].pos.plus(Vec(37,-13)), labeltext, 0, -1);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM].pos.plus(Vec(37,-13)), labeltext, 0, -1);
 		
 				snprintf(labeltext, sizeof(labeltext), "%s", "Octaves (1-6)");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.noctaves, 0);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.noctaves, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Period Sec. (1-100)");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_HARMONY_FBM_PERIOD_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.period, 1);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONY_FBM_PERIOD_PARAM].pos, labeltext, theMeanderState.theHarmonyParms.period, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Melody");
-				drawBassControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM].pos.plus(Vec(41,-13)), labeltext, 0, -1);
+				drawBassControlParamLine(args,ParameterRectLocal[Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM].pos.plus(Vec(41,-13)), labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Octaves (1-6)");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM].pos, labeltext, theMeanderState.theMelodyParms.noctaves, 0);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_MELODY_FBM_OCTAVES_PARAM].pos, labeltext, theMeanderState.theMelodyParms.noctaves, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Period Sec. (1-100)");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_MELODY_FBM_PERIOD_PARAM].pos, labeltext, theMeanderState.theMelodyParms.period, 1);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_MELODY_FBM_PERIOD_PARAM].pos, labeltext, theMeanderState.theMelodyParms.period, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "32nds");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_ARP_FBM_OCTAVES_PARAM].pos.plus(Vec(47,-13)), labeltext, 0, -1);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_ARP_FBM_OCTAVES_PARAM].pos.plus(Vec(47,-13)), labeltext, 0, -1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Octaves (1-6)");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_ARP_FBM_OCTAVES_PARAM].pos, labeltext, theMeanderState.theArpParms.noctaves, 0);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_ARP_FBM_OCTAVES_PARAM].pos, labeltext, theMeanderState.theArpParms.noctaves, 0);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Period Sec. (1-100)");
-				drawfBmControlParamLine(args, ParameterRect[Meander::CONTROL_ARP_FBM_PERIOD_PARAM].pos, labeltext, theMeanderState.theArpParms.period, 1);
+				drawfBmControlParamLine(args,ParameterRectLocal[Meander::CONTROL_ARP_FBM_PERIOD_PARAM].pos, labeltext, theMeanderState.theArpParms.period, 1);
 
 				
 			} 
@@ -4671,37 +4676,37 @@ struct MeanderWidget : ModuleWidget
 				char labeltext[128];
 		
 				snprintf(labeltext, sizeof(labeltext), "%s", "RUN");
-				drawLabelAbove(args, ParameterRect[Meander::BUTTON_RUN_PARAM], labeltext, 12.);
+				drawLabelAbove(args,ParameterRectLocal[Meander::BUTTON_RUN_PARAM], labeltext, 12.);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "OUT");
-				drawOutport(args, OutportRect[Meander::OUT_RUN_OUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_RUN_OUT].pos, labeltext, 0, 1);
 				
 			
 				snprintf(labeltext, sizeof(labeltext), "%s", "RESET");
-				drawLabelAbove(args, ParameterRect[Meander::BUTTON_RESET_PARAM], labeltext, 12.);
+				drawLabelAbove(args,ParameterRectLocal[Meander::BUTTON_RESET_PARAM], labeltext, 12.);
 				
 				snprintf(labeltext, sizeof(labeltext), "%s", "OUT");
-				drawOutport(args, OutportRect[Meander::OUT_RESET_OUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_RESET_OUT].pos, labeltext, 0, 1);
 			
 				snprintf(labeltext, sizeof(labeltext), "%s", "BPM");
-				drawLabelAbove(args, ParameterRect[Meander::CONTROL_TEMPOBPM_PARAM], labeltext, 12.);
+				drawLabelAbove(args,ParameterRectLocal[Meander::CONTROL_TEMPOBPM_PARAM], labeltext, 12.);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Time Sig Top");
-				drawLabelRight(args, ParameterRect[Meander::CONTROL_TIMESIGNATURETOP_PARAM], labeltext);
+				drawLabelRight(args,ParameterRectLocal[Meander::CONTROL_TIMESIGNATURETOP_PARAM], labeltext);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Time Sig Bottom");
-				drawLabelRight(args, ParameterRect[Meander::CONTROL_TIMESIGNATUREBOTTOM_PARAM], labeltext);
+				drawLabelRight(args,ParameterRectLocal[Meander::CONTROL_TIMESIGNATUREBOTTOM_PARAM], labeltext);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Root (~Key)");
-				drawLabelRight(args, ParameterRect[Meander::CONTROL_ROOT_KEY_PARAM], labeltext);
+				drawLabelRight(args,ParameterRectLocal[Meander::CONTROL_ROOT_KEY_PARAM], labeltext);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Mode");
-				drawLabelRight(args, ParameterRect[Meander::CONTROL_SCALE_PARAM], labeltext);
+				drawLabelRight(args,ParameterRectLocal[Meander::CONTROL_SCALE_PARAM], labeltext);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "EXT");
-				drawLabelAbove(args, InportRect[Meander::IN_CLOCK_EXT_CV], labeltext, 12.);
+				drawLabelAbove(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext, 12.);
 				snprintf(labeltext, sizeof(labeltext), "%s", "  Clock");
-				drawLabelRight(args, InportRect[Meander::IN_CLOCK_EXT_CV], labeltext);
+				drawLabelRight(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext);
 				
 				
 			}
@@ -4710,34 +4715,34 @@ struct MeanderWidget : ModuleWidget
 			{
 				char labeltext[128];
 				snprintf(labeltext, sizeof(labeltext), "%s", "1V/Oct");
-				drawOutport(args, OutportRect[Meander::OUT_HARMONY_CV_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_HARMONY_CV_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Gate");
-				drawOutport(args, OutportRect[Meander::OUT_HARMONY_GATE_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_HARMONY_GATE_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Volume");
-				drawOutport(args, OutportRect[Meander::OUT_HARMONY_VOLUME_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_HARMONY_VOLUME_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "1V/Oct");
-				drawOutport(args, OutportRect[Meander::OUT_MELODY_CV_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_MELODY_CV_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Gate");
-				drawOutport(args, OutportRect[Meander::OUT_MELODY_GATE_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_MELODY_GATE_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Volume");
-				drawOutport(args, OutportRect[Meander::OUT_MELODY_VOLUME_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_MELODY_VOLUME_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "1V/Oct");
-				drawOutport(args, OutportRect[Meander::OUT_BASS_CV_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_BASS_CV_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Gate");
-				drawOutport(args, OutportRect[Meander::OUT_BASS_GATE_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_BASS_GATE_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Volume");
-				drawOutport(args, OutportRect[Meander::OUT_BASS_VOLUME_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_BASS_VOLUME_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Melody");
-				drawOutport(args, OutportRect[Meander::OUT_FBM_MELODY_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_FBM_MELODY_OUTPUT].pos, labeltext, 0, 1);
 
 				sprintf(labeltext, "%s", "Outputs are 0-10V fBm noise");
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xff));
@@ -4748,37 +4753,37 @@ struct MeanderWidget : ModuleWidget
 				nvgBeginPath(args.vg);
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-			    nvgText(args.vg, OutportRect[Meander::OUT_FBM_MELODY_OUTPUT].pos.x+13,  OutportRect[Meander::OUT_FBM_MELODY_OUTPUT].pos.y-30, labeltext, NULL);
+			    nvgText(args.vg, OutportRectLocal[Meander::OUT_FBM_MELODY_OUTPUT].pos.x+13,  OutportRectLocal[Meander::OUT_FBM_MELODY_OUTPUT].pos.y-30, labeltext, NULL);
 				
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Harmony");
-				drawOutport(args, OutportRect[Meander::OUT_FBM_HARMONY_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_FBM_HARMONY_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "32nds");
-				drawOutport(args, OutportRect[Meander::OUT_FBM_ARP_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_FBM_ARP_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Bar");
-				drawOutport(args, OutportRect[Meander::OUT_CLOCK_BAR_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_CLOCK_BAR_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Beat");
-				drawOutport(args, OutportRect[Meander::OUT_CLOCK_BEAT_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_CLOCK_BEAT_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Beatx2");
-				drawOutport(args, OutportRect[Meander::OUT_CLOCK_BEATX2_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_CLOCK_BEATX2_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "1ms Clocked Trigger Pulses");
-				rack::math::Rect rect=OutportRect[Meander::OUT_CLOCK_BEATX2_OUTPUT];
+				rack::math::Rect rect=OutportRectLocal[Meander::OUT_CLOCK_BEATX2_OUTPUT];
 				rect.pos=rect.pos.plus(Vec(0,-16));
 				drawLabelAbove(args, rect, labeltext, 18.);
 				
 				snprintf(labeltext, sizeof(labeltext), "%s", "Beatx4");
-				drawOutport(args, OutportRect[Meander::OUT_CLOCK_BEATX4_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_CLOCK_BEATX4_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Beatx8");
-				drawOutport(args, OutportRect[Meander::OUT_CLOCK_BEATX8_OUTPUT].pos, labeltext, 0, 1);
+				drawOutport(args, OutportRectLocal[Meander::OUT_CLOCK_BEATX8_OUTPUT].pos, labeltext, 0, 1);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "These can trigger STEP above");
-				rect=OutportRect[Meander::OUT_CLOCK_BEATX8_OUTPUT];
+				rect=OutportRectLocal[Meander::OUT_CLOCK_BEATX8_OUTPUT];
 				rect.pos=rect.pos.plus(Vec(5,0));
 				drawLabelRight(args, rect, labeltext);
 				
@@ -5261,7 +5266,7 @@ struct MeanderWidget : ModuleWidget
 
 					
 			if (doDebug) DEBUG("UpdatePanel()-end");
-		}
+		}  // end UpdatePanel()
 
 	   
 		double smoothedDt=.016;  // start out at 1/60
@@ -5307,19 +5312,19 @@ struct MeanderWidget : ModuleWidget
 				nvgText(args.vg, pos.x, pos.y, text, NULL);
 				#endif
 				
-			}
+			} 
 		}
 
 		
 	
 	};  // end struct CircleOf5thsDisplay
 
-	MeanderWidget(Meander* module)   // all plugins I've looked at use this constructor with module*, event though docs show it deprecated.  
+	MeanderWidget(Meander* module)   // all plugins I've looked at use this constructor with module*, even though docs show it deprecated.  
 	{ 
 		if (doDebug) DEBUG("MeanderWidget()");
 		setModule(module);  // most plugins do this
 		this->module = module;  //  most plugins do not do this.  It was introduced in singleton implementation
-	
+
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander.svg")));
 					
 		rack::random::init();  // must be called per thread
@@ -5347,7 +5352,10 @@ struct MeanderWidget : ModuleWidget
 			addChild(MeanderScaleSelectDisplay);
 
 			CircleOf5thsDisplay *display = new CircleOf5thsDisplay();
-					
+			display->ParameterRectLocal=ParameterRect;
+			display->InportRectLocal=InportRect;  
+			display->OutportRectLocal=OutportRect;  
+									
 			display->box.pos = Vec(0, 0);
 			display->box.size = Vec(box.size.x, box.size.y);
 			addChild(display);
@@ -6191,35 +6199,28 @@ struct MeanderWidget : ModuleWidget
 			outPortWidgets[Meander::OUT_CLOCK_BEATX8_OUTPUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_CLOCK_BEATX8_OUTPUT]->box.size.div(2.));
 			drawCenter=drawCenter.plus(Vec(40,0));
 
-
-			
-
-			 
 			//********************
-			if ((module) &&(module->instanceRunning))   // do not allow these to be reinitialized via a browser ModuleWidget instance, particularly, the inportStates[i]
+			
+			for (int i=0; ((i<Meander::NUM_PARAMS)&&(i<MAX_PARAMS)); ++i)  // get the paramWidget box into a MeanderWidget array so it can be accessed as needed
 			{
-				for (int i=0; ((i<Meander::NUM_PARAMS)&&(i<MAX_PARAMS)); ++i)  // get the paramWidget box into a global array so it can be accessed as needed
-				{
-					if (paramWidgets[i]!=NULL) 
-						ParameterRect[i]=paramWidgets[i]->box;
-				}
-
-				for (int i=0; ((i<Meander::NUM_OUTPUTS)&&(i<MAX_OUTPORTS)); ++i)  // get the paramWidget box into a global array so it can be accessed as needed
-				{
-					if (outPortWidgets[i]!=NULL) 
-						OutportRect[i]=outPortWidgets[i]->box;
-				}
-
-				for (int i=0; ((i<Meander::NUM_INPUTS)&&(i<MAX_INPORTS)); ++i)  // get the paramWidget box into a global array so it can be accessed as needed
-				{
-					if (inPortWidgets[i]!=NULL) 
-						InportRect[i]=inPortWidgets[i]->box;
-					inportStates[i].lastValue=-999;  // initial out of range value
-				}
+				if (paramWidgets[i]!=NULL) 
+					ParameterRect[i]=paramWidgets[i]->box;
 			}
 
+			for (int i=0; ((i<Meander::NUM_OUTPUTS)&&(i<MAX_OUTPORTS)); ++i)  // get the paramWidget box into a MeanderWidget array so it can be accessed as needed
+			{
+				if (outPortWidgets[i]!=NULL) 
+					OutportRect[i]=outPortWidgets[i]->box;
+			}
+
+			for (int i=0; ((i<Meander::NUM_INPUTS)&&(i<MAX_INPORTS)); ++i)  // get the paramWidget box into a MeanderWidget array so it can be accessed as needed
+			{
+				if (inPortWidgets[i]!=NULL) 
+					InportRect[i]=inPortWidgets[i]->box;
+			}
+				
 		
-		}
+		}  // end if (true) line 5336
 
 	}    // end MeanderWidget(Meander* module)  
  
@@ -6288,9 +6289,9 @@ struct MeanderWidget : ModuleWidget
 		}
 	
 		ModuleWidget::step();
-	} 
+	} // end step()
 
-};
+};  // end struct MeanderWidget
 
 
 
