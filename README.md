@@ -122,6 +122,9 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ## Significant Version Changes
 
+### v1.0.6
+- Corrected a bug that caused the Meander module panel image to draw incorrectly in the plugin/module browser on some systems.
+
 ### V1.0.5
 - Added CV Degree and Gate inputs to melody section.  Allows playing of the melody engine via octal radix degree.octave values from sequencers or standard note values from a MIDI keyboard or modules such as TWELVE-KEY.
 - Changed Harmony circle Degree and Gate inputs format to accept same control as the melody.  Allows playing of the harmony  engine via octal radix degree.octave values from sequencers or standard note values from a MIDI keyboard or modules such as TWELVE-KEY.
