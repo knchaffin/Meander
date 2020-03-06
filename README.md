@@ -122,7 +122,10 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ## Significant Version Changes
 
-### v1.0.6
+### V1.0.7
+- Corrected several problems related to module browser and Libray panel appearance.
+
+### V1.0.6
 - Corrected a bug that caused the Meander module panel image to draw incorrectly in the plugin/module browser on some systems.
 
 ### V1.0.5
