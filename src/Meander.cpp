@@ -1222,7 +1222,7 @@ struct Meander : Module
 
 		// running
 			// running
-		json_object_set_new(rootJ, "running", json_boolean(running));
+		json_object_set_new(rootJ, "running", json_boolean(running)); 
 
 		json_object_set_new(rootJ, "theHarmonyParmsenabled", json_boolean(theMeanderState.theHarmonyParms.enabled));
 		json_object_set_new(rootJ, "harmony_staccato_enable", json_boolean(theMeanderState.theHarmonyParms.enable_staccato));
@@ -1333,7 +1333,7 @@ struct Meander : Module
 		if (!instanceRunning)
 			return;
 	
-		if (!initialized)
+		if (!globalsInitialized)
 			return;
 
 		//Run
@@ -3549,7 +3549,7 @@ struct Meander : Module
 				   		
 		
 		initPerlin();
-		MeanderMusicStructuresInitialize();
+		MeanderMusicStructuresInitialize();  // sets global globalsInitialized=true
 
 			
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -3571,7 +3571,8 @@ struct Meander : Module
 		configParam(CONTROL_TEMPOBPM_PARAM, min_bpm, max_bpm, 120.0f, "Tempo", " BPM");
 	    configParam(CONTROL_TIMESIGNATURETOP_PARAM,2.0f, 15.0f, 4.0f, "Time Signature Top");
 		configParam(CONTROL_TIMESIGNATUREBOTTOM_PARAM,0.0f, 3.0f, 1.0f, "Time Signature Bottom");
-		configParam(CONTROL_ROOT_KEY_PARAM, 0, 11, 1.f, "Root/Key");
+	//	configParam(CONTROL_ROOT_KEY_PARAM, 0, 11, 1.f, "Root/Key");
+		configParam(CONTROL_ROOT_KEY_PARAM, 0, 11, 0.f, "Root/Key");
 		configParam(CONTROL_SCALE_PARAM, 0.f, num_modes-1, 1.f, "Mode");
 
 		configParam(BUTTON_ENABLE_MELODY_PARAM, 0.f, 1.f, 0.f, "Enable");
@@ -3685,17 +3686,19 @@ struct RootKeySelectLineDisplay : TransparentWidget {
 		nvgStrokeColor(ctx.vg, borderColor);
 		nvgStroke(ctx.vg);
 	
-	
-		nvgFontSize(ctx.vg,18 );
-		nvgFontFaceId(ctx.vg, font->handle);
-		nvgTextLetterSpacing(ctx.vg, -1);
-		nvgTextAlign(ctx.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-		nvgFillColor(ctx.vg, nvgRGBA(0xff, 0xff, 0x2c, 0xFF));
+		if (globalsInitialized)  // global fully initialized if Module!=NULL
+		{
+			nvgFontSize(ctx.vg,18 );
+			nvgFontFaceId(ctx.vg, font->handle);
+			nvgTextLetterSpacing(ctx.vg, -1);
+			nvgTextAlign(ctx.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
+			nvgFillColor(ctx.vg, nvgRGBA(0xff, 0xff, 0x2c, 0xFF));
 
-		char text[128];
-		
-		snprintf(text, sizeof(text), "%s", root_key_names[root_key]);
-		nvgText(ctx.vg, pos.x, pos.y, text, NULL);
+			char text[128];
+			
+			snprintf(text, sizeof(text), "%s", root_key_names[root_key]);
+			nvgText(ctx.vg, pos.x, pos.y, text, NULL);
+		}
 	}
 
 };
@@ -3724,28 +3727,30 @@ struct ScaleSelectLineDisplay : TransparentWidget {
 		nvgStrokeColor(ctx.vg, borderColor);
 		nvgStroke(ctx.vg);
 	 
-		nvgFontSize(ctx.vg, 16);
-		nvgFontFaceId(ctx.vg, font->handle);
-		nvgTextLetterSpacing(ctx.vg, -1);
-		nvgTextAlign(ctx.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-		nvgFillColor(ctx.vg, nvgRGBA(0xff, 0xff, 0x2c, 0xFF));
-	
-		char text[128];
-		
-		snprintf(text, sizeof(text), "%s", mode_names[mode]);
-		nvgText(ctx.vg, pos.x, pos.y, text, NULL);
-
-		// add on the scale notes display out of this box
-		nvgFillColor(ctx.vg, nvgRGBA(0x00, 0x0, 0x0, 0xFF));
-		strcpy(text,"");
-		for (int i=0;i<mode_step_intervals[mode][0];++i)
+	 	if (globalsInitialized)  // global fully initialized if Module!=NULL
 		{
-			strcat(text,note_desig[notes[i]%MAX_NOTES]);  
-			strcat(text," ");
-		}
+			nvgFontSize(ctx.vg, 16);
+			nvgFontFaceId(ctx.vg, font->handle);
+			nvgTextLetterSpacing(ctx.vg, -1);
+			nvgTextAlign(ctx.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
+			nvgFillColor(ctx.vg, nvgRGBA(0xff, 0xff, 0x2c, 0xFF));
 		
-		nvgText(ctx.vg, pos.x, pos.y+24, text, NULL);
-	
+			char text[128];
+			
+			snprintf(text, sizeof(text), "%s", mode_names[mode]);
+			nvgText(ctx.vg, pos.x, pos.y, text, NULL);
+
+			// add on the scale notes display out of this box
+			nvgFillColor(ctx.vg, nvgRGBA(0x00, 0x0, 0x0, 0xFF));
+			strcpy(text,"");
+			for (int i=0;i<mode_step_intervals[mode][0];++i)
+			{
+				strcat(text,note_desig[notes[i]%MAX_NOTES]);  
+				strcat(text," ");
+			}
+			
+			nvgText(ctx.vg, pos.x, pos.y+24, text, NULL);
+		}
 		
 	} 
 
@@ -3763,11 +3768,9 @@ struct BpmDisplayWidget : TransparentWidget {
   };
 
   void draw(const DrawArgs &args) override {
-
-	if (!val) { 
-      return;
-    }
 	    
+
+	// draw the display background even if there is no module
 	// Background
 	NVGcolor backgroundColor = nvgRGB(0x20, 0x10, 0x10);
 	NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
@@ -3778,6 +3781,11 @@ struct BpmDisplayWidget : TransparentWidget {
 	nvgStrokeWidth(args.vg, 1.0);
 	nvgStrokeColor(args.vg, borderColor);
 	nvgStroke(args.vg);
+
+	// if val is null (Module null)
+	if (!val) { 
+      return;
+    }
 
 	nvgFontSize(args.vg, 36);
 	nvgFontFaceId(args.vg, font->handle);
@@ -3817,11 +3825,9 @@ struct SigDisplayWidget : TransparentWidget {
 
   void draw(const DrawArgs &args) override {
 	
-    if (!value) {
-      return;
-    }
+ 
 
-	// Display Background is now drawn on the svg panel
+	// Display Background is now drawn on the svg panel, even if Module is null (value=null)
     NVGcolor backgroundColor = nvgRGB(0x20, 0x10, 0x10);
     NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
     nvgBeginPath(args.vg);
@@ -3831,6 +3837,10 @@ struct SigDisplayWidget : TransparentWidget {
     nvgStrokeWidth(args.vg, 1.0);
     nvgStrokeColor(args.vg, borderColor);
     nvgStroke(args.vg); 
+
+	 if (!value) {
+      return;
+    }
          
     // text 
  	nvgFontSize(args.vg, 20);  
@@ -4398,14 +4408,16 @@ struct MeanderWidget : ModuleWidget
 				nvgStroke(args.vg);
 
 				
-				nvgBeginPath(args.vg);
-				nvgFontSize(args.vg, 14);
-				nvgFontFaceId(args.vg, textfont->handle);
-				nvgTextLetterSpacing(args.vg, -1);
-				nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
-				snprintf(text, sizeof(text), "#%d:  %s", harmony_type, theActiveHarmonyType.harmony_type_desc);
-				nvgText(args.vg, pos.x+10, pos.y+10, text, NULL);
-
+				if (globalsInitialized)  // global fully initialized if Module!=NULL
+				{
+					nvgBeginPath(args.vg);
+					nvgFontSize(args.vg, 14);
+					nvgFontFaceId(args.vg, textfont->handle);
+					nvgTextLetterSpacing(args.vg, -1);
+					nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
+					snprintf(text, sizeof(text), "#%d:  %s", harmony_type, theActiveHarmonyType.harmony_type_desc);
+					nvgText(args.vg, pos.x+10, pos.y+10, text, NULL);
+				}
 				pos = pos.plus(Vec(0,20));
 
 							
@@ -4417,11 +4429,14 @@ struct MeanderWidget : ModuleWidget
 				nvgFill(args.vg);
 				nvgStroke(args.vg);
 
-				nvgBeginPath(args.vg);
-				nvgFontSize(args.vg, 12);
-				nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
-				snprintf(text, sizeof(text), "%s           ",  theActiveHarmonyType.harmony_degrees_desc);
-				nvgText(args.vg, pos.x+10, pos.y+10, text, NULL);
+				if (globalsInitialized)  // global fully initialized if Module!=NULL
+				{
+					nvgBeginPath(args.vg);
+					nvgFontSize(args.vg, 12);
+					nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
+					snprintf(text, sizeof(text), "%s           ",  theActiveHarmonyType.harmony_degrees_desc);
+					nvgText(args.vg, pos.x+10, pos.y+10, text, NULL);
+				}
 								
 			}
 
@@ -4831,13 +4846,14 @@ struct MeanderWidget : ModuleWidget
 			nvgFontFaceId(args.vg, musicfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
-			pos=Vec(beginEdge+10, beginTop+45);  
-			snprintf(text, sizeof(text), "%s", "G");
+		//	pos=Vec(beginEdge+10, beginTop+45);  // had to change for some unknown reason
+			pos=Vec(beginEdge, beginTop+45);  
+			snprintf(text, sizeof(text), "%s", "G");  // treble clef
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
 			nvgFontSize(args.vg, 35);
 			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-			snprintf(text, sizeof(text), "%s", "B");
+			snprintf(text, sizeof(text), "%s", "B");  // sharp
 			
 			int num_sharps1=0;
 			int vertical_offset1=0;
@@ -4854,7 +4870,7 @@ struct MeanderWidget : ModuleWidget
 				nvgClosePath(args.vg);
 			}	
 		
-			snprintf(text, sizeof(text), "%s", "b");
+			snprintf(text, sizeof(text), "%s", "b");  // flat
 			int num_flats1=0;
 			vertical_offset1=0;
 			for (int i=6; i>=0; --i)
@@ -4898,7 +4914,6 @@ struct MeanderWidget : ModuleWidget
 			// draw staff lines
 
 			beginEdge = 890;
-		//	beginTop =190;
 			beginTop =8;
 			lineWidth=1.0; 
 			
@@ -5051,185 +5066,189 @@ struct MeanderWidget : ModuleWidget
 			
 
 			//****************
-		
-
-			nvgFontSize(args.vg, 30);
-			nvgFontFaceId(args.vg, musicfont->handle);
-			nvgTextLetterSpacing(args.vg, -1);
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
-		
+				
 			float display_note_position=0; 
 
-			for (int i=0; ((i<bar_note_count)&&(i<256)); ++i)
+			if (globalsInitialized)  // global fully initialized if Module!=NULL
 			{
-				int display_note=played_notes_circular_buffer[i].note;
-				if (doDebug) DEBUG("display_note=%d %s", display_note, note_desig[display_note%12]);
-			 
-				int scale_note=0;
-				if (strstr(note_desig[display_note%12],"C"))
-					scale_note=0;
-				else
-				if (strstr(note_desig[display_note%12],"D"))
-					scale_note=1;
-				else
-				if (strstr(note_desig[display_note%12],"E"))
-					scale_note=2;
-				else
-				if (strstr(note_desig[display_note%12],"F"))
-					scale_note=3;
-				else
-				if (strstr(note_desig[display_note%12],"G"))
-					scale_note=4;
-				else
-				if (strstr(note_desig[display_note%12],"A"))
-					scale_note=5;
-				else
-				if (strstr(note_desig[display_note%12],"B"))
-					scale_note=6;
-				if (doDebug) DEBUG("scale_note=%d", scale_note%12);
-			  
-				int octave=(display_note/12)-2;
-				if (doDebug) DEBUG("octave=%d", octave);
-			
-				display_note_position = 108.0-(octave*21.0)-(scale_note*3.0)-7.5;
-				if (doDebug) DEBUG("display_note_position=%d", (int)display_note_position);
-			
-				
-				float note_x_spacing= 230.0/(32*time_sig_top/time_sig_bottom);  // experimenting with note spacing function of time_signature.  barts_count_limit is not in scope, needs to be global
-				pos=Vec(beginEdge+70+(played_notes_circular_buffer[i].time32s*note_x_spacing), beginTop+display_note_position);  
-				if (true)  // color code notes in staff rendering
-				{ 
-					if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_CHORD)
-						nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
-					else
-					if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_MELODY)
-						nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-					else
-					if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_ARP)
-						nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0xFF, 0xFF)); 
-					else
-					if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_BASS)
-						nvgFillColor(args.vg, nvgRGBA(0x0, 0xFF, 0x0, 0xFF)); 
-					
-				}
-
-				
 				nvgFontSize(args.vg, 30);
-				if (played_notes_circular_buffer[i].length==1)
-					snprintf(text, sizeof(text), "%s", "w");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-				else
-				if (played_notes_circular_buffer[i].length==2)
-					snprintf(text, sizeof(text), "%s", "h");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-				else
-				if (played_notes_circular_buffer[i].length==4)
-					snprintf(text, sizeof(text), "%s", "q");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-				else
-				if (played_notes_circular_buffer[i].length==8)
-					snprintf(text, sizeof(text), "%s", "e");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-				else
-				if (played_notes_circular_buffer[i].length==16)
-					snprintf(text, sizeof(text), "%s", "s");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-				else
-				if (played_notes_circular_buffer[i].length==32)
-					snprintf(text, sizeof(text), "%s", "s");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				nvgFontFaceId(args.vg, musicfont->handle);
+				nvgTextLetterSpacing(args.vg, -1);
+				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
 
-				if (played_notes_circular_buffer[i].length==32)  // do overstrike for 1/32 symbol
+				for (int i=0; ((i<bar_note_count)&&(i<256)); ++i)
 				{
-					nvgFontSize(args.vg, 15);
-					snprintf(text, sizeof(text), "%s", "e");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-					nvgText(args.vg, pos.x-.5, pos.y+4.5, text, NULL);
+					int display_note=played_notes_circular_buffer[i].note;
+					if (doDebug) DEBUG("display_note=%d %s", display_note, note_desig[display_note%12]);
 				
-				}
+					int scale_note=0;
+					if (strstr(note_desig[display_note%12],"C"))
+						scale_note=0;
+					else
+					if (strstr(note_desig[display_note%12],"D"))
+						scale_note=1;
+					else
+					if (strstr(note_desig[display_note%12],"E"))
+						scale_note=2;
+					else
+					if (strstr(note_desig[display_note%12],"F"))
+						scale_note=3;
+					else
+					if (strstr(note_desig[display_note%12],"G"))
+						scale_note=4;
+					else
+					if (strstr(note_desig[display_note%12],"A"))
+						scale_note=5;
+					else
+					if (strstr(note_desig[display_note%12],"B"))
+						scale_note=6;
+					if (doDebug) DEBUG("scale_note=%d", scale_note%12);
+				
+					int octave=(display_note/12)-2;
+					if (doDebug) DEBUG("octave=%d", octave);
+				
+					display_note_position = 108.0-(octave*21.0)-(scale_note*3.0)-7.5;
+					if (doDebug) DEBUG("display_note_position=%d", (int)display_note_position);
+				
+					
+					float note_x_spacing= 230.0/(32*time_sig_top/time_sig_bottom);  // experimenting with note spacing function of time_signature.  barts_count_limit is not in scope, needs to be global
+					pos=Vec(beginEdge+70+(played_notes_circular_buffer[i].time32s*note_x_spacing), beginTop+display_note_position);  
+					if (true)  // color code notes in staff rendering
+					{ 
+						if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_CHORD)
+							nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
+						else
+						if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_MELODY)
+							nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+						else
+						if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_ARP)
+							nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0xFF, 0xFF)); 
+						else
+						if (played_notes_circular_buffer[i].noteType==NOTE_TYPE_BASS)
+							nvgFillColor(args.vg, nvgRGBA(0x0, 0xFF, 0x0, 0xFF)); 
+						
+					}
 
-
-				if (((scale_note==5)&&(octave==3))  //A3
-				  ||((scale_note==0)&&(octave==4))  //C4
-				  ||((scale_note==0)&&(octave==2))  //C2
-				  ||((scale_note==2)&&(octave==0))  //E0 
-				  ||((scale_note==0)&&(octave==0))) //C0 
-				{
+					
 					nvgFontSize(args.vg, 30);
-					pos.x -= 2.0;
-					pos.y -= 4.4;
-					snprintf(text, sizeof(text), "%s", "_");  
+					if (played_notes_circular_buffer[i].length==1)
+						snprintf(text, sizeof(text), "%s", "w");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+					else
+					if (played_notes_circular_buffer[i].length==2)
+						snprintf(text, sizeof(text), "%s", "h");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+					else
+					if (played_notes_circular_buffer[i].length==4)
+						snprintf(text, sizeof(text), "%s", "q");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+					else
+					if (played_notes_circular_buffer[i].length==8)
+						snprintf(text, sizeof(text), "%s", "e");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+					else
+					if (played_notes_circular_buffer[i].length==16)
+						snprintf(text, sizeof(text), "%s", "s");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+					else
+					if (played_notes_circular_buffer[i].length==32)
+						snprintf(text, sizeof(text), "%s", "s");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
-				} 
-			}
 
+					if (played_notes_circular_buffer[i].length==32)  // do overstrike for 1/32 symbol
+					{
+						nvgFontSize(args.vg, 15);
+						snprintf(text, sizeof(text), "%s", "e");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+						nvgText(args.vg, pos.x-.5, pos.y+4.5, text, NULL);
+					
+					}
+
+
+					if (((scale_note==5)&&(octave==3))  //A3
+					||((scale_note==0)&&(octave==4))  //C4
+					||((scale_note==0)&&(octave==2))  //C2
+					||((scale_note==2)&&(octave==0))  //E0 
+					||((scale_note==0)&&(octave==0))) //C0 
+					{
+						nvgFontSize(args.vg, 30);
+						pos.x -= 2.0;
+						pos.y -= 4.4;
+						snprintf(text, sizeof(text), "%s", "_");  
+						nvgText(args.vg, pos.x, pos.y, text, NULL);
+					} 
+				}
+			}
 			
 			//*********************
 
-			nvgFontSize(args.vg, 14);
-			nvgFontFaceId(args.vg, textfont->handle);
-			nvgTextLetterSpacing(args.vg, -1);
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
-			 
-			// write last melody note played 
-			pos=convertSVGtoNVG(261.4, 120.3, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theMelodyParms.last[0].note%12)], (int)(theMeanderState.theMelodyParms.last[0].note/12 ));
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-
-			// write last arp note played 
-			if (theMeanderState.theArpParms.note_count>0)
+			if (globalsInitialized)  // global fully initialized if Module!=NULL
 			{
+				nvgFontSize(args.vg, 14);
+				nvgFontFaceId(args.vg, textfont->handle);
+				nvgTextLetterSpacing(args.vg, -1);
+				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
+
+				// write last melody note played 
 				pos=convertSVGtoNVG(261.4, 120.3, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].note%12)], (int)(theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].note/12 ));
-				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0xFF, 0xFF)); 
-				nvgText(args.vg, pos.x+20, pos.y+200, text, NULL);
+				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theMelodyParms.last[0].note%12)], (int)(theMeanderState.theMelodyParms.last[0].note/12 ));
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-			}
+				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+
+				// write last arp note played 
+				if (theMeanderState.theArpParms.note_count>0)
+				{
+					pos=convertSVGtoNVG(261.4, 120.3, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
+					snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].note%12)], (int)(theMeanderState.theArpParms.last[theMeanderState.theArpParms.note_count].note/12 ));
+					nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0xFF, 0xFF)); 
+					nvgText(args.vg, pos.x+20, pos.y+200, text, NULL);
+					nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+				}
+				
+				// write last harmony note played 1
+				pos=convertSVGtoNVG(187.8, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
+				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[0].note%12)] , theMeanderState.theHarmonyParms.last[0].note/12);
+				nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
+				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+
+				// write last harmony note played 2
+				pos=convertSVGtoNVG(199.1, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
+				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[1].note%12)], theMeanderState.theHarmonyParms.last[1].note/12);
+				nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
+				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+
+				// write last harmony note played 3
+				pos=convertSVGtoNVG(210.4, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
+				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[2].note%12)], theMeanderState.theHarmonyParms.last[2].note/12);
+				nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
+				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+
+				// write last harmony note played 4
 			
-			// write last harmony note played 1
-			pos=convertSVGtoNVG(187.8, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[0].note%12)] , theMeanderState.theHarmonyParms.last[0].note/12);
-			nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-
-			// write last harmony note played 2
-			pos=convertSVGtoNVG(199.1, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[1].note%12)], theMeanderState.theHarmonyParms.last[1].note/12);
-			nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-
-			// write last harmony note played 3
-			pos=convertSVGtoNVG(210.4, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[2].note%12)], theMeanderState.theHarmonyParms.last[2].note/12);
-			nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-
-			// write last harmony note played 4
-		
-			pos=convertSVGtoNVG(221.7, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			if ((theMeanderState.theHarmonyParms.last_chord_type==2)||(theMeanderState.theHarmonyParms.last_chord_type==3)||(theMeanderState.theHarmonyParms.last_chord_type==4)||(theMeanderState.theHarmonyParms.last_chord_type==5))
-				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[3].note%12)], theMeanderState.theHarmonyParms.last[3].note/12);
-			else
-				snprintf(text, sizeof(text), "%s", "   ");
-			nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-			
-					
-			// write last bass note played 
-			pos=convertSVGtoNVG(319.1, 121.0, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theBassParms.last[0].note%12)], (theMeanderState.theBassParms.last[0].note/12));
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0xFF, 0x0, 0xFF)); 
-			nvgText(args.vg, pos.x, pos.y, text, NULL);
-			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
-
-			// write last octave bass note played 
-			if (theMeanderState.theBassParms.octave_enabled)
-			{
-				pos=convertSVGtoNVG(330.1, 121.0, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theBassParms.last[1].note%12)], (theMeanderState.theBassParms.last[1].note/12));
+				pos=convertSVGtoNVG(221.7, 119.8, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
+				if ((theMeanderState.theHarmonyParms.last_chord_type==2)||(theMeanderState.theHarmonyParms.last_chord_type==3)||(theMeanderState.theHarmonyParms.last_chord_type==4)||(theMeanderState.theHarmonyParms.last_chord_type==5))
+					snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theHarmonyParms.last[3].note%12)], theMeanderState.theHarmonyParms.last[3].note/12);
+				else
+					snprintf(text, sizeof(text), "%s", "   ");
+				nvgFillColor(args.vg, nvgRGBA(0xFF, 0x0, 0x0, 0xFF)); 
+				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+				
+						
+				// write last bass note played 
+				pos=convertSVGtoNVG(319.1, 121.0, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
+				snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theBassParms.last[0].note%12)], (theMeanderState.theBassParms.last[0].note/12));
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0xFF, 0x0, 0xFF)); 
 				nvgText(args.vg, pos.x, pos.y, text, NULL);
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+
+				// write last octave bass note played 
+				if (theMeanderState.theBassParms.octave_enabled)
+				{
+					pos=convertSVGtoNVG(330.1, 121.0, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
+					snprintf(text, sizeof(text), "%s%d", note_desig[(theMeanderState.theBassParms.last[1].note%12)], (theMeanderState.theBassParms.last[1].note/12));
+					nvgFillColor(args.vg, nvgRGBA(0x0, 0xFF, 0x0, 0xFF)); 
+					nvgText(args.vg, pos.x, pos.y, text, NULL);
+					nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF)); 
+				}
 			}
 
 			int last_chord_root=theMeanderState.last_harmony_chord_root_note%12;
@@ -5377,7 +5396,8 @@ struct MeanderWidget : ModuleWidget
 			SigDisplayWidget *SigTopDisplay = new SigDisplayWidget();
 			SigTopDisplay->box.pos = Vec(130,130);
 			SigTopDisplay->box.size = Vec(25, 20);
-			SigTopDisplay->value = &time_sig_top;
+			if (module) 
+				SigTopDisplay->value = &time_sig_top;
 			addChild(SigTopDisplay);
 			//SIG TOP KNOB
 		
@@ -5385,7 +5405,8 @@ struct MeanderWidget : ModuleWidget
 			SigDisplayWidget *SigBottomDisplay = new SigDisplayWidget();
 			SigBottomDisplay->box.pos = Vec(130,150);
 			SigBottomDisplay->box.size = Vec(25, 20);
-			SigBottomDisplay->value = &time_sig_bottom;
+			if (module) 
+				SigBottomDisplay->value = &time_sig_bottom;
 			addChild(SigBottomDisplay);
 			
 			//*************   Note: Each LEDButton needs its light and that light needs a unique ID, needs to be added to an array and then needs to be repositioned along with the button.  Also needs to be enumed with other lights so lights[] picks it up.

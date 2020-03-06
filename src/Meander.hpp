@@ -4,7 +4,7 @@ bool doDebug = false;  // set this to true to enable verbose DEBUG() logging
 
 static bool owned = false;
 
-bool initialized=false;
+bool globalsInitialized=false;  // globals as initialized only during Module(), otherwise the global values are whatever they were set to here, if anything.
 
 bool Audit_enable=false;  
 
@@ -42,7 +42,8 @@ struct TinyPJ301MPort : SvgPort {
 };
 
 
-int time_sig_top, time_sig_bottom = 4;
+int time_sig_top = 4;
+int time_sig_bottom = 4;
 
 
 // make it a power of 8
@@ -287,7 +288,7 @@ struct MelodyParms
 	double seed=12345;
 	int noctaves=4;
 	float period=10.0;
-	bool destutter=true;
+	bool destutter=false;
 	bool stutter_detected=false;
 	int last_stutter_step=0;
 	int last_chord_note_index=0;
@@ -1672,7 +1673,7 @@ void MeanderMusicStructuresInitialize()
 	init_harmony();
 	copyHarmonyTypeToActiveHarmonyType(harmony_type);
 	setup_harmony();
-	initialized=true;  // prevents process() from doing anything before initialization
+	globalsInitialized=true;  // prevents process() from doing anything before initialization and also prevents some access by ModuleWidget
 } 
 
 
