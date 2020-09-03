@@ -238,6 +238,8 @@ struct Meander : Module
 		OUT_MELODY_VOLUME_OUTPUT,
 		OUT_HARMONY_VOLUME_OUTPUT,
 		OUT_BASS_VOLUME_OUTPUT,
+
+		OUT_EXT_POLY_SCALE_OUTPUT,
 		
 		NUM_OUTPUTS
 	};
@@ -2448,9 +2450,12 @@ struct Meander : Module
 							case IN_HARMONY_DIVISOR_EXT_CV:
 								if (fvalue>=0.01)
 								{
-									float ratio=(fvalue/10.0);
+								//	float ratio=(fvalue/10.0);
+									float ratio=(fvalue/9.0); // allow for CV that doesn't quite get to 10.0
 									int exp=(int)(ratio*3);
 									exp=clamp(exp, 0, 3);
+								//	int exp=(int)(ratio*4);
+								//	exp=clamp(exp, 0, 4);
 									int newValue=pow(2,exp);
 
 									if (newValue!=theMeanderState.theHarmonyParms.note_length_divisor)
@@ -2733,9 +2738,10 @@ struct Meander : Module
 							case IN_MELODY_NOTE_LENGTH_DIVISOR_EXT_CV:
 								if (fvalue>=.01)
 								{
-									float ratio=(fvalue/10.0);
-									int exp=(int)(ratio*3);
-									exp=clamp(exp, 0, 3);
+								//	float ratio=(fvalue/10.0);
+									float ratio=(fvalue/9.0);  // allow for CV that doesn't quite get to 10V
+									int exp=(int)(ratio*5);
+									exp=clamp(exp, 0, 5);
 									int newValue=pow(2,exp);
 
 									if (newValue!=theMeanderState.theMelodyParms.note_length_divisor)
@@ -2909,7 +2915,8 @@ struct Meander : Module
 							case IN_ARP_INCREMENT_EXT_CV:
 								if (fvalue>=.01)
 								{
-									float ratio=(fvalue/10.0);
+								//	float ratio=(fvalue/10.0);
+									float ratio=(fvalue/9.0);  // allow for CV that doesn't quite get to 10.0
 									int exp=(int)(ratio*3);
 									exp=clamp(exp, 0, 3)+2;
 									int newValue=pow(2,exp);
@@ -2976,9 +2983,14 @@ struct Meander : Module
 							case IN_ARP_PATTERN_EXT_CV:  // issue with range of -3 to +3
 							    if (true)  // just for local variable scope
 								{
-									float ratio=(fvalue/10.0);
-									int newValue=(int)(ratio*3);
-									newValue=clamp(newValue, -3, 3);
+								//	float ratio=(fvalue/10.0);
+									float ratio=(fvalue/9.0);  // handle CV's that do not quite make it to 10.0V
+								//	int newValue=(int)(ratio*3);
+								//	newValue=clamp(newValue, -3, 3);
+								//	int newValue=(int)(ratio*2);
+									int newValue=(int)(ratio*4);
+									newValue -= 2;
+									newValue=clamp(newValue, -2, 2);
 									if (newValue!=theMeanderState.theArpParms.pattern)
 									{
 										theMeanderState.theArpParms.pattern=newValue;  
@@ -3032,7 +3044,8 @@ struct Meander : Module
 							case IN_BASS_DIVISOR_EXT_CV:
 								if (fvalue>=.01)
 								{
-									float ratio=(fvalue/10.0);
+									//float ratio=(fvalue/10.0);
+									float ratio=(fvalue/9.0); // allow for CV that doesn't quite get to 10.0
 									int exp=(int)(ratio*3);
 									exp=clamp(exp, 0, 3);
 									int newValue=pow(2,exp);
@@ -3507,6 +3520,24 @@ struct Meander : Module
 				params[CONTROL_HARMONY_STEPS_PARAM].setValue(theHarmonyTypes[harmony_type].num_harmony_steps);
 				AuditHarmonyData(3);
 				circleChanged=false;
+			}
+
+			if (true)  // send Poly External Scale to output  // using Aria standard
+			{
+				outputs[OUT_EXT_POLY_SCALE_OUTPUT].setChannels(12);  // set polyphony
+				
+				for (int i=0; i<12; ++i)
+				{
+					outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(0.0,i);  // (not scale note, channel) 
+				}
+				for (int i=0;i<mode_step_intervals[mode][0];++i)
+				{
+					int note=(int)(notes[i]%MAX_NOTES);  
+					if (note==root_key)
+						outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(10.0,(int)note);  // (scale note, channel) 
+					else
+						outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(8.0,(int)note);  // (scale note, channel) 
+				}
 			}
 		}	
 
@@ -4240,7 +4271,7 @@ struct MeanderWidget : ModuleWidget
 			nvgText(args.vg, rect.pos.x+rect.size.x+2, rect.pos.y+rect.size.y/2., label, NULL);
 		}
 
-		void drawLabelLeft(const DrawArgs &args, Rect rect, const char* label)  
+		void drawLabelLeft(const DrawArgs &args, Rect rect, const char* label, float xoffset)  
 		{
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, nvgRGBA( 0x0,  0x0, 0x0, 0xff));
@@ -4248,7 +4279,7 @@ struct MeanderWidget : ModuleWidget
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
-			nvgText(args.vg, rect.pos.x-rect.size.x-2, rect.pos.y+rect.size.y/2., label, NULL);
+			nvgText(args.vg, rect.pos.x-rect.size.x-2+xoffset, rect.pos.y+rect.size.y/2., label, NULL);
 		}
 
 		void drawOutport(const DrawArgs &args, Vec OutportPos, const char* label, float value, int valueDecimalPoints)  // test draw a rounded corner rect  for jack border testing
@@ -4353,7 +4384,7 @@ struct MeanderWidget : ModuleWidget
 						drawLabelAbove(args, ParameterRectLocal[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext, 15.);  
 					}
 					sprintf(labeltext, "%d", i+1);
-					drawLabelLeft(args,ParameterRectLocal[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext);  
+					drawLabelLeft(args,ParameterRectLocal[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext, 0.);  
 				}
 
               
@@ -4693,14 +4724,14 @@ struct MeanderWidget : ModuleWidget
 				snprintf(labeltext, sizeof(labeltext), "%s", "RUN");
 				drawLabelAbove(args,ParameterRectLocal[Meander::BUTTON_RUN_PARAM], labeltext, 12.);
 
-				snprintf(labeltext, sizeof(labeltext), "%s", "OUT");
+				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
 				drawOutport(args, OutportRectLocal[Meander::OUT_RUN_OUT].pos, labeltext, 0, 1);
 				
 			
 				snprintf(labeltext, sizeof(labeltext), "%s", "RESET");
 				drawLabelAbove(args,ParameterRectLocal[Meander::BUTTON_RESET_PARAM], labeltext, 12.);
 				
-				snprintf(labeltext, sizeof(labeltext), "%s", "OUT");
+				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
 				drawOutport(args, OutportRectLocal[Meander::OUT_RESET_OUT].pos, labeltext, 0, 1);
 			
 				snprintf(labeltext, sizeof(labeltext), "%s", "BPM");
@@ -4722,8 +4753,13 @@ struct MeanderWidget : ModuleWidget
 				drawLabelAbove(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext, 12.);
 				snprintf(labeltext, sizeof(labeltext), "%s", "  Clock");
 				drawLabelRight(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext);
-				
-				
+
+				snprintf(labeltext, sizeof(labeltext), "%s", "Poly Ext. Scale");
+				drawLabelLeft(args, OutportRectLocal[Meander::OUT_EXT_POLY_SCALE_OUTPUT], labeltext, -55.);
+
+				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
+				drawOutport(args, OutportRectLocal[Meander::OUT_EXT_POLY_SCALE_OUTPUT].pos, labeltext, 0, 1);
+											
 			}
 
 			if (true)  // draw rounded corner rects  for output jacks border 
@@ -5906,6 +5942,9 @@ struct MeanderWidget : ModuleWidget
 			outPortWidgets[Meander::OUT_FBM_ARP_OUTPUT]=createOutputCentered<PJ301MPort>(mm2px(Vec(380.0, 124.831)), module, Meander::OUT_FBM_ARP_OUTPUT);
 			addOutput(outPortWidgets[Meander::OUT_FBM_ARP_OUTPUT]);
 
+			outPortWidgets[Meander::OUT_EXT_POLY_SCALE_OUTPUT]=createOutputCentered<PJ301MPort>(mm2px(Vec(380.0, 124.831)), module, Meander::OUT_EXT_POLY_SCALE_OUTPUT);
+			addOutput(outPortWidgets[Meander::OUT_EXT_POLY_SCALE_OUTPUT]);
+
 						
 			//**********************************
 
@@ -6138,7 +6177,7 @@ struct MeanderWidget : ModuleWidget
 				else
 				if (i==Meander::IN_CLOCK_EXT_CV)
 				{
-					Vec drawCenter=Vec(22., 320.);
+					Vec drawCenter=Vec(22., 345.);
 					inPortWidgets[Meander::IN_CLOCK_EXT_CV]->box.pos=drawCenter.minus(inPortWidgets[Meander::IN_CLOCK_EXT_CV]->box.size.div(2.));
 				}
 				else
@@ -6218,6 +6257,10 @@ struct MeanderWidget : ModuleWidget
 			outPortWidgets[Meander::OUT_CLOCK_BEATX4_OUTPUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_CLOCK_BEATX4_OUTPUT]->box.size.div(2.));
 			drawCenter=drawCenter.plus(Vec(40,0));
 			outPortWidgets[Meander::OUT_CLOCK_BEATX8_OUTPUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_CLOCK_BEATX8_OUTPUT]->box.size.div(2.));
+			drawCenter=drawCenter.plus(Vec(40,0));
+
+			drawCenter=Vec(145., 300.);
+			outPortWidgets[Meander::OUT_EXT_POLY_SCALE_OUTPUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_EXT_POLY_SCALE_OUTPUT]->box.size.div(2.));
 			drawCenter=drawCenter.plus(Vec(40,0));
 
 			//********************
