@@ -122,6 +122,9 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ## Significant Version Changes
 
+### V1.0.8
+- Support added for "Poly External Scale" output. https://aria.dog/modules/poly-external-scale/ Currently, only Aria Salvatrice's modules can interpret this data.  I specfically tested this with Aria's QQQQ quad quantizer module.  Basically, Meander sends its mode and root scale info out the "Poly Ext. Scale" out port.  QQQQ can receive this data and set up a quantizer that matches Meander's current scale.  Thus, QQQQ can be used in scale sequencers and arpeggiators you might build outside of Meander in the current VCV Rack patch.  QQQQ also adds to Meander by displaying the Meander current mode and root (key) scale notes on a piano keyboard display.  This graphical representation matches the Meander Mode parameter scale that is displayed on the panel below the mode name.
+
 ### V1.0.7
 - Corrected several problems related to module browser and Libray panel appearance.
 
