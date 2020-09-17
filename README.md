@@ -126,6 +126,16 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ## Significant Version Changes
 
+### V1.0.9
+- Corrected issue with melody when arp is enabled.  It now sets the molody note duration to the arp notes duration if arp is enabled.  This makes sure the melody and arp gate output catches all notes.
+- The harmony chord output port now always puts the chord root or tonic note in channel 0.  This enables external modules to extract the root bass note from the chord.  Works for triads and tetrad 7ths.
+- The 12 bar blues progression (#13) was corrected to use the most standard or traditional form.
+- Standardized all progression degree steps to upper case Roman numerals with a space and dash in between steps.
+- Correct the #7 "strong" progression to actually be a strong progressions with each step approaching the tonic by 4ths.
+- Corrected the #22 "random coming home" progression to always return to the tonic via steps of a 4th.
+- When the BPM CV input is connected, Meander now sets the Meander BPM to track the external clock (ex. from CLOCKED) even if Meander is receiving an external clock.
+
+
 ### V1.0.8
 - Support added for "Poly External Scale" output. https://aria.dog/modules/poly-external-scale/ Currently, only Aria Salvatrice's modules can interpret this data.  I specfically tested this with Aria's QQQQ quad quantizer module.  Basically, Meander sends its mode and root scale info out the "Poly Ext. Scale" out port.  QQQQ can receive this data and set up a quantizer that matches Meander's current scale.  Thus, QQQQ can be used in scale sequencers and arpeggiators you might build outside of Meander in the current VCV Rack patch.  QQQQ also adds to Meander by displaying the Meander current mode and root (key) scale notes on a piano keyboard display.  This graphical representation matches the Meander Mode parameter scale that is displayed on the panel below the mode name.
 
