@@ -20,6 +20,7 @@
 #include <windows.h>
 #endif
 
+
 struct Meander : Module 
 {
 	bool instanceRunning = false;
@@ -678,10 +679,11 @@ struct Meander : Module
 
 		if (doDebug) DEBUG("1st 3 step_chord_notes=%d %s, %d %s, %d %s", step_chord_notes[step][0], note_desig[step_chord_notes[step][0]%MAX_NOTES], step_chord_notes[step][1], note_desig[step_chord_notes[step][1]%MAX_NOTES], step_chord_notes[step][2], note_desig[step_chord_notes[step][2]%MAX_NOTES]);
 			
+		bool tonicFound=false;
 		for (int j=0;j<num_chord_members;++j) 
 		{
 				if (doDebug) DEBUG("num_step_chord_notes[%d]=%d", step, num_step_chord_notes[step]);
-				current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState.theHarmonyParms.note_avg*num_step_chord_notes[step])+j]; // do not create inversion
+				current_chord_notes[j]= step_chord_notes[step][(int)(theMeanderState.theHarmonyParms.note_avg*num_step_chord_notes[step])+j]; // may create inversion
 				if (doDebug) DEBUG("current_chord_notes[%d]=%d %s", j, current_chord_notes[j], note_desig[current_chord_notes[j]%MAX_NOTES]);
 						
 				int note_to_play=current_chord_notes[j]-12;  // drop it an octave to get target octave right
@@ -699,7 +701,22 @@ struct Meander : Module
 						if (bar_note_count<256)
 						played_notes_circular_buffer[bar_note_count++]=theMeanderState.theHarmonyParms.last[j];
 					}
-					outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel)
+				
+					//  get tonic in channel 0
+											
+					if ( (note_to_play%MAX_NOTES)==(theMeanderState.last_harmony_chord_root_note%MAX_NOTES))
+					{
+						outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,0);  // (note, channel)
+						tonicFound=true;
+					}
+					else
+					{
+						if (!tonicFound)
+							outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j+1);  // (note, channel)
+						else
+							outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel)
+					}
+					
 				
 				}
 		}
@@ -885,6 +902,12 @@ struct Meander : Module
 				else
 					durationFactor=1.0;
 				float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theMelodyParms.note_length_divisor);
+
+				// adjust melody note duration if arp enabled
+				
+				if (theMeanderState.theArpParms.enabled)
+					note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theArpParms.note_length_divisor);
+				
 
 				if (theMeanderState.theMelodyParms.enabled)
 				melodyGatePulse.trigger(note_duration);  // Test 1s duration  need to use .process to detect this and then send it to output
@@ -1381,6 +1404,11 @@ struct Meander : Module
 				tempo=10;
 			if (tempo>300)
 				tempo=300;
+
+			if (true)  // adjust the tempo knob and param
+			{
+				params[CONTROL_TEMPOBPM_PARAM].setValue(tempo);
+			}
 		}
 		else
 		{
@@ -2214,14 +2242,13 @@ struct Meander : Module
 			if (!instanceRunning)
 				return;
 			// check controls for changes
-
+		
 			if ((fvalue=std::round(params[CONTROL_TEMPOBPM_PARAM].getValue()))!=tempo)
 			{
 				tempo = fvalue;
 				if (doDebug) DEBUG("tempo changed to %d", (int)tempo);
 			}
-		
-
+			
        		int ivalue=std::round(params[CONTROL_TIMESIGNATURETOP_PARAM].getValue());
 			if (ivalue!=time_sig_top)
 			{
@@ -3522,23 +3549,23 @@ struct Meander : Module
 				circleChanged=false;
 			}
 
-			if (true)  // send Poly External Scale to output  // using Aria standard
+			// send Poly External Scale to output  // using Aria standard
+			
+			outputs[OUT_EXT_POLY_SCALE_OUTPUT].setChannels(12);  // set polyphony
+			
+			for (int i=0; i<12; ++i)
 			{
-				outputs[OUT_EXT_POLY_SCALE_OUTPUT].setChannels(12);  // set polyphony
-				
-				for (int i=0; i<12; ++i)
-				{
-					outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(0.0,i);  // (not scale note, channel) 
-				}
-				for (int i=0;i<mode_step_intervals[mode][0];++i)
-				{
-					int note=(int)(notes[i]%MAX_NOTES);  
-					if (note==root_key)
-						outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(10.0,(int)note);  // (scale note, channel) 
-					else
-						outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(8.0,(int)note);  // (scale note, channel) 
-				}
+				outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(0.0,i);  // (not scale note, channel) 
 			}
+			for (int i=0;i<mode_step_intervals[mode][0];++i)
+			{
+				int note=(int)(notes[i]%MAX_NOTES);  
+				if (note==root_key)
+					outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(10.0,(int)note);  // (scale note, channel) 
+				else
+					outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(8.0,(int)note);  // (scale note, channel) 
+			}
+			
 		}	
 
 		if (sec1Clock.process())
