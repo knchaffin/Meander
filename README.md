@@ -129,7 +129,7 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 ### V1.0.10
 - A bug was corrected so that note lengths are correct for all settings.  Legato and Staccato are now correctly handled. Staccato note lengths via the gate outputs are now 50% of the note length designation (1/4, 1/8,, etc.).  Legato (defualt) notes are 95% of the note length designation.
 - 8 new harmonic progressions were added for a new total of 59.  A few slight tweaks were made to existing progressions to fit tradition better.
-- An appendix was added at the end of this manual that lists the harmonic progression description and Roman number step degrees.
+- An appendix was added at the end of this manual that lists the harmonic progression description and Roman number step degrees.  I've added some annotations about the progressions if you are interested in knowing more about harmonic theory.  I'm no expert, but I have worked with Meander for 32 years or so now.  I keep learning though.
 - The panel clock input text was changed to "EXT 8x BPM" to remind users that the clock should be an 8X clock.
 - Expanded the Harmony Presets text displays to allow maximum length in the space provided.
 ### V1.0.9
@@ -162,7 +162,7 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 ### V1.0.4
 - All button parameter internal variable states are now saved and restored in save and autosave and load via json.
 - Run and Reset logic was improved to behave predictably.
-- "All 7ths" was changed to "~Nice 7ths".  Attempts to only play "nice" sounding 7ths, which are V7, ii7, viidim7 and IVM7.  These sound a lot more harmonious and less dissonant.
+- "All 7ths" was changed to "~Nice 7ths".  Attempts to only play "nice" sounding 7ths, which are V7, ii7, viidim7 and IVM7.  These sound a lot more harmonious and less dissonant.  A better choice is V7ths which almost always sound good and are extensively used in music, particlularly in jazz and the blues.
 
 ### V1.0.3
 - Added a STEP button inside of the circle of 5ths to allow the harmony progression to be manually advanced, or via CV.
@@ -170,93 +170,95 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 Appendix I: Harmonic Progression Presets
 -----------------
-Progression #1: Description=  "50's Classic R&R do-wop and jazz" 
+Note: for any of the following, you can select V7ths in Meander and it will almost always sound good, giving a more jazzy or bluesy sound.  Some progressions are tradionally played with non V 7ths in addition but Meander cannot handle arbitray 7ths in a progression.
+
+Progression #1: Description=  "50's Classic R&R do-wop and jazz" this is a circle progression, up by 4ths from VI to I
 Progression #1: Degree steps= "I - VI - II - V" 
 	    	
-Progression #2: Description=  "elem.. classical 1" 
+Progression #2: Description=  "elem.. classical 1" a variation of I-IV-V
 Progression #2: Degree steps= "I - IV - I - V" 
 	    	
-Progression #3: Description=  "romantic - alt root_keys" 
+Progression #3: Description=  "romantic - alt root_keys" in Cmaj this is a major I-IV-V-I with relative minor vi-ii-iii-vi
 Progression #3: Degree steps= "I - IV - V - I - VI - II - III - VI" 
 	       
-Progression #4: Description=  "custom" 
+Progression #4: Description=  "custom" you can use this as a place to create your own progression, but it is hard and no way to save
 	      
-Progression #5: Description=  "the classic  I - IV - V" 
+Progression #5: Description=  "the classic  I - IV - V" the most commonly used progression in Western music. Tonic, subdominant and dominant.
 Progression #5: Degree steps= "I - IV - V - I" 
 	      
-Progression #6: Description=  "elem. classical 3" 
+Progression #6: Description=  "elem. classical 3"  a variation of I-IV-V
 Progression #6: Degree steps= "I - IV - V - IV" 
 	      
-Progression #7: Description=  "strong return by 4ths" 
+Progression #7: Description=  "strong return by 4ths" a circle progression up by 4ths from III to I
 Progression #7: Degree steps= "I - III - VI - IV - V" 
 	         
-Progression #8: Description=  "stay on I" 
+Progression #8: Description=  "stay on I" sometimes it is fun to keep the harmony fixed and let the melody and bass meander within that I tonic chord.
 Progression #8: Degree steps= "I" 
 	    
-Progression #9: Description=  "harmonic+ CW 5ths" 
+Progression #9: Description=  "harmonic+ CW 5ths" in Cmaj this goes C, G, D, A, E, B, F down by 5ths CW around the circle  (harmonicall)
 Progression #9: Degree steps= "I - V - II - VI - III - VII - IV" 
 	    
-Progression #10: Description=  "circle- CCW up by 4ths" 
+Progression #10: Description=  "harmonic circle- CCW up by 4ths" in Cmaj this goes C, F, B, E, A, D, G up bu 4ths CCW around the circle (harmonically)
 Progression #10: Degree steps= "I - IV - VII - III - VI - II - V" 
 	    
-Progression #11: Description=  "tonal+" 
+Progression #11: Description=  "tonal+" in Cmaj this goes C, D, E, F, G, A, B (tonal ascending)
 Progression #11: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
 Progression #12: Description=  "tonal-" 
-Progression #12: Degree steps= "I - VII - VI - V - IV - III - II" 
+Progression #12: Degree steps= "I - VII - VI - V - IV - III - II" in Cmaj is C, B, A, G, F, E, D (tonal descending)
 	    
-Progression #13: Description=  "12 bar blues 1 traditional" 
+Progression #13: Description=  "12 bar blues 1 traditional" a I-IV-V variation
 Progression #13: Degree steps= "I - I - I - I - IV - IV - I - I - V - V - I - I" 
 	   
-Progression #14: Description=  "12 bar blues 2 shuffle" 
+Progression #14: Description=  "12 bar blues 2 shuffle" a I-IV-V variation
 Progression #14: Degree steps= "I - I - I - I - IV - IV - I - I - V - IV - I - I" 
 	    
-Progression #15: Description=  "country 1" 
+Progression #15: Description=  "country 1" a I-IV-V variation
 Progression #15: Degree steps= "I - IV - V - I - I - IV - V - I" 
 	   
-Progression #16: Description=  "country 2" 
+Progression #16: Description=  "country 2" a I-IV-V variation
 Progression #16: Degree steps= "I - I - V - V - IV - IV - I - I" 
 	   
-Progression #17: Description=  "country 3" 
+Progression #17: Description=  "country 3" a I-IV-V variation
 Progression #17: Degree steps= "I - IV - I - V - I - IV - V - I" 
 	   
 Progression #18: Description=  "50's R&R" 
-Progression #18: Degree steps= "I - VI - IV - V" 
+Progression #18: Degree steps= "I - VI - IV - V" a I-IV-V variation
 	    
-Progression #19: Description=  "rock" 
+Progression #19: Description=  "rock" a plagal cadence (IV-I termination) that never resolves the tension that would be resolved if there was a V-I strong cadence.
 Progression #19: Degree steps= "I - IV" 
 	  
-Progression #20: Description=  "folk 1" 
+Progression #20: Description=  "folk 1" a series of strong V-I cadences with strong resolution
 Progression #20: Degree steps= "I - V - I - V" 
 	    
 Progression #21: Description=  "folk 2" 
 Progression #21: Degree steps= "I - I - I - V - V - V - I" 
 	   
-Progression #22: Description=  "random coming home by 4ths" 
+Progression #22: Description=  "random coming home by 4ths" a cadence of strong steps by 4ths where the progression steps a random number of steps to begin.
 Progression #22: Degree steps= "I - VI - II - V" 
 	  
-Progression #23: Description=  "random order" 
+Progression #23: Description=  "random order" a I-IV-V variation in which every combination sounds good.
 Progression #23: Degree steps= "I - IV - V" 
 	    
-Progression #24: Description=  "Hallelujah" 
+Progression #24: Description=  "Hallelujah" a partial song
 Progression #24: Degree steps= "I - VI - I - VI - IV - V - I - I - I - IV - V - VI - IV - V - III - VI" 
 	   		
-Progression #25: Description=  "Canon - DMaj" 
+Progression #25: Description=  "Canon - DMaj" Pachabel's classic
 Progression #25: Degree steps= "I - V - VI - III - IV - I - IV - V" 
 	   
-Progression #26: Description=  "Pop Rock Classic Sensitive" 
+Progression #26: Description=  "Pop Rock Classic Sensitive" has a reputation for sounding sensitive
 Progression #26: Degree steps= "I - V - VI - IV" 
 	    
-Progression #27: Description=  "Andalusion Cadence 1" 
+Progression #27: Description=  "Andalusion Cadence 1" with an authentic cadence
 Progression #27: Degree steps= "I - VII - VI - V" 
 	   
-Progression #28: Description=  "16 Bar Blues" 
+Progression #28: Description=  "16 Bar Blues" a I-IV-V variation
 Progression #28: Degree steps= "I - I - I - I - I - I - I - I - IV - IV - I - I - V - IV - I - I" 
 	  		
-Progression #29: Description=  "Black Stones" 
+Progression #29: Description=  "Black Stones" a partial song
 Progression #29: Degree steps= "I - VII - III - VII - I - I - I - I - I - VII - III - VII - IV - IV - V - V" 
 	  
-Progression #30: Description=  "I - V"  
+Progression #30: Description=  "I - V"  a series of strong V-I cadences.
 Progression #30: Degree steps= "I - V" 
 	    
 Progression #31: Description=  "Markov Chain-Bach 1" 1st order Markov chain with transition probabilities most often used by Bach
@@ -268,28 +270,28 @@ Progression #32: Degree steps= "I - II - IV - V"
 Progression #33: Description=  "Classical" 
 Progression #33: Degree steps= "I - V - I - VI - II - V - I" 
 	    
-Progression #34: Description=  "Mozart " 
+Progression #34: Description=  "Mozart " a typical Mozart progression
 Progression #34: Degree steps= "I - II - V - I" 
 	   
-Progression #35: Description=  "Classical Tonal" 
+Progression #35: Description=  "Classical Tonal" a popular I-IV-V variation
 Progression #35: Degree steps= "I - V - I - IV" 
 	   
-Progression #36: Description=  "Sensitive" 
+Progression #36: Description=  "Sensitive" sometimes called the sensitive female progression
 Progression #36: Degree steps= "VI - IV - I - V" 
 	  
-Progression #37: Description=  "Jazz" 
+Progression #37: Description=  "Jazz" a short strong cadence
 Progression #37: Degree steps= "II - V - I" 
 	   
 Progression #38: Description=  "Pop and jazz" 
 Progression #38: Degree steps= "I - IV - II - V" 
-	    
-Progression #39: Description=  "Pop" 
+	     
+Progression #39: Description=  "Pop" an ascending tonal progression. in Cmaj C-D-E-F-G
 Progression #39: Degree steps= "I - II - III - IV - V" 
 	    
 Progression #40: Description=  "Pop" 
-Progression #40: Degree steps= "I - III - IV - IV"   // can't really do a IV and iv together
+Progression #40: Degree steps= "I - III - IV - IV"   // can't really do a IV and iv together in Meander as traditional
 	   
-Progression #41: Description=  "Andalusian Cadence 2" 
+Progression #41: Description=  "Andalusian Cadence 2" a descending tonal progression. in Cmaj A, G, F, E
 Progression #41: Degree steps= "VI - V - IV - III" 
 	    
 Progression #42: Description=  "Markov Chain - Bach 2" 1st order Markov chain with transition probabilities most often used by Bach
@@ -313,36 +315,36 @@ Progression #47: Degree steps= "I - II - III - IV - V - VI - VII"
 Progression #48: Description=  "Markov Chain- I - IV - V"   1st order Markov chain with transition probabilities most often used in I-IV-V
 Progression #48: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
-Progression #49: Description=  "Jazz 2" 
+Progression #49: Description=  "Jazz 2" a strong cadence ascending by 4ths
 Progression #49: Degree steps= "I - VI - II - V" 
 	  
-Progression #50: Description=  "Jazz 3" 
+Progression #50: Description=  "Jazz 3" a strong cadence ascending by 4ths
 Progression #50: Degree steps= "III - VI - II - V" 
 	    
 Progression #51: Description=  "Jazz 4" 
 Progression #51: Degree steps= "I - IV - III - VI" 
 	    
-Progression #52: Description=  "I-VI alt maj/ rel. min" 
+Progression #52: Description=  "I-VI alt maj/ rel. min" actually a I-vi in Cmaj where v1 is the relative minor of the major I
 Progression #52: Degree steps= "I - VI" 
 	    
-Progression #53: Description=  "12 bar blues variation 1" 
+Progression #53: Description=  "12 bar blues variation 1" a I-IV-V variation
 Progression #53: Degree steps= "I - I - I - I - IV - IV - I - I - V - IV - I - V" 
 	    
-Progression #54: Description=  "12 bar blues variation 2" 
+Progression #54: Description=  "12 bar blues variation 2" a I-IV-V variation
 Progression #54: Degree steps= "I - I - I - I - IV - IV - I - I - IV - V - I - V" 
 	   
-Progression #55: Description=  "12 bar blues turnaround 1" 
+Progression #55: Description=  "12 bar blues turnaround 1" a I-IV-V variation
 Progression #55: Degree steps= "I - IV - I - I - IV - IV - I - I - V - IV - I - V" 
 	  
-Progression #56: Description=  "8 bar blues traditional" 
+Progression #56: Description=  "8 bar blues traditional" a I-IV-V variation
 Progression #56: Degree steps= "I - V - IV - IV - I - V - I - V" 
 	    
-Progression #57: Description=  "8 bar blues variation 1" 
+Progression #57: Description=  "8 bar blues variation 1" a I-IV-V variation
 Progression #57: Degree steps= "I - I - I - I - IV - IV - V - I" 
 	    
-Progression #58: Description=  "8 bar blues variation 2" 
+Progression #58: Description=  "8 bar blues variation 2" a I-IV-V variation
 Progression #58: Degree steps= "I - I - I - I - IV - IV - V - V" 
 	    
-Progression #59: Description=  "II - V - I cadential" 
+Progression #59: Description=  "II - V - I cadential" a short strong cadence ascending by 4ths
 Progression #59: Degree steps= "II - V - I" 
 	   
