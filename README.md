@@ -1,5 +1,5 @@
 # Meander
-Meander plugin module for VCV Rack.   
+Meander plugin module for VCV Rack. This document contains the manual, change-log and appendix of progression presets, in that order.
 
 ![Meander](./res/Meander.png)
 
@@ -40,7 +40,7 @@ Harmony is made up of chords made up of notes from the mode and root that is sel
 
 Technically, Meander uses the "diatonic circle of fifths" rather than the "chromatic circle of fifths". The 7 degrees of the diatonic scale are designated in color on the Meander panel, whereas the 5 remaining degrees of the chromatic scale are rendered in gray. The music theory behind the circle-of-fifths is beyond this manual, but the basic theory is that triad chords next to each other on the colored (diatonic) part of the circle always share one note between them.  Each degree going CW around the circle represents a 5th interval, thus the name circle of fifths. Going CCW, the interval is a 4th.  The shared note between two chords going CW is a 5th above the tonic or root note of the first chord.  Basically, the further away from each other two chords are on the circle, the more dissonance there will be.  A common progression is to start out on the I position and then jump several positions CW on the circle and then walk back CCW on the circle back to the I position.  Each step CCW gives a feeling of resolution of tension back to the I position.  There are a myriad ways to form the progression, but there are a few progressions that almost all popular western music is composed of.  Meander has 50+ such presets.  One of the most common progressions in popular music is I-V-vi-IV , which is #26 in the presets.  That same progression can be played in any of the 84 mode and root combinations, but may have s distinctly different feel in a different mode and root scale.  Not all music is based on chord progressions, but a lot is, particularly popular music. Most progression based Western music limits the chord progression degrees to the 7 colored diatonic scale positions.
 
-Note, whereas the harmonic "degrees" (the Roman numerals) meaning and roles are fixed by definition, other aspects such as "harmonic function" are context, style and composer specific and relative.  In harmonic function analysis, chords are typically grouped using the circle of thirds as tonic, dominant and subdominant functions.  These represent the role (function) of the chord in the harmonic progression.  Different styles of music and different composers tend to have different roles for chords in the progression, such as which chords transition most often to other chords in the progression.  Different classical composers had their own style of harmonic functions that gave them their distinctive sound.  This is also why there are so many variations of popular harmonic progressions, where the harmonic degrees have different functions and contexts.  Meander for Windows made use of harmonic function nomenclature but since that was really just specific to classical music common practice era, I have dropped terms such as tonic, dominant and subdominant from Meander for VCV Rack.
+Note, whereas the harmonic "degrees" (the Roman numerals) meaning and roles are fixed by definition, other aspects such as "harmonic function" are context, style and composer specific and relative.  In harmonic function analysis, chords are typically grouped using the circle of thirds as tonic, dominant and subdominant functions.  These represent the role (function) of the chord in the harmonic progression.  Different styles of music and different composers tend to have different roles for chords in the progression, such as which chords transition most often to other chords in the progression.  Different classical composers had their own style of harmonic functions that gave them their distinctive sound.  This is also why there are so many variations of popular harmonic progressions, where the harmonic degrees have different functions and contexts.  Meander for Windows made use of harmonic function nomenclature but since that was really just specific to classical music common practice era, I have dropped terms such as tonic, dominant and subdominant from Meander for VCV Rack.  In Meander, the harmonoc progression steps are designated as upper case Roman numerals.  Note, the standard practice is to show major chord degrees as upper case Roman and minor chord degrees as lower case Roman, but since the degrees may be major, or minor or diminished depending on the mode and root selected, only upper case Roman is used in Meander.
 
 The fBm fractal noise results in harmony (chord) meandering, by allowing chords to wander over a range from a fraction of an octave to several octaves.  Rather than meandering in octave jumps, the chords meander through chord inversions across one or more octaves.  The playing chords shown inside the circle are in inversion notation if inverted.  If you see a chord such as G/D, that means a Gmaj chord where the G root is played above the D note in the major triad.  These inversions also allow the chord progression around the circle of 5ths to sound less melodic.  These are also two of the reasons that musicians use chord inversions.
 
@@ -110,7 +110,7 @@ Located along the lower left side of the panel are 5 clocked trigger (not clock)
 
 ## Clock In
 
-Located at the extreme bottom left corner of the panel, this accepts an input clock and if connected, overrides Meander's internal clock.  This should be a 1/32 note clock or 8X the beat clock for 4/4 time.  As soon as the clock input is disconnected, Meander will switch over to the internal clock, usually seamlessly.
+Located at the extreme bottom left corner of the panel, this accepts an input clock and if connected, overrides Meander's internal clock.  This should be a 8X the BPM clock.  As soon as the clock input is disconnected, Meander will switch over to the internal clock, usually seamlessly.  An external clock such as Impromptu CLOCKED is recommended with 8X "RATIO" and with outputs RESET, RUN, BPM and the clock connected to the Meander RUN, RESET, BPM and Clock inputs.  The BPM connection is required so that Meander can understand the 8X clock speed and the time signature setting relationships.  If you do not connect the CLOCKED BPM outout to Meander, you should manually set the Meander BPM knob to the same BPM setting as the clock.  If you are using the Meander internal clock, you should not connect the CLOCKED BPM output to Meander.  You can still connect the external clock RUN and RESET connections to Meander in such a case.  Other clock modules than  Impromptu CLOCKED can be used, but may not fully support Meander.
 
 ## Play controls
 
@@ -124,8 +124,14 @@ Whereas most harmonic progression presets are deterministic in the degree steps,
 
 All knob or state buttons can accept an external CV signal to vary the parameter over all allowed values.  The input CV should be from 0V-10.0V .  Meander will normalize the CV input ratio to 0.0-1.0 and then multiply this ratio times the parameter range and add to the minimum value to determine the new parameter value.  Only acceptable values will be set that are a reflection of the configParam() min and max.  The new value is displayed on the panel for your convenience.  If an exernal CV is > 0 V., it has control of the param.  If the external CV is <=0, control is returned to the Meander parameter knobs.  For buttons, the external CV should be 0V for the off state and >=1V for the on state.
 
-## Significant Version Changes
+## Significant Version Changes (Change log)
 
+### V1.0.10
+- A bug was corrected so that note lengths are correct for all settings.  Legato and Staccato are now correctly handled. Staccato note lengths via the gate outputs ae now 50% of the note length designation (1/4, 1/8,, etc.).  Legato (defualt) notes are 95% of the note length designation.
+- 8 new harmonic progressions were added for a new total of 59.  A few slight tweaks were made to existing progressions to fit tradition better.
+- An appendix was addes at the end of this manual that lists the harmonic progression description and Roman number step degrees.
+- The panel clock input text was changed to "EXT 8x BPM" to remind users that the clock should be an 8X clock.
+- Expanded the Harmony Presets text displays to allow maximum length in the space provided.
 ### V1.0.9
 - Corrected issue with melody when arp is enabled.  It now sets the molody note duration to the arp notes duration if arp is enabled.  This makes sure the melody and arp gate output catches all notes.
 - The harmony chord output port now always puts the chord root or tonic note in channel 0.  This enables external modules to extract the root bass note from the chord.  Works for triads and tetrad 7ths.
@@ -161,3 +167,182 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 ### V1.0.3
 - Added a STEP button inside of the circle of 5ths to allow the harmony progression to be manually advanced, or via CV.
 - Panel cleanup.
+
+Appendix I: Harmonic Progression Presets
+-----------------
+    Progression #1: Description=  "50's Classic R&R do-wop and jazz" 
+		Progression #1: Degree steps= "I - VI - II - V" 
+	    	
+		Progression #2: Description=  "elem.. classical 1" 
+		Progression #2: Degree steps= "I - IV - I - V" 
+	    	
+		Progression #3: Description=  "romantic - alt root_keys" 
+		Progression #3: Degree steps= "I - IV - V - I - VI - II - III - VI" 
+	       
+    Progression #4: Description=  "custom" 
+	      
+		Progression #5: Description=  "the classic  I - IV - V" 
+		Progression #5: Degree steps= "I - IV - V - I" 
+	      
+		Progression #6: Description=  "elem. classical 3" 
+		Progression #6: Degree steps= "I - IV - V - IV" 
+	      
+		Progression #7: Description=  "strong return by 4ths" 
+		Progression #7: Degree steps= "I - III - VI - IV - V" 
+	         
+	 	Progression #8: Description=  "stay on I" 
+		Progression #8: Degree steps= "I" 
+	    
+	  Progression #9: Description=  "harmonic+ CW 5ths" 
+		Progression #9: Degree steps= "I - V - II - VI - III - VII - IV" 
+	    
+	  Progression #10: Description=  "circle- CCW up by 4ths" 
+		Progression #10: Degree steps= "I - IV - VII - III - VI - II - V" 
+	    
+	  Progression #11: Description=  "tonal+" 
+		Progression #11: Degree steps= "I - II - III - IV - V - VI - VII" 
+	   
+	  Progression #12: Description=  "tonal-" 
+		Progression #12: Degree steps= "I - VII - VI - V - IV - III - II" 
+	    
+	  Progression #13: Description=  "12 bar blues 1 traditional" 
+		Progression #13: Degree steps= "I - I - I - I - IV - IV - I - I - V - V - I - I" 
+	   
+		Progression #14: Description=  "12 bar blues 2 shuffle" 
+		Progression #14: Degree steps= "I - I - I - I - IV - IV - I - I - V - IV - I - I" 
+	    
+		Progression #15: Description=  "country 1" 
+		Progression #15: Degree steps= "I - IV - V - I - I - IV - V - I" 
+	   
+	  Progression #16: Description=  "country 2" 
+		Progression #16: Degree steps= "I - I - V - V - IV - IV - I - I" 
+	   
+	  Progression #17: Description=  "country 3" 
+		Progression #17: Degree steps= "I - IV - I - V - I - IV - V - I" 
+	   
+		Progression #18: Description=  "50's R&R" 
+		Progression #18: Degree steps= "I - VI - IV - V" 
+	    
+		Progression #19: Description=  "rock" 
+		Progression #19: Degree steps= "I - IV" 
+	  
+		Progression #20: Description=  "folk 1" 
+		Progression #20: Degree steps= "I - V - I - V" 
+	    
+		Progression #21: Description=  "folk 2" 
+		Progression #21: Degree steps= "I - I - I - V - V - V - I" 
+	   
+		Progression #22: Description=  "random coming home by 4ths" 
+		Progression #22: Degree steps= "I - VI - II - V" 
+	  
+		Progression #23: Description=  "random order" 
+		Progression #23: Degree steps= "I - IV - V" 
+	    
+		Progression #24: Description=  "Hallelujah" 
+		Progression #24: Degree steps= "I - VI - I - VI - IV - V - I - I - I - IV - V - VI - IV - V - III - VI" 
+	   		
+		Progression #25: Description=  "Canon - DMaj" 
+		Progression #25: Degree steps= "I - V - VI - III - IV - I - IV - V" 
+	   
+		Progression #26: Description=  "Pop Rock Classic Sensitive" 
+		Progression #26: Degree steps= "I - V - VI - IV" 
+	    
+		Progression #27: Description=  "Andalusion Cadence 1" 
+		Progression #27: Degree steps= "I - VII - VI - V" 
+	   
+		Progression #28: Description=  "16 Bar Blues" 
+		Progression #28: Degree steps= "I - I - I - I - I - I - I - I - IV - IV - I - I - V - IV - I - I" 
+	  		
+		Progression #29: Description=  "Black Stones" 
+		Progression #29: Degree steps= "I - VII - III - VII - I - I - I - I - I - VII - III - VII - IV - IV - V - V" 
+	  
+		Progression #30: Description=  "I - V"  
+		Progression #30: Degree steps= "I - V" 
+	    
+		Progression #31: Description=  "Markov Chain-Bach 1" 
+		Progression #31: Degree steps= "I - II - III - IV - V - VI - VII" 
+	   
+		Progression #32: Description=  "Pop " 
+		Progression #32: Degree steps= "I - II - IV - V" 
+	 
+		Progression #33: Description=  "Classical" 
+		Progression #33: Degree steps= "I - V - I - VI - II - V - I" 
+	    
+		Progression #34: Description=  "Mozart " 
+		Progression #34: Degree steps= "I - II - V - I" 
+	   
+		Progression #35: Description=  "Classical Tonal" 
+		Progression #35: Degree steps= "I - V - I - IV" 
+	   
+		Progression #36: Description=  "Sensitive" 
+		Progression #36: Degree steps= "VI - IV - I - V" 
+	  
+		Progression #37: Description=  "Jazz" 
+		Progression #37: Degree steps= "II - V - I" 
+	   
+		Progression #38: Description=  "Pop and jazz" 
+		Progression #38: Degree steps= "I - IV - II - V" 
+	    
+		Progression #39: Description=  "Pop" 
+		Progression #39: Degree steps= "I - II - III - IV - V" 
+	    
+		Progression #40: Description=  "Pop" 
+		Progression #40: Degree steps= "I - III - IV - IV"   // can't really do a IV and iv together
+	   
+		Progression #41: Description=  "Andalusian Cadence 2" 
+		Progression #41: Degree steps= "VI - V - IV - III" 
+	    
+		Progression #42: Description=  "Markov Chain - Bach 2" 
+		Progression #42: Degree steps= "I - II - III - IV - V - VI - VII" 
+	   
+		Progression #43: Description=  "Markov Chain-Mozart 1" 
+		Progression #43: Degree steps= "I - II - III - IV - V - VI - VII" 
+	   
+		Progression #44: Description=  "Markov Chain-Mozart 2" 
+		Progression #44: Degree steps= "I - II - III - IV - V - VI - VII" 
+	   
+		Progression #45: Description=  "Markov Chain-Palestrina 1" 
+		Progression #45: Degree steps= "I - II - III - IV - V - VI - VII" 
+	    
+		Progression #46: Description=  "Markov Chain-Beethoven 1" 
+		Progression #46: Degree steps= "I - II - III - IV - V - VI - VII" 
+	   
+		Progression #47: Description=  "Markov Chain-Traditional 1" 
+		Progression #47: Degree steps= "I - II - III - IV - V - VI - VII" 
+	    
+		Progression #48: Description=  "Markov Chain- I - IV - V" 
+		Progression #48: Degree steps= "I - II - III - IV - V - VI - VII" 
+	   
+		Progression #49: Description=  "Jazz 2" 
+		Progression #49: Degree steps= "I - VI - II - V" 
+	  
+		Progression #50: Description=  "Jazz 3" 
+		Progression #50: Degree steps= "III - VI - II - V" 
+	    
+		Progression #51: Description=  "Jazz 4" 
+		Progression #51: Degree steps= "I - IV - III - VI" 
+	    
+		Progression #52: Description=  "I-VI alt maj/ rel. min" 
+		Progression #52: Degree steps= "I - VI" 
+	    
+	  Progression #53: Description=  "12 bar blues variation 1" 
+		Progression #53: Degree steps= "I - I - I - I - IV - IV - I - I - V - IV - I - V" 
+	    
+	  Progression #54: Description=  "12 bar blues variation 2" 
+		Progression #54: Degree steps= "I - I - I - I - IV - IV - I - I - IV - V - I - V" 
+	   
+	  Progression #55: Description=  "12 bar blues turnaround 1" 
+		Progression #55: Degree steps= "I - IV - I - I - IV - IV - I - I - V - IV - I - V" 
+	  
+	  Progression #56: Description=  "8 bar blues traditional" 
+		Progression #56: Degree steps= "I - V - IV - IV - I - V - I - V" 
+	    
+	  Progression #57: Description=  "8 bar blues variation 1" 
+		Progression #57: Degree steps= "I - I - I - I - IV - IV - V - I" 
+	    
+	  Progression #58: Description=  "8 bar blues variation 2" 
+		Progression #58: Degree steps= "I - I - I - I - IV - IV - V - V" 
+	    
+		Progression #59: Description=  "II - V - I cadential" 
+		Progression #59: Degree steps= "II - V - I" 
+	   
