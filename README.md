@@ -110,7 +110,7 @@ Located along the lower left side of the panel are 5 clocked trigger (not clock)
 
 ## Clock In
 
-Located at the extreme bottom left corner of the panel, this accepts an input clock and if connected, overrides Meander's internal clock.  This should be a 8X the BPM clock.  As soon as the clock input is disconnected, Meander will switch over to the internal clock, usually seamlessly.  An external clock such as Impromptu CLOCKED is recommended with 8X "RATIO" and with outputs RESET, RUN, BPM and the clock connected to the Meander RUN, RESET, BPM and Clock inputs.  The BPM connection is required so that Meander can understand the 8X clock speed and the time signature setting relationships.  If you do not connect the CLOCKED BPM outout to Meander, you should manually set the Meander BPM knob to the same BPM setting as the clock.  If you are using the Meander internal clock, you should not connect the CLOCKED BPM output to Meander.  You can still connect the external clock RUN and RESET connections to Meander in such a case.  Other clock modules than  Impromptu CLOCKED can be used, but may not fully support Meander.
+Located at the extreme bottom left corner of the panel, this accepts an input clock and if connected, overrides Meander's internal clock.  This should be a 8X the BPM clock.  As soon as the clock input is disconnected, Meander will switch over to the internal clock, usually seamlessly.  An external clock such as Impromptu CLOCKED is recommended with 8X "RATIO" and with outputs RESET, RUN, BPM and the clock connected to the Meander RUN, RESET, BPM and Clock inputs.  The BPM connection is required so that Meander can understand the 8X clock speed and the time signature setting relationships.  If you do not connect the CLOCKED BPM outout to Meander, you should manually set the Meander BPM knob to the same BPM setting as the clock BPM.  If you are using the Meander internal clock, you should not connect the CLOCKED BPM output to Meander.  You can still connect the external clock RUN and RESET connections to Meander in such a case.  Other clock modules than  Impromptu CLOCKED can be used, but may not fully support Meander.  Clocks do not in general understand time signatures, so this all gets tricky.  You can use other ratios than 8x sometimes, but the note lengths in Meander may not be correct. Use other than 8x clocks if it meets your needs and sounds good.  The internal Meander clock is recommended for getting started and for very simple patches.  For more complicated patches, it is best to use an external clock so that clock can also send to other modules that need a clock and all clocks need to be synchronized.  Meander does not have a clock output.
 
 ## Play controls
 
@@ -124,12 +124,12 @@ Whereas most harmonic progression presets are deterministic in the degree steps,
 
 All knob or state buttons can accept an external CV signal to vary the parameter over all allowed values.  The input CV should be from 0V-10.0V .  Meander will normalize the CV input ratio to 0.0-1.0 and then multiply this ratio times the parameter range and add to the minimum value to determine the new parameter value.  Only acceptable values will be set that are a reflection of the configParam() min and max.  The new value is displayed on the panel for your convenience.  If an exernal CV is > 0 V., it has control of the param.  If the external CV is <=0, control is returned to the Meander parameter knobs.  For buttons, the external CV should be 0V for the off state and >=1V for the on state.
 
-## Significant Version Changes (Change log)
+## Significant Version Changes (Changelog)
 
 ### V1.0.10
-- A bug was corrected so that note lengths are correct for all settings.  Legato and Staccato are now correctly handled. Staccato note lengths via the gate outputs ae now 50% of the note length designation (1/4, 1/8,, etc.).  Legato (defualt) notes are 95% of the note length designation.
+- A bug was corrected so that note lengths are correct for all settings.  Legato and Staccato are now correctly handled. Staccato note lengths via the gate outputs are now 50% of the note length designation (1/4, 1/8,, etc.).  Legato (defualt) notes are 95% of the note length designation.
 - 8 new harmonic progressions were added for a new total of 59.  A few slight tweaks were made to existing progressions to fit tradition better.
-- An appendix was addes at the end of this manual that lists the harmonic progression description and Roman number step degrees.
+- An appendix was added at the end of this manual that lists the harmonic progression description and Roman number step degrees.
 - The panel clock input text was changed to "EXT 8x BPM" to remind users that the clock should be an 8X clock.
 - Expanded the Harmony Presets text displays to allow maximum length in the space provided.
 ### V1.0.9
@@ -170,179 +170,179 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 Appendix I: Harmonic Progression Presets
 -----------------
-    Progression #1: Description=  "50's Classic R&R do-wop and jazz" 
-		Progression #1: Degree steps= "I - VI - II - V" 
+Progression #1: Description=  "50's Classic R&R do-wop and jazz" 
+Progression #1: Degree steps= "I - VI - II - V" 
 	    	
-		Progression #2: Description=  "elem.. classical 1" 
-		Progression #2: Degree steps= "I - IV - I - V" 
+Progression #2: Description=  "elem.. classical 1" 
+Progression #2: Degree steps= "I - IV - I - V" 
 	    	
-		Progression #3: Description=  "romantic - alt root_keys" 
-		Progression #3: Degree steps= "I - IV - V - I - VI - II - III - VI" 
+Progression #3: Description=  "romantic - alt root_keys" 
+Progression #3: Degree steps= "I - IV - V - I - VI - II - III - VI" 
 	       
-    Progression #4: Description=  "custom" 
+Progression #4: Description=  "custom" 
 	      
-		Progression #5: Description=  "the classic  I - IV - V" 
-		Progression #5: Degree steps= "I - IV - V - I" 
+Progression #5: Description=  "the classic  I - IV - V" 
+Progression #5: Degree steps= "I - IV - V - I" 
 	      
-		Progression #6: Description=  "elem. classical 3" 
-		Progression #6: Degree steps= "I - IV - V - IV" 
+Progression #6: Description=  "elem. classical 3" 
+Progression #6: Degree steps= "I - IV - V - IV" 
 	      
-		Progression #7: Description=  "strong return by 4ths" 
-		Progression #7: Degree steps= "I - III - VI - IV - V" 
+Progression #7: Description=  "strong return by 4ths" 
+Progression #7: Degree steps= "I - III - VI - IV - V" 
 	         
-	 	Progression #8: Description=  "stay on I" 
-		Progression #8: Degree steps= "I" 
+Progression #8: Description=  "stay on I" 
+Progression #8: Degree steps= "I" 
 	    
-	  Progression #9: Description=  "harmonic+ CW 5ths" 
-		Progression #9: Degree steps= "I - V - II - VI - III - VII - IV" 
+Progression #9: Description=  "harmonic+ CW 5ths" 
+Progression #9: Degree steps= "I - V - II - VI - III - VII - IV" 
 	    
-	  Progression #10: Description=  "circle- CCW up by 4ths" 
-		Progression #10: Degree steps= "I - IV - VII - III - VI - II - V" 
+Progression #10: Description=  "circle- CCW up by 4ths" 
+Progression #10: Degree steps= "I - IV - VII - III - VI - II - V" 
 	    
-	  Progression #11: Description=  "tonal+" 
-		Progression #11: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #11: Description=  "tonal+" 
+Progression #11: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
-	  Progression #12: Description=  "tonal-" 
-		Progression #12: Degree steps= "I - VII - VI - V - IV - III - II" 
+Progression #12: Description=  "tonal-" 
+Progression #12: Degree steps= "I - VII - VI - V - IV - III - II" 
 	    
-	  Progression #13: Description=  "12 bar blues 1 traditional" 
-		Progression #13: Degree steps= "I - I - I - I - IV - IV - I - I - V - V - I - I" 
+Progression #13: Description=  "12 bar blues 1 traditional" 
+Progression #13: Degree steps= "I - I - I - I - IV - IV - I - I - V - V - I - I" 
 	   
-		Progression #14: Description=  "12 bar blues 2 shuffle" 
-		Progression #14: Degree steps= "I - I - I - I - IV - IV - I - I - V - IV - I - I" 
+Progression #14: Description=  "12 bar blues 2 shuffle" 
+Progression #14: Degree steps= "I - I - I - I - IV - IV - I - I - V - IV - I - I" 
 	    
-		Progression #15: Description=  "country 1" 
-		Progression #15: Degree steps= "I - IV - V - I - I - IV - V - I" 
+Progression #15: Description=  "country 1" 
+Progression #15: Degree steps= "I - IV - V - I - I - IV - V - I" 
 	   
-	  Progression #16: Description=  "country 2" 
-		Progression #16: Degree steps= "I - I - V - V - IV - IV - I - I" 
+Progression #16: Description=  "country 2" 
+Progression #16: Degree steps= "I - I - V - V - IV - IV - I - I" 
 	   
-	  Progression #17: Description=  "country 3" 
-		Progression #17: Degree steps= "I - IV - I - V - I - IV - V - I" 
+Progression #17: Description=  "country 3" 
+Progression #17: Degree steps= "I - IV - I - V - I - IV - V - I" 
 	   
-		Progression #18: Description=  "50's R&R" 
-		Progression #18: Degree steps= "I - VI - IV - V" 
+Progression #18: Description=  "50's R&R" 
+Progression #18: Degree steps= "I - VI - IV - V" 
 	    
-		Progression #19: Description=  "rock" 
-		Progression #19: Degree steps= "I - IV" 
+Progression #19: Description=  "rock" 
+Progression #19: Degree steps= "I - IV" 
 	  
-		Progression #20: Description=  "folk 1" 
-		Progression #20: Degree steps= "I - V - I - V" 
+Progression #20: Description=  "folk 1" 
+Progression #20: Degree steps= "I - V - I - V" 
 	    
-		Progression #21: Description=  "folk 2" 
-		Progression #21: Degree steps= "I - I - I - V - V - V - I" 
+Progression #21: Description=  "folk 2" 
+Progression #21: Degree steps= "I - I - I - V - V - V - I" 
 	   
-		Progression #22: Description=  "random coming home by 4ths" 
-		Progression #22: Degree steps= "I - VI - II - V" 
+Progression #22: Description=  "random coming home by 4ths" 
+Progression #22: Degree steps= "I - VI - II - V" 
 	  
-		Progression #23: Description=  "random order" 
-		Progression #23: Degree steps= "I - IV - V" 
+Progression #23: Description=  "random order" 
+Progression #23: Degree steps= "I - IV - V" 
 	    
-		Progression #24: Description=  "Hallelujah" 
-		Progression #24: Degree steps= "I - VI - I - VI - IV - V - I - I - I - IV - V - VI - IV - V - III - VI" 
+Progression #24: Description=  "Hallelujah" 
+Progression #24: Degree steps= "I - VI - I - VI - IV - V - I - I - I - IV - V - VI - IV - V - III - VI" 
 	   		
-		Progression #25: Description=  "Canon - DMaj" 
-		Progression #25: Degree steps= "I - V - VI - III - IV - I - IV - V" 
+Progression #25: Description=  "Canon - DMaj" 
+Progression #25: Degree steps= "I - V - VI - III - IV - I - IV - V" 
 	   
-		Progression #26: Description=  "Pop Rock Classic Sensitive" 
-		Progression #26: Degree steps= "I - V - VI - IV" 
+Progression #26: Description=  "Pop Rock Classic Sensitive" 
+Progression #26: Degree steps= "I - V - VI - IV" 
 	    
-		Progression #27: Description=  "Andalusion Cadence 1" 
-		Progression #27: Degree steps= "I - VII - VI - V" 
+Progression #27: Description=  "Andalusion Cadence 1" 
+Progression #27: Degree steps= "I - VII - VI - V" 
 	   
-		Progression #28: Description=  "16 Bar Blues" 
-		Progression #28: Degree steps= "I - I - I - I - I - I - I - I - IV - IV - I - I - V - IV - I - I" 
+Progression #28: Description=  "16 Bar Blues" 
+Progression #28: Degree steps= "I - I - I - I - I - I - I - I - IV - IV - I - I - V - IV - I - I" 
 	  		
-		Progression #29: Description=  "Black Stones" 
-		Progression #29: Degree steps= "I - VII - III - VII - I - I - I - I - I - VII - III - VII - IV - IV - V - V" 
+Progression #29: Description=  "Black Stones" 
+Progression #29: Degree steps= "I - VII - III - VII - I - I - I - I - I - VII - III - VII - IV - IV - V - V" 
 	  
-		Progression #30: Description=  "I - V"  
-		Progression #30: Degree steps= "I - V" 
+Progression #30: Description=  "I - V"  
+Progression #30: Degree steps= "I - V" 
 	    
-		Progression #31: Description=  "Markov Chain-Bach 1" 
-		Progression #31: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #31: Description=  "Markov Chain-Bach 1" 1st order Markov chain with transition probabilities most often used by Bach
+Progression #31: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
-		Progression #32: Description=  "Pop " 
-		Progression #32: Degree steps= "I - II - IV - V" 
+Progression #32: Description=  "Pop " 
+Progression #32: Degree steps= "I - II - IV - V" 
 	 
-		Progression #33: Description=  "Classical" 
-		Progression #33: Degree steps= "I - V - I - VI - II - V - I" 
+Progression #33: Description=  "Classical" 
+Progression #33: Degree steps= "I - V - I - VI - II - V - I" 
 	    
-		Progression #34: Description=  "Mozart " 
-		Progression #34: Degree steps= "I - II - V - I" 
+Progression #34: Description=  "Mozart " 
+Progression #34: Degree steps= "I - II - V - I" 
 	   
-		Progression #35: Description=  "Classical Tonal" 
-		Progression #35: Degree steps= "I - V - I - IV" 
+Progression #35: Description=  "Classical Tonal" 
+Progression #35: Degree steps= "I - V - I - IV" 
 	   
-		Progression #36: Description=  "Sensitive" 
-		Progression #36: Degree steps= "VI - IV - I - V" 
+Progression #36: Description=  "Sensitive" 
+Progression #36: Degree steps= "VI - IV - I - V" 
 	  
-		Progression #37: Description=  "Jazz" 
-		Progression #37: Degree steps= "II - V - I" 
+Progression #37: Description=  "Jazz" 
+Progression #37: Degree steps= "II - V - I" 
 	   
-		Progression #38: Description=  "Pop and jazz" 
-		Progression #38: Degree steps= "I - IV - II - V" 
+Progression #38: Description=  "Pop and jazz" 
+Progression #38: Degree steps= "I - IV - II - V" 
 	    
-		Progression #39: Description=  "Pop" 
-		Progression #39: Degree steps= "I - II - III - IV - V" 
+Progression #39: Description=  "Pop" 
+Progression #39: Degree steps= "I - II - III - IV - V" 
 	    
-		Progression #40: Description=  "Pop" 
-		Progression #40: Degree steps= "I - III - IV - IV"   // can't really do a IV and iv together
+Progression #40: Description=  "Pop" 
+Progression #40: Degree steps= "I - III - IV - IV"   // can't really do a IV and iv together
 	   
-		Progression #41: Description=  "Andalusian Cadence 2" 
-		Progression #41: Degree steps= "VI - V - IV - III" 
+Progression #41: Description=  "Andalusian Cadence 2" 
+Progression #41: Degree steps= "VI - V - IV - III" 
 	    
-		Progression #42: Description=  "Markov Chain - Bach 2" 
-		Progression #42: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #42: Description=  "Markov Chain - Bach 2" 1st order Markov chain with transition probabilities most often used by Bach
+Progression #42: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
-		Progression #43: Description=  "Markov Chain-Mozart 1" 
-		Progression #43: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #43: Description=  "Markov Chain-Mozart 1" 1st order Markov chain with transition probabilities most often used by Mozart
+Progression #43: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
-		Progression #44: Description=  "Markov Chain-Mozart 2" 
-		Progression #44: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #44: Description=  "Markov Chain-Mozart 2" 1st order Markov chain with transition probabilities most often used by Mozart
+Progression #44: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
-		Progression #45: Description=  "Markov Chain-Palestrina 1" 
-		Progression #45: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #45: Description=  "Markov Chain-Palestrina 1" 1st order Markov chain with transition probabilities most often used by Palestrina
+Progression #45: Degree steps= "I - II - III - IV - V - VI - VII" 
 	    
-		Progression #46: Description=  "Markov Chain-Beethoven 1" 
-		Progression #46: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #46: Description=  "Markov Chain-Beethoven 1" 1st order Markov chain with transition probabilities most often used by Beethoven
+Progression #46: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
-		Progression #47: Description=  "Markov Chain-Traditional 1" 
-		Progression #47: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #47: Description=  "Markov Chain-Traditional 1" 1st order Markov chain with transition probabilities most often used in Western music
+Progression #47: Degree steps= "I - II - III - IV - V - VI - VII" 
 	    
-		Progression #48: Description=  "Markov Chain- I - IV - V" 
-		Progression #48: Degree steps= "I - II - III - IV - V - VI - VII" 
+Progression #48: Description=  "Markov Chain- I - IV - V"   1st order Markov chain with transition probabilities most often used in I-IV-V
+Progression #48: Degree steps= "I - II - III - IV - V - VI - VII" 
 	   
-		Progression #49: Description=  "Jazz 2" 
-		Progression #49: Degree steps= "I - VI - II - V" 
+Progression #49: Description=  "Jazz 2" 
+Progression #49: Degree steps= "I - VI - II - V" 
 	  
-		Progression #50: Description=  "Jazz 3" 
-		Progression #50: Degree steps= "III - VI - II - V" 
+Progression #50: Description=  "Jazz 3" 
+Progression #50: Degree steps= "III - VI - II - V" 
 	    
-		Progression #51: Description=  "Jazz 4" 
-		Progression #51: Degree steps= "I - IV - III - VI" 
+Progression #51: Description=  "Jazz 4" 
+Progression #51: Degree steps= "I - IV - III - VI" 
 	    
-		Progression #52: Description=  "I-VI alt maj/ rel. min" 
-		Progression #52: Degree steps= "I - VI" 
+Progression #52: Description=  "I-VI alt maj/ rel. min" 
+Progression #52: Degree steps= "I - VI" 
 	    
-	  Progression #53: Description=  "12 bar blues variation 1" 
-		Progression #53: Degree steps= "I - I - I - I - IV - IV - I - I - V - IV - I - V" 
+Progression #53: Description=  "12 bar blues variation 1" 
+Progression #53: Degree steps= "I - I - I - I - IV - IV - I - I - V - IV - I - V" 
 	    
-	  Progression #54: Description=  "12 bar blues variation 2" 
-		Progression #54: Degree steps= "I - I - I - I - IV - IV - I - I - IV - V - I - V" 
+Progression #54: Description=  "12 bar blues variation 2" 
+Progression #54: Degree steps= "I - I - I - I - IV - IV - I - I - IV - V - I - V" 
 	   
-	  Progression #55: Description=  "12 bar blues turnaround 1" 
-		Progression #55: Degree steps= "I - IV - I - I - IV - IV - I - I - V - IV - I - V" 
+Progression #55: Description=  "12 bar blues turnaround 1" 
+Progression #55: Degree steps= "I - IV - I - I - IV - IV - I - I - V - IV - I - V" 
 	  
-	  Progression #56: Description=  "8 bar blues traditional" 
-		Progression #56: Degree steps= "I - V - IV - IV - I - V - I - V" 
+Progression #56: Description=  "8 bar blues traditional" 
+Progression #56: Degree steps= "I - V - IV - IV - I - V - I - V" 
 	    
-	  Progression #57: Description=  "8 bar blues variation 1" 
-		Progression #57: Degree steps= "I - I - I - I - IV - IV - V - I" 
+Progression #57: Description=  "8 bar blues variation 1" 
+Progression #57: Degree steps= "I - I - I - I - IV - IV - V - I" 
 	    
-	  Progression #58: Description=  "8 bar blues variation 2" 
-		Progression #58: Degree steps= "I - I - I - I - IV - IV - V - V" 
+Progression #58: Description=  "8 bar blues variation 2" 
+Progression #58: Degree steps= "I - I - I - I - IV - IV - V - V" 
 	    
-		Progression #59: Description=  "II - V - I cadential" 
-		Progression #59: Degree steps= "II - V - I" 
+Progression #59: Description=  "II - V - I cadential" 
+Progression #59: Degree steps= "II - V - I" 
 	   
