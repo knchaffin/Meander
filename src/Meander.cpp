@@ -732,7 +732,7 @@ struct Meander : Module
 			if (theMeanderState.theHarmonyParms.enable_staccato)
 				durationFactor=0.5;
 			else
-				durationFactor=1.0;
+				durationFactor=0.95;
 			
 			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BAR_OUTPUT)
 				durationFactor*=1.0;
@@ -749,7 +749,7 @@ struct Meander : Module
 			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BEATX8_OUTPUT)
 				durationFactor*=.03125;	
 						
-			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
+			float note_duration=durationFactor*4/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
 			harmonyGatePulse.reset();  // kill the pulse in case it is active
 			harmonyGatePulse.trigger(note_duration);  
 		}
@@ -900,13 +900,13 @@ struct Meander : Module
 				if (theMeanderState.theMelodyParms.enable_staccato)
 					durationFactor=0.5;
 				else
-					durationFactor=1.0;
-				float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theMelodyParms.note_length_divisor);
+					durationFactor=0.95;
+				float note_duration=durationFactor*4/(frequency*theMeanderState.theMelodyParms.note_length_divisor);
 
 				// adjust melody note duration if arp enabled
 				
 				if (theMeanderState.theArpParms.enabled)
-					note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theArpParms.note_length_divisor);
+					note_duration=durationFactor*4/(frequency*theMeanderState.theArpParms.note_length_divisor);
 				
 
 				if (theMeanderState.theMelodyParms.enabled)
@@ -1044,8 +1044,8 @@ struct Meander : Module
 		if (theMeanderState.theMelodyParms.enable_staccato)
 			durationFactor=0.5;
 		else
-			durationFactor=1.0;
-		float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theArpParms.note_length_divisor);
+			durationFactor=0.95;
+		float note_duration=durationFactor*4/(frequency*theMeanderState.theArpParms.note_length_divisor);
 		melodyGatePulse.trigger(note_duration);  
 	}
  
@@ -1111,8 +1111,8 @@ struct Meander : Module
 			if (theMeanderState.theBassParms.enable_staccato)
 				durationFactor=0.5;
 			else
-				durationFactor=1.0;
-			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theBassParms.note_length_divisor);
+				durationFactor=0.95;
+			float note_duration=durationFactor*4/(frequency*theMeanderState.theBassParms.note_length_divisor);
 		    bassGatePulse.trigger(note_duration);  // Test 1s duration  need to use .process to detect this and then send it to output
 		}
 	}
@@ -4455,11 +4455,11 @@ struct MeanderWidget : ModuleWidget
 				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_PROG_STEP_PARAM].pos, labeltext, 0, -1);
  
 				//  do the progression displays
-				pos =ParameterRectLocal[Meander::CONTROL_HARMONYPRESETS_PARAM].pos.plus(Vec(0,20));
+				pos =ParameterRectLocal[Meander::CONTROL_HARMONYPRESETS_PARAM].pos.plus(Vec(-20,20));
 							
 				nvgBeginPath(args.vg);
 				nvgFillColor(args.vg, nvgRGBA( 0x2f,  0x27, 0x0a, 0xff));
-				nvgRoundedRect(args.vg, pos.x,pos.y, 175.f, 20.f, 4.f);
+				nvgRoundedRect(args.vg, pos.x,pos.y, 195.f, 20.f, 4.f);
 				nvgStrokeColor(args.vg,nvgRGBA( 0x80,  0x80 , 0x80, 0x80));
 				nvgStrokeWidth(args.vg, 2.0);
 				nvgFill(args.vg);
@@ -4474,7 +4474,7 @@ struct MeanderWidget : ModuleWidget
 					nvgTextLetterSpacing(args.vg, -1);
 					nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
 					snprintf(text, sizeof(text), "#%d:  %s", harmony_type, theActiveHarmonyType.harmony_type_desc);
-					nvgText(args.vg, pos.x+10, pos.y+10, text, NULL);
+					nvgText(args.vg, pos.x+5, pos.y+10, text, NULL);
 				}
 				pos = pos.plus(Vec(0,20));
 
@@ -4483,7 +4483,7 @@ struct MeanderWidget : ModuleWidget
 				nvgFillColor(args.vg, nvgRGBA( 0x2f,  0x27, 0x0a, 0xff));
 				nvgStrokeColor(args.vg,nvgRGBA( 0x80,  0x80 , 0x80, 0x80));
 				nvgStrokeWidth(args.vg, 2.0);
-				nvgRoundedRect(args.vg, pos.x,pos.y, 175.f, 20.f, 4.f);
+				nvgRoundedRect(args.vg, pos.x,pos.y, 195.f, 20.f, 4.f);
 				nvgFill(args.vg);
 				nvgStroke(args.vg);
 
@@ -4493,7 +4493,7 @@ struct MeanderWidget : ModuleWidget
 					nvgFontSize(args.vg, 12);
 					nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
 					snprintf(text, sizeof(text), "%s           ",  theActiveHarmonyType.harmony_degrees_desc);
-					nvgText(args.vg, pos.x+10, pos.y+10, text, NULL);
+					nvgText(args.vg, pos.x+5, pos.y+10, text, NULL);
 				}
 								
 			}
@@ -4776,7 +4776,7 @@ struct MeanderWidget : ModuleWidget
 				snprintf(labeltext, sizeof(labeltext), "%s", "Mode");
 				drawLabelRight(args,ParameterRectLocal[Meander::CONTROL_SCALE_PARAM], labeltext);
 
-				snprintf(labeltext, sizeof(labeltext), "%s", "EXT");
+				snprintf(labeltext, sizeof(labeltext), "%s", "                EXT 8x BPM");
 				drawLabelAbove(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext, 12.);
 				snprintf(labeltext, sizeof(labeltext), "%s", "  Clock");
 				drawLabelRight(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext);
@@ -6092,7 +6092,7 @@ struct MeanderWidget : ModuleWidget
 			drawCenter=drawCenter.plus(Vec(-85,22));			
 			paramWidgets[Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM]->box.size.div(2.));
 			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM]->box.pos=drawCenter.minus(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM]->box.size.div(2.));
-			drawCenter=drawCenter.plus(Vec(0,22));			
+			drawCenter=drawCenter.plus(Vec(0,22));	
 			paramWidgets[Meander::CONTROL_HARMONYPRESETS_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::CONTROL_HARMONYPRESETS_PARAM]->box.size.div(2.));
 
 			// redo all melody controls positions
