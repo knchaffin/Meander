@@ -1,4 +1,4 @@
-# Meander
+[comment]: <> # Meander
 Meander plugin module for VCV Rack. This document contains the manual, change-log and appendix of progression presets, in that order.
 
 ## Contents:
