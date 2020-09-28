@@ -168,7 +168,7 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 - Added a STEP button inside of the circle of 5ths to allow the harmony progression to be manually advanced, or via CV.
 - Panel cleanup.
 
-Appendix I: Harmonic Progression Presets
+## Appendix I: Harmonic Progression Presets
 -----------------
 Note: for any of the following, you can select V7ths in Meander and it will almost always sound good, giving a more jazzy or bluesy sound.  Some progressions are tradionally played with non V 7ths in addition but Meander cannot handle arbitray 7ths in a progression.
 
