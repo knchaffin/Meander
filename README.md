@@ -175,7 +175,6 @@ Note: for any of the following, you can select V7ths in Meander and it will almo
 
 * Progression #1: Description=  "50's Classic R&R do-wop and jazz" this is a circle progression, up by 4ths from VI to I
 * Progression #1: Degree steps= "I - VI - II - V" 
-	    	
 * Progression #2: Description=  "elem.. classical 1" a variation of I-IV-V
 * Progression #2: Degree steps= "I - IV - I - V" 
 	    	
