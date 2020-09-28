@@ -1,8 +1,7 @@
-
-Meander plugin module for VCV Rack. This document contains the manual, change-log and appendix of progression presets, in that order.
+## PurrSoftware Meander plugin module for VCV Rack.
 
 ## Contents
-- [Manual](#manual) 
+* [Manual](#manual) 
 * [MeanderChangeLog](#meander-change-log)
 * [MeanderProgressionPresets](#meander-progression-presets)
 
