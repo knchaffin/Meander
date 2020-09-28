@@ -1,6 +1,14 @@
 # Meander
 Meander plugin module for VCV Rack. This document contains the manual, change-log and appendix of progression presets, in that order.
 
+## Contents:
+* [MeanderManual (#meander-manual)
+* [MeanderChangeLog] (#meander-change-log)
+* [MeanderProgressionPresets] (#meander-progression-presets)
+
+## MeanderManual <a id="meander-manual"></a>
+
+
 ![Meander](./res/Meander.png)
 
 ## Caveat:
@@ -124,6 +132,7 @@ Whereas most harmonic progression presets are deterministic in the degree steps,
 
 All knob or state buttons can accept an external CV signal to vary the parameter over all allowed values.  The input CV should be from 0V-10.0V .  Meander will normalize the CV input ratio to 0.0-1.0 and then multiply this ratio times the parameter range and add to the minimum value to determine the new parameter value.  Only acceptable values will be set that are a reflection of the configParam() min and max.  The new value is displayed on the panel for your convenience.  If an exernal CV is > 0 V., it has control of the param.  If the external CV is <=0, control is returned to the Meander parameter knobs.  For buttons, the external CV should be 0V for the off state and >=1V for the on state.
 
+## MeanderChangeLog <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
 ### V1.0.10
@@ -168,6 +177,7 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 - Added a STEP button inside of the circle of 5ths to allow the harmony progression to be manually advanced, or via CV.
 - Panel cleanup.
  
+## MeanderProgressionPresets <a id="meander-progression-presets"></a>
 ## Appendix I: Harmonic Progression Presets
 
 ###
