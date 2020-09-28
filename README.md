@@ -6,7 +6,7 @@ Meander plugin module for VCV Rack. This document contains the manual, change-lo
 * [MeanderChangeLog] (#meander-change-log)
 * [MeanderProgressionPresets] (#meander-progression-presets)
 
-## manual <a name="manual"></a> 
+## manual <a name="Manual"></a> 
 
 
 ![Meander](./res/Meander.png)
