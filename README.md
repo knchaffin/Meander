@@ -172,8 +172,8 @@ Appendix I: Harmonic Progression Presets
 -----------------
 Note: for any of the following, you can select V7ths in Meander and it will almost always sound good, giving a more jazzy or bluesy sound.  Some progressions are tradionally played with non V 7ths in addition but Meander cannot handle arbitray 7ths in a progression.
 
-Progression #1: Description=  "50's Classic R&R do-wop and jazz" this is a circle progression, up by 4ths from VI to I
-Progression #1: Degree steps= "I - VI - II - V" 
+- Progression #1: Description=  "50's Classic R&R do-wop and jazz" this is a circle progression, up by 4ths from VI to I
+- Progression #1: Degree steps= "I - VI - II - V" 
 	    	
 Progression #2: Description=  "elem.. classical 1" a variation of I-IV-V
 Progression #2: Degree steps= "I - IV - I - V" 
