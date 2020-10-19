@@ -141,8 +141,8 @@ struct Meander : Module
 		IN_ROOT_KEY_EXT_CV,
 		IN_SCALE_EXT_CV,
 		IN_CLOCK_EXT_CV,
-		IN_HARMONY_CIRCLE_POSITION_EXT_CV,
-		IN_HARMONY_CIRCLE_GATE_EXT_CV,
+		IN_HARMONY_CIRCLE_DEGREE_EXT_CV,
+		IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV,
 
 		
 		IN_MELODY_ENABLE_EXT_CV,			
@@ -239,9 +239,8 @@ struct Meander : Module
 		OUT_MELODY_VOLUME_OUTPUT,
 		OUT_HARMONY_VOLUME_OUTPUT,
 		OUT_BASS_VOLUME_OUTPUT,
-
 		OUT_EXT_POLY_SCALE_OUTPUT,
-		
+	
 		NUM_OUTPUTS
 	};
 
@@ -346,7 +345,7 @@ struct Meander : Module
 		}
 		float sqr() 
 		{
-			float sqr = phase < pw ? 1.0f : -1.0f;
+			float sqr = (phase < pw) ? 1.0f : -1.0f;
 			return sqr;
 		}
 	};  // struct LFOGenerator 
@@ -377,7 +376,11 @@ struct Meander : Module
 				break;
 			}
 		} 
- 
+
+		theMeanderState.theMelodyParms.last_step=theMeanderState.last_harmony_step;
+		int note_index=	(int)(theMeanderState.theMelodyParms.note_avg*num_step_chord_notes[theMeanderState.last_harmony_step]);		// not sure this is necessary
+		theMeanderState.theMelodyParms.last_chord_note_index= note_index;
+		 
 		int current_chord_note=0;
 		int root_key_note=circle_of_fifths[circle_position]; 
 		if (doDebug) DEBUG("root_key_note=%d %s", root_key_note, note_desig[root_key_note%12]); 
@@ -733,7 +736,8 @@ struct Meander : Module
 				durationFactor=0.5;
 			else
 				durationFactor=0.95;
-			
+
+					
 			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BAR_OUTPUT)
 				durationFactor*=1.0;
 			else	
@@ -748,6 +752,10 @@ struct Meander : Module
 			else
 			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BEATX8_OUTPUT)
 				durationFactor*=.03125;	
+			else
+			if ( inputs[IN_PROG_STEP_EXT_CV].isConnected()) // something is connected to the circle STEP input but we do not know what. Assume it is an 16X BPM frequency
+		   		durationFactor *= .01562;  
+			
 						
 			float note_duration=durationFactor*4/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
 			harmonyGatePulse.reset();  // kill the pulse in case it is active
@@ -1106,14 +1114,33 @@ struct Meander : Module
 					theMeanderState.theBassParms.note_accented=false; 
 			}	
 			
-			
 			float durationFactor=1.0;
 			if (theMeanderState.theBassParms.enable_staccato)
 				durationFactor=0.5;
 			else
 				durationFactor=0.95;
-			float note_duration=durationFactor*4/(frequency*theMeanderState.theBassParms.note_length_divisor);
-		    bassGatePulse.trigger(note_duration);  // Test 1s duration  need to use .process to detect this and then send it to output
+			
+			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BAR_OUTPUT)
+				durationFactor*=1.0;
+			else	
+			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BEAT_OUTPUT)
+				durationFactor*=.25;
+			else	
+			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BEATX2_OUTPUT)
+				durationFactor*=.125;
+			else	
+			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BEATX4_OUTPUT)
+				durationFactor*=.0625;	
+			else
+			if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port==OUT_CLOCK_BEATX8_OUTPUT)
+				durationFactor*=.03125;	
+			else
+			if ( inputs[IN_PROG_STEP_EXT_CV].isConnected()) // something is connected to the circle STEP input but we do not know what. Assume it is an 16X BPM frequency
+		   		durationFactor *= .01562;  
+			
+			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theBassParms.note_length_divisor);
+
+		    bassGatePulse.trigger(note_duration);  
 		}
 	}
    
@@ -1527,15 +1554,39 @@ struct Meander : Module
 			LFOclock.step(1.0 / args.sampleRate);
 
 			bool clockTick=false;
-			if ( inputs[IN_CLOCK_EXT_CV].isConnected())
+			if ( inputs[IN_CLOCK_EXT_CV].isConnected())  // external clock connected to Clock input
 			{
-				if (ST_32ts_trig.process(inputs[IN_CLOCK_EXT_CV].getVoltage()))  // triggers from each external clock tick 
-				 	 clockTick=true;
+				if (!inportStates[IN_CLOCK_EXT_CV].inTransition)
+				{
+					if (ST_32ts_trig.process(inputs[IN_CLOCK_EXT_CV].getVoltage()))  // triggers from each external clock tick ONLY once when input reaches 1.0V
+					{
+						clockTick=true;
+						outputs[OUT_CLOCK_OUT].setChannels(1);  // set polyphony  
+						outputs[OUT_CLOCK_OUT].setVoltage(10.0f);
+						inportStates[IN_CLOCK_EXT_CV].inTransition=true;
+					}
+				}
+
+				if (inportStates[IN_CLOCK_EXT_CV].inTransition)
+				{
+					if (ST_32ts_trig.process(math::rescale(inputs[IN_CLOCK_EXT_CV].getVoltage(),10.f,0.f,0.f,10.f)))  // triggers from each external clock tick ONLY once when inverted input reaches 0.0V
+					{
+						outputs[OUT_CLOCK_OUT].setChannels(1);  // set polyphony  
+						outputs[OUT_CLOCK_OUT].setVoltage(0.0f);  
+						inportStates[IN_CLOCK_EXT_CV].inTransition=false;
+					}
+				}
 			}
-			else
+			else // no external clock connected to Clock input, use internal clock
 			{
-				if (ST_32ts_trig.process(LFOclock.sqr()))
+				float IntClockLevel=5.0f*(LFOclock.sqr()+1.0f);
+				if (ST_32ts_trig.process(LFOclock.sqr()))                         // triggers from each external clock tick ONLY once when .sqr() reaches 1.0V
+				{
 					 clockTick=true;
+				}
+			
+				 outputs[OUT_CLOCK_OUT].setChannels(1);  // set polyphony  
+				 outputs[OUT_CLOCK_OUT].setVoltage(IntClockLevel);  
 			}
 				
 		    if (clockTick)
@@ -1725,7 +1776,17 @@ struct Meander : Module
 				}
 				
 				clockPulse32ts.trigger(trigger_length);  // retrigger the pulse after all done in this loop
+
+			//	outputs[OUT_CLOCK_OUT].setChannels(1);  // set polyphony  
+			//	outputs[OUT_CLOCK_OUT].setVoltage(10.0f);  
+				
 			}
+			else  // !clockTick
+			{
+			//	outputs[OUT_CLOCK_OUT].setChannels(1);  // set polyphony  
+			//	outputs[OUT_CLOCK_OUT].setVoltage(0.0f);  
+			}
+			
 		}
 
 		pulse1ts = clockPulse1ts.process(1.0 / args.sampleRate);
@@ -2041,10 +2102,10 @@ struct Meander : Module
 		float scaleDegree=0;   // for melody
 		float gateValue=0;
 
-		if (  (inputs[IN_HARMONY_CIRCLE_GATE_EXT_CV].isConnected()) && (inputs[IN_HARMONY_CIRCLE_POSITION_EXT_CV].isConnected()) )
+		if (  (inputs[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].isConnected()) && (inputs[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].isConnected()) )
 		{
-			circleDegree=inputs[IN_HARMONY_CIRCLE_POSITION_EXT_CV].getVoltage();
-			gateValue=inputs[IN_HARMONY_CIRCLE_GATE_EXT_CV].getVoltage(); 
+			circleDegree=inputs[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].getVoltage();
+			gateValue=inputs[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].getVoltage(); 
 
 			theMeanderState.theHarmonyParms.lastCircleDegreeIn=circleDegree;
 			extHarmonyIn=circleDegree;
@@ -2055,16 +2116,17 @@ struct Meander : Module
 			if (octave<-3)
 				octave=-3;
 			bool degreeChanged=false; // assume false unless determined true below
+			bool skipStep=false;
 
 			if ((gateValue==circleDegree)&&(circleDegree>=1)&&(circleDegree<=7.7))  // MarkovSeq or other 1-7V degree  degree.octave 0.0-7.7V
 			{
-				if (inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].inTransition)
+				if (inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition)
 				{
-					if (circleDegree==inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue)
+					if (circleDegree==inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
 					{
 						// was in transition but now is not
-						inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].inTransition=false;
-						inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue=circleDegree;
+						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition=false;
+						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
 						octave = (int)(10.0*std::fmod(circleDegree, 1.0f));
 						if (octave>7)
 							octave=7;
@@ -2073,17 +2135,17 @@ struct Meander : Module
 						degreeChanged=true;
 					}
 					else
-					if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue)
+					if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
 					{
-						inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue=circleDegree;
+						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
 					}
 				}
 				else
 				{
-					if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue)
+					if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
 					{
-						inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].inTransition=true;
-						inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue=circleDegree;
+						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition=true;
+						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
 					}
 				}
 
@@ -2092,46 +2154,53 @@ struct Meander : Module
 					degreeChanged=false;
 				}
 			}
+			else
+			if ((gateValue==circleDegree)&&((circleDegree<1.0)||(circleDegree>=8.0)))  // MarkovSeq or other 1-7V degree  degree.octave 1.0-7.7V  <1 or >=8V means skip step
+			{
+				inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=fvalue;
+				degreeChanged=true;
+				skipStep=true;
+			}
 			else  // keyboard  C-B
 			{
-					float fgvalue=inputs[IN_HARMONY_CIRCLE_GATE_EXT_CV].getVoltage();
-					if (inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].inTransition)
+					float fgvalue=inputs[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].getVoltage();
+					if (inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].inTransition)
 					{
-						if (fgvalue==inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].lastValue)
+						if (fgvalue==inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue)
 						{
 							// was in transition but now is not
-							inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].inTransition=false;
-							inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].lastValue=fgvalue;
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].inTransition=false;
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue=fgvalue;
 							if (fgvalue)  // gate has gone high
 							{
-								if ( circleDegree==inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue) // the gate has changed but the degree has not
+								if ( circleDegree==inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue) // the gate has changed but the degree has not
 									degreeChanged=true;   // not really, but play like it has so it will be replayed below
 							}
 						}
 						else
-						if (fgvalue!=inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].lastValue)
+						if (fgvalue!=inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue)
 						{
-							inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].lastValue=fgvalue;
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue=fgvalue;
 						}
 					}
 					else
 					{
-						if (fgvalue!=inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].lastValue)
+						if (fgvalue!=inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue)
 						{
-							inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].inTransition=true;
-							inportStates[IN_HARMONY_CIRCLE_GATE_EXT_CV].lastValue=fgvalue;
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].inTransition=true;
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue=fgvalue;
 						}
 					}
 
-					if ( (degreeChanged) || (circleDegree!=inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue))
+					if ( (degreeChanged) || (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue))
 					{
-						inportStates[IN_HARMONY_CIRCLE_POSITION_EXT_CV].lastValue=circleDegree;
+						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
 						if (circleDegree>=0)
 							circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0f);
 						else
 							circleDegree=-(float)std::fmod(std::fabs(circleDegree), 1.0f);
 						degreeChanged=true; 
-						if (doDebug) DEBUG("IN_MELODY_CIRCLE_DEGREE_EXT_CV circleDegree=%f", circleDegree);
+						if (doDebug) DEBUG("IN_HARMONY_CIRCLE_DEGREE_EXT_CV circleDegree=%f", circleDegree);
 						if (circleDegree>=0)
 						{
 							if ((std::abs(circleDegree)<.005f))  	   theMeanderState.circleDegree=1;
@@ -2174,7 +2243,7 @@ struct Meander : Module
 				
 			}
 			
-            if (degreeChanged)
+        	if ((degreeChanged)&&(!skipStep))
 			{
 				if (theMeanderState.circleDegree<1)
 					theMeanderState.circleDegree=1;
@@ -2182,8 +2251,8 @@ struct Meander : Module
 					theMeanderState.circleDegree=7;
 				
 
-				if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
-			//	DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
+				if (doDebug) DEBUG("IN_HARMONY_CIRCLE_DEGREE_EXT_CV=%d", (int)theMeanderState.circleDegree);
+			//	DEBUG("IN_HARMONY_CIRCLE_DEGREE_EXT_CV=%d", (int)theMeanderState.circleDegree);
 
 				int step=1;  // default if not found below
 				for (int i=0; i<MAX_STEPS; ++i)
@@ -2599,9 +2668,10 @@ struct Meander : Module
 									if (octave<-3)
 										octave=-3;
 									bool degreeChanged=false; // assume false unless determined true below
+									bool skipStep=false;
 
 								
-									if ((gateValue==scaleDegree)&&(scaleDegree>=1)&&(scaleDegree<=7.7))  // MarkovSeq or other 1-7V degree  degree.octave 0.0-7.7V
+									if ((gateValue==scaleDegree)&&(scaleDegree>=1)&&(scaleDegree<=7.7))  // MarkovSeq or other 1-7V degree  degree.octave 1.0-7.7V
 									{
 										if (inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition)
 										{
@@ -2632,7 +2702,15 @@ struct Meander : Module
 											}
 										}
 									}
+									else
+									if ((gateValue==scaleDegree)&&((scaleDegree<1.0)||(scaleDegree>=8.0)))  // MarkovSeq or other 1-7V degree  degree.octave 1.0-7.7V  <1 or >=8V means skip step
+									{
+										inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=fvalue;
+										degreeChanged=true;
+										skipStep=true;
+									}
 									else  // keyboard  C-B
+									if (!(gateValue==scaleDegree))
 									{
 										float fgvalue=inputs[IN_MELODY_SCALE_GATE_EXT_CV].getVoltage();
 										if (inportStates[IN_MELODY_SCALE_GATE_EXT_CV].inTransition)
@@ -2718,22 +2796,20 @@ struct Meander : Module
 										}	
 									}
 
-								
-									if (degreeChanged)
+																
+									if ((degreeChanged)&&(!skipStep))  
 									{
 										if (scaleDegree<1)
 											scaleDegree=1;
 										if (scaleDegree>7)
 											scaleDegree=7;
 
-										if (doDebug) DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
-									    //	DEBUG("IN_HARMONY_CIRCLE_POSITION_EXT_CV=%d", (int)theMeanderState.circleDegree);
+										if (doDebug) DEBUG("IN_HARMONY_CIRCLE_DEGREE_EXT_CV=%d", (int)theMeanderState.circleDegree);
+									    //	DEBUG("IN_HARMONY_CIRCLE_DEGREE_EXT_CV=%d", (int)theMeanderState.circleDegree);
 																	
 										if (scaleDegree>0)
 										{
-										
 											userPlaysScaleDegreeMelody(scaleDegree, octave+theMeanderState.theMelodyParms.target_octave); 
-											doMelody();
 											theMeanderState.theArpParms.note_count=0; 
 										}
 										
@@ -3720,7 +3796,7 @@ struct Meander : Module
 };  // end of struct Meander
 
  
-struct RootKeySelectLineDisplay : TransparentWidget {
+struct RootKeySelectLineDisplay : LightWidget {
 	
 	int frame = 0;
 	std::shared_ptr<Font> font;
@@ -3761,7 +3837,7 @@ struct RootKeySelectLineDisplay : TransparentWidget {
 
 };
 
-struct ScaleSelectLineDisplay : TransparentWidget {
+struct ScaleSelectLineDisplay : LightWidget {
 	
 	int frame = 0;
 	std::shared_ptr<Font> font;
@@ -3815,7 +3891,7 @@ struct ScaleSelectLineDisplay : TransparentWidget {
 };
 
 ////////////////////////////////////
-struct BpmDisplayWidget : TransparentWidget {
+struct BpmDisplayWidget : LightWidget {
 
   float *val = NULL;
 
@@ -3870,7 +3946,7 @@ struct BpmDisplayWidget : TransparentWidget {
   }
 };
 ////////////////////////////////////
-struct SigDisplayWidget : TransparentWidget {
+struct SigDisplayWidget : LightWidget {
 
   int *value = NULL;
   std::shared_ptr<Font> font;
@@ -4307,6 +4383,17 @@ struct MeanderWidget : ModuleWidget
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
 			nvgText(args.vg, rect.pos.x-rect.size.x-2+xoffset, rect.pos.y+rect.size.y/2., label, NULL);
+		}
+
+		void drawLabelOffset(const DrawArgs &args, Rect rect, const char* label, float xoffset, float yoffset)  
+		{
+			nvgBeginPath(args.vg);
+			nvgFillColor(args.vg, nvgRGBA( 0x0,  0x0, 0x0, 0xff));
+			nvgFontSize(args.vg, 14);
+			nvgFontFaceId(args.vg, textfont->handle);
+			nvgTextLetterSpacing(args.vg, -1);
+			nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
+			nvgText(args.vg, rect.pos.x+xoffset, rect.pos.y+yoffset, label, NULL);
 		}
 
 		void drawOutport(const DrawArgs &args, Vec OutportPos, const char* label, float value, int valueDecimalPoints)  // test draw a rounded corner rect  for jack border testing
@@ -4776,13 +4863,11 @@ struct MeanderWidget : ModuleWidget
 				snprintf(labeltext, sizeof(labeltext), "%s", "Mode");
 				drawLabelRight(args,ParameterRectLocal[Meander::CONTROL_SCALE_PARAM], labeltext);
 
-				snprintf(labeltext, sizeof(labeltext), "%s", "                EXT 8x BPM");
-				drawLabelAbove(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext, 12.);
-				snprintf(labeltext, sizeof(labeltext), "%s", "  Clock");
-				drawLabelRight(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext);
-
+				snprintf(labeltext, sizeof(labeltext), "%s", "        8x BPM Clock");
+				drawLabelOffset(args, InportRectLocal[Meander::IN_CLOCK_EXT_CV], labeltext, -14., -11.); 
+			
 				snprintf(labeltext, sizeof(labeltext), "%s", "Poly Ext. Scale");
-				drawLabelLeft(args, OutportRectLocal[Meander::OUT_EXT_POLY_SCALE_OUTPUT], labeltext, -55.);
+				drawLabelLeft(args, OutportRectLocal[Meander::OUT_EXT_POLY_SCALE_OUTPUT], labeltext, -40.);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
 				drawOutport(args, OutportRectLocal[Meander::OUT_EXT_POLY_SCALE_OUTPUT].pos, labeltext, 0, 1);
@@ -4865,6 +4950,11 @@ struct MeanderWidget : ModuleWidget
 				rect.pos=rect.pos.plus(Vec(5,0));
 				drawLabelRight(args, rect, labeltext);
 				
+				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
+				drawOutport(args, OutportRectLocal[Meander::OUT_EXT_POLY_SCALE_OUTPUT].pos, labeltext, 0, 1);
+
+				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
+				drawOutport(args, OutportRectLocal[Meander::OUT_CLOCK_OUT].pos, labeltext, 0, 1);
 			}
 
 			Vec pos;
@@ -5972,7 +6062,10 @@ struct MeanderWidget : ModuleWidget
 			outPortWidgets[Meander::OUT_EXT_POLY_SCALE_OUTPUT]=createOutputCentered<PJ301MPort>(mm2px(Vec(380.0, 124.831)), module, Meander::OUT_EXT_POLY_SCALE_OUTPUT);
 			addOutput(outPortWidgets[Meander::OUT_EXT_POLY_SCALE_OUTPUT]);
 
-						
+			outPortWidgets[Meander::OUT_CLOCK_OUT]=createOutputCentered<PJ301MPort>(mm2px(Vec(45.0, 350.0)), module, Meander::OUT_CLOCK_OUT);
+			addOutput(outPortWidgets[Meander::OUT_CLOCK_OUT]);
+
+									
 			//**********************************
 
 			// now, procedurally rearrange the control param panel locations
@@ -6204,20 +6297,20 @@ struct MeanderWidget : ModuleWidget
 				else
 				if (i==Meander::IN_CLOCK_EXT_CV)
 				{
-					Vec drawCenter=Vec(22., 345.);
+					Vec drawCenter=Vec(20., 335.);  // raise panel vertical position a bit to not conflict with CPU meter display
 					inPortWidgets[Meander::IN_CLOCK_EXT_CV]->box.pos=drawCenter.minus(inPortWidgets[Meander::IN_CLOCK_EXT_CV]->box.size.div(2.));
 				}
 				else
-				if (i==Meander::IN_HARMONY_CIRCLE_POSITION_EXT_CV)
+				if (i==Meander::IN_HARMONY_CIRCLE_DEGREE_EXT_CV)
 				{
 					Vec drawCenter=Vec(345., 210.);
-					inPortWidgets[Meander::IN_HARMONY_CIRCLE_POSITION_EXT_CV]->box.pos=drawCenter.minus(inPortWidgets[Meander::IN_HARMONY_CIRCLE_POSITION_EXT_CV]->box.size.div(2.));
+					inPortWidgets[Meander::IN_HARMONY_CIRCLE_DEGREE_EXT_CV]->box.pos=drawCenter.minus(inPortWidgets[Meander::IN_HARMONY_CIRCLE_DEGREE_EXT_CV]->box.size.div(2.));
 				}
 				else
-				if (i==Meander::IN_HARMONY_CIRCLE_GATE_EXT_CV)
+				if (i==Meander::IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV)
 				{
 					Vec drawCenter=Vec(345., 230.);
-					inPortWidgets[Meander::IN_HARMONY_CIRCLE_GATE_EXT_CV]->box.pos=drawCenter.minus(inPortWidgets[Meander::IN_HARMONY_CIRCLE_GATE_EXT_CV]->box.size.div(2.));
+					inPortWidgets[Meander::IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV]->box.pos=drawCenter.minus(inPortWidgets[Meander::IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV]->box.size.div(2.));
 				}
 				else
 				if (i==Meander::IN_MELODY_SCALE_DEGREE_EXT_CV)
@@ -6233,7 +6326,7 @@ struct MeanderWidget : ModuleWidget
 				}
 				else
 				{
-					int parmIndex=Meander::BUTTON_ENABLE_MELODY_PARAM+i-Meander::IN_HARMONY_CIRCLE_GATE_EXT_CV-1;
+					int parmIndex=Meander::BUTTON_ENABLE_MELODY_PARAM+i-Meander::IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV-1;
 					if ((inPortWidgets[i]!=NULL)&&(paramWidgets[parmIndex]!=NULL))
 						inPortWidgets[i]->box.pos= paramWidgets[parmIndex]->box.pos.minus(Vec(20,-1));
 				}
@@ -6288,6 +6381,10 @@ struct MeanderWidget : ModuleWidget
 
 			drawCenter=Vec(145., 300.);
 			outPortWidgets[Meander::OUT_EXT_POLY_SCALE_OUTPUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_EXT_POLY_SCALE_OUTPUT]->box.size.div(2.));
+			drawCenter=drawCenter.plus(Vec(40,0));
+		
+			drawCenter=Vec(60., 350.);  // adjust the port a bit to right to avoid CPU meter display
+			outPortWidgets[Meander::OUT_CLOCK_OUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_CLOCK_OUT]->box.size.div(2.));
 			drawCenter=drawCenter.plus(Vec(40,0));
 
 			//********************

@@ -398,6 +398,7 @@ char circle_of_fifths_degrees_LC[][MAXSHORTSTRLEN]= {
 int  step_chord_notes[MAX_STEPS][MAX_NOTES_CANDIDATES];
 int  num_step_chord_notes[MAX_STEPS]={};
 
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrixTemplate[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // I
@@ -409,6 +410,7 @@ float MarkovProgressionTransitionMatrixTemplate[8][8]={  // 8x8 so degrees can b
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrix_I_IV_V[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.00, 0.00, 0.60, 0.40, 0.00, 0.00},  // I
@@ -420,8 +422,7 @@ float MarkovProgressionTransitionMatrix_I_IV_V[8][8]={  // 8x8 so degrees can be
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
-
-
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrixBach1[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.18, 0.01, 0.20, 0.41, 0.09, 0.12},  // I
@@ -433,6 +434,7 @@ float MarkovProgressionTransitionMatrixBach1[8][8]={  // 8x8 so degrees can be 1
 	{0.00, 0.81, 0.00, 0.01, 0.03, 0.15, 0.00, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrixBach2[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.15, 0.01, 0.28, 0.41, 0.09, 0.06},  // I
@@ -444,6 +446,7 @@ float MarkovProgressionTransitionMatrixBach2[8][8]={  // 8x8 so degrees can be 1
 	{0.00, 0.91, 0.00, 0.01, 0.02, 0.04, 0.03, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrixMozart1[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.08, 0.00, 0.07, 0.68, 0.06, 0.11},  // I
@@ -455,6 +458,7 @@ float MarkovProgressionTransitionMatrixMozart1[8][8]={  // 8x8 so degrees can be
 	{0.00, 0.76, 0.01, 0.00, 0.00, 0.23, 0.00, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrixMozart2[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.13, 0.00, 0.15, 0.62, 0.05, 0.05},  // I
@@ -466,6 +470,7 @@ float MarkovProgressionTransitionMatrixMozart2[8][8]={  // 8x8 so degrees can be
 	{0.00, 0.82, 0.00, 0.01, 0.01, 0.16, 0.00, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrixPalestrina1[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.15, 0.13, 0.28, 0.14, 0.22, 0.08},  // I
@@ -477,6 +482,7 @@ float MarkovProgressionTransitionMatrixPalestrina1[8][8]={  // 8x8 so degrees ca
 	{0.00, 0.15, 0.13, 0.28, 0.14, 0.22, 0.08, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrixBeethoven1[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.10, 0.01, 0.13, 0.52, 0.02, 0.22},  // I
@@ -488,6 +494,7 @@ float MarkovProgressionTransitionMatrixBeethoven1[8][8]={  // 8x8 so degrees can
 	{0.00, 0.80, 0.00, 0.00, 0.03, 0.17, 0.00, 0.00}}; // VII
 //   dummy  I     II    III   IV    V     VI    VII 
 
+// Markov 1st order row to column transition probabiliites
 float MarkovProgressionTransitionMatrixTraditional1[8][8]={  // 8x8 so degrees can be 1 indexed
 	{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},  // dummy
 	{0.00, 0.00, 0.00, 0.25, 0.25, 0.25, 0.25, 0.00},  // I
@@ -1241,15 +1248,15 @@ void init_harmony()
 		theHarmonyTypes[29].harmony_steps[14]=5;
 		theHarmonyTypes[29].harmony_steps[15]=5;
 
-		// (harmony_type==30)             /*I-V */  // 
-		strcpy(theHarmonyTypes[30].harmony_type_desc, "I - V" ); 
-		strcpy(theHarmonyTypes[30].harmony_degrees_desc, "I - V" );
+		// (harmony_type==30)             /*V-I */  // 
+		strcpy(theHarmonyTypes[30].harmony_type_desc, "V - I" ); 
+		strcpy(theHarmonyTypes[30].harmony_degrees_desc, "V - I" );
 	    if (doDebug)  DEBUG(theHarmonyTypes[30].harmony_type_desc);
         theHarmonyTypes[30].num_harmony_steps=2;  // 1-8
 		theHarmonyTypes[30].min_steps=1;
 	    theHarmonyTypes[30].max_steps=theHarmonyTypes[30].num_harmony_steps;
-		theHarmonyTypes[30].harmony_steps[0]=1;
-		theHarmonyTypes[30].harmony_steps[1]=5;
+		theHarmonyTypes[30].harmony_steps[0]=5;
+		theHarmonyTypes[30].harmony_steps[1]=1;
 
 		// (harmony_type==31)             /* Markov Chain  Bach 1*/  // 
 		strcpy(theHarmonyTypes[31].harmony_type_desc, "Markov Chain-Bach 1" );
