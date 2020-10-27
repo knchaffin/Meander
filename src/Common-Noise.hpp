@@ -1,3 +1,10 @@
+/*  Copyright (C) 2019-2020 Ken Chaffin
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+
 #include "math.hpp"
 
 //double InversePersistence=NoiseFactor.a;    // for fBms. Persistence indicates how the frequencies are scaled when adding.  Normally a value of 2.0 is used for InversePersistance so that scale goes as 1/pow(invpersistence,i) or 1/pow(2,i). if ip=1->equal low and high noise.  if ip<1,more high noise.
