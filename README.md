@@ -1,4 +1,4 @@
-## PurrSoftware Meander plugin module for VCV Rack. V1.0.11
+## PurrSoftware Meander plugin module for VCV Rack. V2.0.12
 
 ## Contents
 * [Manual](#manual) 
@@ -132,6 +132,10 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
+
+
+### V2.0.12
+- Initial commit for Rack v2
 
 ### V1.0.11
 - A clock outport was added, adjacent to the clock inport.  If no external clock is connected, the Meander generated clock is output.  If an external clock is connected, the external clock is output (as pass-through).
