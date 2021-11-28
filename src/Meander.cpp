@@ -4,7 +4,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <rack.hpp>   
+#include <rack.hpp>     
    
 
 #include "plugin.hpp"  
@@ -3669,10 +3669,8 @@ struct Meander : Module
 
 	Meander() 
 	{
-
 		if (doDebug) DEBUG("");  // clear debug log file
-
-				
+						
 		if (!owned) {
 			// Take ownership of singleton
 			owned = true;
@@ -3805,14 +3803,15 @@ struct Meander : Module
 struct RootKeySelectLineDisplay : LightWidget {
 	
 	int frame = 0;
-	std::shared_ptr<Font> font;
 
 	RootKeySelectLineDisplay() {
-		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
+	
 	}
 
 	void draw(const DrawArgs &ctx) override {
 
+		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
+		
 		Vec pos = Vec(18,-11); // this is the offset if any in the passed box position, particularly x indention -7.3=box height
 	
 		// Background
@@ -3829,6 +3828,7 @@ struct RootKeySelectLineDisplay : LightWidget {
 		if (globalsInitialized)  // global fully initialized if Module!=NULL
 		{
 			nvgFontSize(ctx.vg,18 );
+			if (font)
 			nvgFontFaceId(ctx.vg, font->handle);
 			nvgTextLetterSpacing(ctx.vg, -1);
 			nvgTextAlign(ctx.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
@@ -3846,13 +3846,15 @@ struct RootKeySelectLineDisplay : LightWidget {
 struct ScaleSelectLineDisplay : LightWidget {
 	
 	int frame = 0;
-	std::shared_ptr<Font> font;
 
 	ScaleSelectLineDisplay() {
-		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
+
 	}
 
 	void draw(const DrawArgs &ctx) override {
+
+		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
+		
 
 		Vec pos = Vec(60,12); 
 	
@@ -3870,6 +3872,7 @@ struct ScaleSelectLineDisplay : LightWidget {
 	 	if (globalsInitialized)  // global fully initialized if Module!=NULL
 		{
 			nvgFontSize(ctx.vg, 16);
+			if (font)
 			nvgFontFaceId(ctx.vg, font->handle);
 			nvgTextLetterSpacing(ctx.vg, -1);
 			nvgTextAlign(ctx.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
@@ -3901,15 +3904,16 @@ struct BpmDisplayWidget : LightWidget {
 
   float *val = NULL;
 
-  std::shared_ptr<Font> font;
-
+ 
   BpmDisplayWidget() {
-    font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
+ 
   };
 
   void draw(const DrawArgs &args) override {
-	    
 
+	std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));  
+	
+	  
 	// draw the display background even if there is no module
 	// Background
 	NVGcolor backgroundColor = nvgRGB(0x20, 0x10, 0x10);
@@ -3928,6 +3932,7 @@ struct BpmDisplayWidget : LightWidget {
     }
 
 	nvgFontSize(args.vg, 36);
+	if (font)
 	nvgFontFaceId(args.vg, font->handle);
 	nvgTextLetterSpacing(args.vg, 2.5);
 
@@ -3955,17 +3960,15 @@ struct BpmDisplayWidget : LightWidget {
 struct SigDisplayWidget : LightWidget {
 
   int *value = NULL;
-  std::shared_ptr<Font> font;
-
+  
   SigDisplayWidget() {
-    font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
-    
-    
+        
   };
 
   void draw(const DrawArgs &args) override {
 	
- 
+	std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
+	
 
 	// Display Background is now drawn on the svg panel, even if Module is null (value=null)
     NVGcolor backgroundColor = nvgRGB(0x20, 0x10, 0x10);
@@ -3984,6 +3987,7 @@ struct SigDisplayWidget : LightWidget {
          
     // text 
  	nvgFontSize(args.vg, 20);  
+	if (font)
     nvgFontFaceId(args.vg, font->handle);
     nvgTextLetterSpacing(args.vg, 2.2);
 
@@ -4009,15 +4013,12 @@ struct SigDisplayWidget : LightWidget {
 //////////////////////////////////
 
 struct RSLabelCentered : LedDisplay {
-	std::shared_ptr<Font> font;
 	int fontSize;
 	std::string text;
 	NVGcolor color;
 
 //	RSLabelCentered(int x, int y, const char* str = "", int fontSize = 10, const NVGcolor& colour = COLOR_RS_GREY) {
 	RSLabelCentered(int x, int y, const char* str = "", int fontSize = 10, const NVGcolor& colour = nvgRGB(0x00, 0x00, 0x00)) {
-	//	font = APP->window->loadFont(asset::plugin(pluginInstance, "res/fonts/Ubuntu Condensed 400.ttf"));  // can't load if this is the textfont
-		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/DejaVuSansMono.ttf"));  // load a not textfont
 		this->fontSize = fontSize;
 		box.pos = Vec(x, y);
 		text = str;
@@ -4025,20 +4026,25 @@ struct RSLabelCentered : LedDisplay {
 	}
 
 	void draw(const DrawArgs &args) override {
-		if(font->handle >= 0) {
-			bndSetFont(font->handle);
 
-			nvgFontSize(args.vg, fontSize);
-			nvgFontFaceId(args.vg, font->handle);
-			nvgTextLetterSpacing(args.vg, 0);
-			nvgTextAlign(args.vg, NVG_ALIGN_CENTER);
+		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/DejaVuSansMono.ttf"));  // load a not textfont
+		if (font)
+		{	
+			if(font->handle >= 0) {
+				bndSetFont(font->handle);
 
-			nvgBeginPath(args.vg);
-			nvgFillColor(args.vg, color);
-			nvgText(args.vg, 0, 0, text.c_str(), NULL);
-			nvgStroke(args.vg);
+				nvgFontSize(args.vg, fontSize);
+				nvgFontFaceId(args.vg, font->handle);
+				nvgTextLetterSpacing(args.vg, 0);
+				nvgTextAlign(args.vg, NVG_ALIGN_CENTER);
 
-			bndSetFont(APP->window->uiFont->handle);
+				nvgBeginPath(args.vg);
+				nvgFillColor(args.vg, color);
+				nvgText(args.vg, 0, 0, text.c_str(), NULL);
+				nvgStroke(args.vg);
+
+				bndSetFont(APP->window->uiFont->handle);
+			}
 		}
 	}
 };
@@ -4065,20 +4071,19 @@ struct MeanderWidget : ModuleWidget
 		rack::math::Rect*  OutportRectLocal;     // warning, don't exceed the dimension
 						
 		int frame = 0;
-		std::shared_ptr<Font> textfont;
-		std::shared_ptr<Font> musicfont; 
-
+	
 		CircleOf5thsDisplay()  
 		{
-		//	textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/DejaVuSansMono.ttf"));
-			textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-	    	musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+	
 		}
  
 	 	  
 
 		void DrawCircle5ths(const DrawArgs &args, int root_key) 
 		{
+			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+			
 			if (doDebug) DEBUG("DrawCircle5ths()");
 			
 			for (int i=0; i<MAX_CIRCLE_STATIONS; ++i)
@@ -4117,6 +4122,7 @@ struct MeanderWidget : ModuleWidget
 								
 					// draw text
 					nvgFontSize(args.vg, 12);
+					if (textfont)
 					nvgFontFaceId(args.vg, textfont->handle);	
 					nvgTextLetterSpacing(args.vg, -1);
 					nvgFillColor(args.vg, nvgRGBA(0x00, 0x00, 0x00, 0xff));
@@ -4132,6 +4138,10 @@ struct MeanderWidget : ModuleWidget
 
 		void DrawDegreesSemicircle(const DrawArgs &args, int root_key) 
 		{
+			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+				    	
+
 			if (doDebug) DEBUG("DrawDegreesSemicircle()");
 			int chord_type=0;
 
@@ -4173,6 +4183,7 @@ struct MeanderWidget : ModuleWidget
 								
 					// draw text
 					nvgFontSize(args.vg, 10);
+					if (textfont)
 					nvgFontFaceId(args.vg, textfont->handle);	
 					nvgTextLetterSpacing(args.vg, -1); // as close as possible
 					nvgFillColor(args.vg, nvgRGBA(0x00, 0x00, 0x00, 0xff));
@@ -4359,9 +4370,13 @@ struct MeanderWidget : ModuleWidget
 
 		void drawLabelAbove(const DrawArgs &args, Rect rect, const char* label, float fontSize)  
 		{
+			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+				    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, nvgRGBA( 0x0,  0x0, 0x0, 0xff));
 			nvgFontSize(args.vg, fontSize);
+			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
@@ -4371,9 +4386,13 @@ struct MeanderWidget : ModuleWidget
 
 		void drawLabelRight(const DrawArgs &args, Rect rect, const char* label)  
 		{
+			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+				    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, nvgRGBA( 0x0,  0x0, 0x0, 0xff));
 			nvgFontSize(args.vg, 14);
+			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
@@ -4382,9 +4401,13 @@ struct MeanderWidget : ModuleWidget
 
 		void drawLabelLeft(const DrawArgs &args, Rect rect, const char* label, float xoffset)  
 		{
+			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+				    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, nvgRGBA( 0x0,  0x0, 0x0, 0xff));
 			nvgFontSize(args.vg, 14);
+			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
@@ -4393,9 +4416,13 @@ struct MeanderWidget : ModuleWidget
 
 		void drawLabelOffset(const DrawArgs &args, Rect rect, const char* label, float xoffset, float yoffset)  
 		{
+			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+				    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, nvgRGBA( 0x0,  0x0, 0x0, 0xff));
 			nvgFontSize(args.vg, 14);
+			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
@@ -4404,12 +4431,16 @@ struct MeanderWidget : ModuleWidget
 
 		void drawOutport(const DrawArgs &args, Vec OutportPos, const char* label, float value, int valueDecimalPoints)  // test draw a rounded corner rect  for jack border testing
 		{
+			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+				    	
 			Vec displayRectPos= OutportPos.plus(Vec(-3, -15));
 			nvgBeginPath(args.vg);
 			nvgRoundedRect(args.vg, displayRectPos.x,displayRectPos.y, 30.f, 43.f, 3.f);
 			nvgFillColor(args.vg, nvgRGBA( 0x0,  0x0, 0x0, 0xff));
 			nvgFill(args.vg);
 			nvgFontSize(args.vg, 10);
+			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, nvgRGBA(0xff, 0xff, 0xff, 0xFF));
@@ -4472,7 +4503,9 @@ struct MeanderWidget : ModuleWidget
 
 		void updatePanel(const DrawArgs &args)
 		{
-					 
+			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+	    	
 			if (true)  // Harmony  position a paramwidget  can't access paramWidgets here  
 			{
 				nvgBeginPath(args.vg);
@@ -4489,6 +4522,7 @@ struct MeanderWidget : ModuleWidget
 				char text[128];
 				char labeltext[128];
 				nvgFontSize(args.vg, 17);
+				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xff));
@@ -4563,6 +4597,7 @@ struct MeanderWidget : ModuleWidget
 				{
 					nvgBeginPath(args.vg);
 					nvgFontSize(args.vg, 14);
+					if (textfont)
 					nvgFontFaceId(args.vg, textfont->handle);
 					nvgTextLetterSpacing(args.vg, -1);
 					nvgFillColor(args.vg, nvgRGBA(0xFF, 0xFF, 0x2C, 0xFF));
@@ -4609,6 +4644,7 @@ struct MeanderWidget : ModuleWidget
 				char text[128];
 				char labeltext[128];
 				nvgFontSize(args.vg, 17);
+				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xff));
@@ -4744,6 +4780,7 @@ struct MeanderWidget : ModuleWidget
 				Vec paramControlPos;
 				char labeltext[128];
 				nvgFontSize(args.vg, 17);
+				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xff));
@@ -4798,6 +4835,7 @@ struct MeanderWidget : ModuleWidget
 				Vec paramControlPos;
 				char labeltext[128];
 				nvgFontSize(args.vg, 17);
+				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xff));
@@ -4917,9 +4955,11 @@ struct MeanderWidget : ModuleWidget
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xff));
 				nvgStrokeColor(args.vg,nvgRGBA( 0x80,  0x80 , 0x80, 0x80));
 				nvgFontSize(args.vg, 17);
+				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgBeginPath(args.vg);
+				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 			    nvgText(args.vg, OutportRectLocal[Meander::OUT_FBM_MELODY_OUTPUT].pos.x+13,  OutportRectLocal[Meander::OUT_FBM_MELODY_OUTPUT].pos.y-30, labeltext, NULL);
@@ -4966,6 +5006,7 @@ struct MeanderWidget : ModuleWidget
 			Vec pos;
 			char text[128];
 			nvgFontSize(args.vg, 17);
+			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
@@ -5002,6 +5043,7 @@ struct MeanderWidget : ModuleWidget
 			nvgStroke(args.vg);
 
 			nvgFontSize(args.vg, 45);
+			if (musicfont)
 			nvgFontFaceId(args.vg, musicfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
@@ -5046,6 +5088,7 @@ struct MeanderWidget : ModuleWidget
 			}	
 
 			nvgFontSize(args.vg, 12);
+			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
@@ -5117,6 +5160,7 @@ struct MeanderWidget : ModuleWidget
 			nvgStroke(args.vg);
 
 			nvgFontSize(args.vg, 45);
+			if (musicfont)
 			nvgFontFaceId(args.vg, musicfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
@@ -5231,6 +5275,7 @@ struct MeanderWidget : ModuleWidget
 			if (globalsInitialized)  // global fully initialized if Module!=NULL
 			{
 				nvgFontSize(args.vg, 30);
+				if (musicfont)
 				nvgFontFaceId(args.vg, musicfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
@@ -5338,6 +5383,7 @@ struct MeanderWidget : ModuleWidget
 			if (globalsInitialized)  // global fully initialized if Module!=NULL
 			{
 				nvgFontSize(args.vg, 14);
+				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgFillColor(args.vg, nvgRGBA(0x0, 0x0, 0x0, 0xFF));
@@ -5480,6 +5526,7 @@ struct MeanderWidget : ModuleWidget
 				smoothedDt=(.9*smoothedDt) + (.1*(deltaTime));
 				
 				nvgFontSize(args.vg, 12);
+				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE); 
 				nvgTextLetterSpacing(args.vg, -1);
