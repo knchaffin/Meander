@@ -1,4 +1,4 @@
-## PurrSoftware Meander V2.0.13 plugin module for VCV Rack V2. 
+## PurrSoftware Meander V1.0.11 plugin module for VCV Rack V1. 
 
 ## Contents
 * [Manual](#manual) 
@@ -7,8 +7,7 @@
 
 ## <a name="manual"></a>  Manual
 
-![Meander](./res/Meander-light.png) 
-![Meander](./res/Meander-dark.png) 
+![Meander](./res/Meander.png) 
 
 ## Caveat:
 Anything I say here about music theory and practice as well as how I have implemented that theory and practice in Meander is my own understanding, which is surely not absolutely correct and musicians might choose to debate with me on that.  There are also a lot of exceptions to the "rules" in music.  If fact, it is these exceptions that give composers and musicians their own distinctive sound.  In the end, it is all about what sounds good or entertaining or evokes certain feelings.  From my perspective, there are no absolute rules in music.  So, take what I say with a grain of salt. 
@@ -133,16 +132,6 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
-
-### V2.0.13 (February 2022)
-- Added light and dark panels with adjustable contrast (through Meander right-click options menu).
-- Added 88 key piano keyboard on which all parts are showed as they are played, color coded the panel parts. This can be enabled/disabled.
-- Musical staves display of playing notes can be enabled or disabled.
-- The "Root" note is output in 1V/oct format for use by drones or for external quantizers control.
-- "Poly Ext. Scale" output can now be in any of 4 types, chosen from the options menu.  The default is the "Poly External Scale" format implemented in Meander in 
-2020 as a 12 poly channel chromatic scale format.  Currently, the Grande Quant module is fully compatible with this format.  Run this to Grande Quant, but do not run the Meander root out to Grande and the Quant quantizer will use the current Meander mode and scale for quantizing outside of Meander but coordinated with Meander.  The second output format is "Heptatonic Diatonis STD-12ch" format whichs is a 7 channel poly out with the scale notes on their own channels.  This is usefult for running into external sequential switches, allowing sequenced scale runs or riffs to be played by exernal modules but in tune with the Meander mode and root scale.  There are also 2 pentatonic scale output modes, one as 5 channel pentatonic and the other as 12ch pentatonic chromatic scale.  The pentatonic modes are modifies subsets of the mode and root scale in Meander.  For best results, have Meander set to either the Ionian major or the Aeolian natural minor modes.  These pentatonic scale outputs are experimental and hopefully will find some uses.  The basic thing going on is that pentatonic melodic scales can play over either a major or minor scale and still sound good, ideally.  Musicians do this often.  A use case would be to run the pentatonic scale output into a sequential swith, allowing sequenincy in the melodic pentatonic scale. 
-- Meander can now act as a polyphonic quantizer for external modules, always quantizing to the current Meander mode and root scale.  In this use case, external modules can send up to 16 channels of notes to be quantized.  Meander will output the quantized notes to the same polyphonic channels, which can then be used to provide 1v/oct note data to other external sound source modules.
-- Several cosmetic changes were made.  For all new features, care was taken to not change the Meander behavior for existing V2 patches.
 
 ### V1.0.11
 - A clock outport was added, adjacent to the clock inport.  If no external clock is connected, the Meander generated clock is output.  If an external clock is connected, the external clock is output (as pass-through).
