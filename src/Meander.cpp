@@ -1507,7 +1507,7 @@ struct Meander : Module
 		
 		json_t *modeJ = json_object_get(rootJ, "scale_out_mode");
         if(modeJ) scale_out_mode = (ScaleOutMode) json_integer_value(modeJ);
-		
+				
 		modeJ = json_object_get(rootJ, "gate_out_mode");
         if(modeJ) gate_out_mode = (GateOutMode) json_integer_value(modeJ);
 
@@ -7570,7 +7570,7 @@ struct MeanderWidget : ModuleWidget
 	
 	   	if ((module != NULL)&&(module->instanceRunning))  
 		{  
-					
+			module->onResetScale();  // make sure channels and scale notes outports are initialized for each frame, in case they have not been iniitialized
 			for (CableWidget* cwIn : APP->scene->rack->getCablesOnPort(inPortWidgets[Meander::IN_PROG_STEP_EXT_CV]))
 			{
 				for (CableWidget* cwOut : APP->scene->rack->getCablesOnPort(outPortWidgets[Meander::OUT_CLOCK_BAR_OUTPUT]))
