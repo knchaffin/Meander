@@ -138,6 +138,7 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ### V2.0.13 (February 2022)
 - Added light and dark panels with adjustable contrast (through Meander right-click options menu).
+- Added "port labels" to all inports and outports. Right click on port to see port label info, including: port description, input or output voltage ranges and how CV maps to parameter range.
 - Added 88 key piano keyboard on which all parts are showed as they are played, color coded the panel parts. This can be enabled/disabled.
 - Musical staves display of playing notes can be enabled or disabled.
 - The "Root" note is output in 1V/oct format for use by drones or for external quantizers control.
