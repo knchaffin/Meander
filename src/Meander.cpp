@@ -882,7 +882,7 @@ struct Meander : Module
 				durationFactor*=.03125;	
 			else
 			if ( inputs[IN_PROG_STEP_EXT_CV].isConnected()) // something is connected to the circle STEP input but we do not know what. Assume it is an 16X BPM frequency
-		   		durationFactor *= .01562;  
+		  		durationFactor *= .01562;  
 			
 						
 			float note_duration=durationFactor*4/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
@@ -1252,7 +1252,7 @@ struct Meander : Module
 				durationFactor*=.03125;	
 			else
 			if ( inputs[IN_PROG_STEP_EXT_CV].isConnected()) // something is connected to the circle STEP input but we do not know what. Assume it is an 16X BPM frequency
-		   		durationFactor *= .01562;  
+		  		durationFactor *= .01562;  
 			
 			float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theBassParms.note_length_divisor);
 
@@ -1795,14 +1795,14 @@ struct Meander : Module
 					}
 					i2ts_count++;
 
-					if (!theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)
+					if (!theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)  // there is no connection to the STEP inport
 						clockPulse2ts.trigger(trigger_length);
 				}
 				else
 				if (i2ts_count == (i2ts_count_limit-1))
 				{
 					i2ts_count = 0;    
-					if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)
+					if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port) // there is a connection to the STEP inport
 						clockPulse2ts.trigger(trigger_length);
 				}
 				else
@@ -1828,14 +1828,14 @@ struct Meander : Module
 
 					i4ts_count++;
 
-					if (!theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)
+					if (!theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port) // there is no connection to the STEP inport
 					 	clockPulse4ts.trigger(trigger_length);
 				}
 				else
 				if (i4ts_count == (i4ts_count_limit-1))
 				{
 					i4ts_count = 0;  
-					if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)
+					if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)  // there is a connection to the STEP inport
 					 	clockPulse4ts.trigger(trigger_length);
 				}
 				else
@@ -1861,14 +1861,14 @@ struct Meander : Module
 
 					i8ts_count++;
 
-					if (!theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)
+					if (!theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)  // there is no connection to the STEP inport
 						clockPulse8ts.trigger(trigger_length);
 				}
 				else
 				if (i8ts_count == (i8ts_count_limit-1))
 				{
 					i8ts_count = 0; 
-					if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)
+					if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)  // there is a connection to the STEP inport
 					  clockPulse8ts.trigger(trigger_length);
 				}
 				else
@@ -1890,14 +1890,14 @@ struct Meander : Module
 
 					i16ts_count++;
 
-					if (!theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)
+					if (!theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)  // there is no connection to the STEP inport
 						clockPulse16ts.trigger(trigger_length);
 				}
 				else
 				if (i16ts_count == (i16ts_count_limit-1))
 				{
 					i16ts_count = 0;
-					if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)
+					if (theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port)  // there is a connection to the STEP inport
 						clockPulse16ts.trigger(trigger_length);
 				}
 				else
@@ -4204,20 +4204,18 @@ struct RootKeySelectLineDisplay : LightWidget {
 		nvgStrokeColor(args.vg, borderColor);
 		nvgStroke(args.vg);
 	
-		if (globalsInitialized)  // global fully initialized if Module!=NULL
-		{
-			nvgFontSize(args.vg,18 );
-			if (font)
-				nvgFontFaceId(args.vg, font->handle);
-			nvgTextLetterSpacing(args.vg, -1);
-			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-			nvgFillColor(args.vg, paramTextColor);
+		nvgFontSize(args.vg,18 );
+		if (font)
+			nvgFontFaceId(args.vg, font->handle);
+		nvgTextLetterSpacing(args.vg, -1);
+		nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
+		nvgFillColor(args.vg, paramTextColor);
 
-			char text[128];
-			
-			snprintf(text, sizeof(text), "%s", root_key_names[root_key]);
-			nvgText(args.vg, textpos.x, textpos.y, text, NULL);
-		}
+		char text[128];
+		
+		snprintf(text, sizeof(text), "%s", root_key_names[root_key]);
+		nvgText(args.vg, textpos.x, textpos.y, text, NULL);
+		
 		nvgClosePath(args.vg);
 	}
 
@@ -4248,32 +4246,31 @@ struct ScaleSelectLineDisplay : LightWidget {
 		nvgStrokeColor(args.vg, borderColor);
 		nvgStroke(args.vg);
 	 
-	 	if (globalsInitialized)  // global fully initialized if Module!=NULL
-		{
-			nvgFontSize(args.vg, 16);
-			if (font)
-			nvgFontFaceId(args.vg, font->handle);
-			nvgTextLetterSpacing(args.vg, -1);
-			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-			nvgFillColor(args.vg, paramTextColor);  
+	
+		nvgFontSize(args.vg, 16);
+		if (font)
+		nvgFontFaceId(args.vg, font->handle);
+		nvgTextLetterSpacing(args.vg, -1);
+		nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
+		nvgFillColor(args.vg, paramTextColor);  
+	
+		char text[128];
 		
-			char text[128];
-			
-			snprintf(text, sizeof(text), "%s", mode_names[mode]);
-			nvgText(args.vg, textpos.x, textpos.y, text, NULL);
+		snprintf(text, sizeof(text), "%s", mode_names[mode]);
+		nvgText(args.vg, textpos.x, textpos.y, text, NULL);
 
-			// add on the scale notes display out of this box
-			nvgFontSize(args.vg, 14);
-			nvgFillColor(args.vg, panelTextColor);
-			strcpy(text,"");
-			for (int i=0;i<mode_step_intervals[mode][0];++i)
-			{
-				strcat(text,note_desig[notes[i]%MAX_NOTES]);  
-				strcat(text," ");
-			}
-			
-			nvgText(args.vg, textpos.x, textpos.y+20, text, NULL);
+		// add on the scale notes display out of this box
+		nvgFontSize(args.vg, 14);
+		nvgFillColor(args.vg, panelTextColor);
+		strcpy(text,"");
+		for (int i=0;i<mode_step_intervals[mode][0];++i)
+		{
+			strcat(text,note_desig[notes[i]%MAX_NOTES]);  
+			strcat(text," ");
 		}
+		
+		nvgText(args.vg, textpos.x, textpos.y+20, text, NULL);
+		
 		nvgClosePath(args.vg);	
 	} 
 
@@ -5198,7 +5195,7 @@ struct MeanderWidget : ModuleWidget
 				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_PROG_STEP_PARAM].pos, labeltext, 0, -1, panelTextColor);
  
 				//  do the progression displays
-				pos =ParameterRectLocal[Meander::CONTROL_HARMONYPRESETS_PARAM].pos.plus(Vec(-20,20));
+				pos =ParameterRectLocal[Meander::CONTROL_HARMONYPRESETS_PARAM].pos.plus(Vec(-20,40));
 							
 				nvgBeginPath(args.vg);
 				nvgFillColor(args.vg, nvgRGBA( 0x2f,  0x27, 0x0a, 0xff));
@@ -5207,19 +5204,16 @@ struct MeanderWidget : ModuleWidget
 				nvgStrokeWidth(args.vg, 2.0);
 				nvgFill(args.vg);
 				nvgStroke(args.vg);
-
+		
+				nvgBeginPath(args.vg);
+				nvgFontSize(args.vg, 14);
+				if (textfont)
+				nvgFontFaceId(args.vg, textfont->handle);
+				nvgTextLetterSpacing(args.vg, -1);
+				nvgFillColor(args.vg, paramTextColor);
+				snprintf(text, sizeof(text), "#%d:  %s", harmony_type, theActiveHarmonyType.harmony_type_desc);
+				nvgText(args.vg, pos.x+5, pos.y+10, text, NULL);
 				
-				if (globalsInitialized)  // global fully initialized if Module!=NULL
-				{
-					nvgBeginPath(args.vg);
-					nvgFontSize(args.vg, 14);
-					if (textfont)
-					nvgFontFaceId(args.vg, textfont->handle);
-					nvgTextLetterSpacing(args.vg, -1);
-					nvgFillColor(args.vg, paramTextColor);
-					snprintf(text, sizeof(text), "#%d:  %s", harmony_type, theActiveHarmonyType.harmony_type_desc);
-					nvgText(args.vg, pos.x+5, pos.y+10, text, NULL);
-				}
 				pos = pos.plus(Vec(0,20));
 
 							
@@ -5231,15 +5225,13 @@ struct MeanderWidget : ModuleWidget
 				nvgFill(args.vg);
 				nvgStroke(args.vg);
 
-				if (globalsInitialized)  // global fully initialized if Module!=NULL
-				{
-					nvgBeginPath(args.vg);
-					nvgFontSize(args.vg, 12);
-					nvgFillColor(args.vg, paramTextColor);
-					snprintf(text, sizeof(text), "%s           ",  theActiveHarmonyType.harmony_degrees_desc);
-					nvgText(args.vg, pos.x+5, pos.y+10, text, NULL);
-				}
-								
+		
+				nvgBeginPath(args.vg);
+				nvgFontSize(args.vg, 12);
+				nvgFillColor(args.vg, paramTextColor);
+				snprintf(text, sizeof(text), "%s           ",  theActiveHarmonyType.harmony_degrees_desc);
+				nvgText(args.vg, pos.x+5, pos.y+10, text, NULL);
+										
 			}
 
 			if  (true)  // update melody control display
@@ -6015,86 +6007,87 @@ struct MeanderWidget : ModuleWidget
 			}
 			//*********************
 
+	
+			float notesPlayingDisplayStartX=565.0;
+			float notesPlayingDisplayStartY=5.0;
+			float notesPlayingDisplayWidth=300.0;
+			float notesPlayingDisplayHeight=19.0;
+			float notesPlayingDisplayEndX=notesPlayingDisplayStartX+notesPlayingDisplayWidth;
+			float notesPlayingDisplayEndY=notesPlayingDisplayStartY+notesPlayingDisplayHeight;
+			float notesPlayingDisplayNoteWidth=37.5;
+			float notesPlayingDisplayNoteCenterY= notesPlayingDisplayStartY+(notesPlayingDisplayHeight/2.0);
+
+			
+			nvgBeginPath(args.vg);
+
+			nvgFontSize(args.vg, 14);
+			if (textfont)
+			nvgFontFaceId(args.vg, textfont->handle);
+			nvgTextLetterSpacing(args.vg, -1);
+			nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
+			nvgFillColor(args.vg, panelTextColor);
+			snprintf(text, sizeof(text), "%s", "Playing Notes---->");  
+			pos=Vec(notesPlayingDisplayStartX-85, notesPlayingDisplayNoteCenterY);  
+			nvgText(args.vg, pos.x, pos.y, text, NULL);
+		
+			nvgStrokeWidth(args.vg, 2.0);
+			nvgStrokeColor(args.vg, nvgRGBA( 0x00,  0x00, 0x00, 0xff));
+								
+			nvgMoveTo(args.vg, notesPlayingDisplayStartX,notesPlayingDisplayStartY);
+			nvgLineTo(args.vg, notesPlayingDisplayEndX, notesPlayingDisplayStartY);
+			nvgLineTo(args.vg, notesPlayingDisplayEndX, notesPlayingDisplayEndY);
+			nvgLineTo(args.vg, notesPlayingDisplayStartX, notesPlayingDisplayEndY);
+			nvgLineTo(args.vg, notesPlayingDisplayStartX, notesPlayingDisplayStartY);
+
+			nvgStroke(args.vg);
+			nvgClosePath(args.vg);
+
+			// draw vertical parts separator lines dark
+			nvgBeginPath(args.vg);
+			nvgStrokeWidth(args.vg, 2.0);
+	
+			nvgMoveTo(args.vg, notesPlayingDisplayStartX+((4*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
+			nvgLineTo(args.vg, notesPlayingDisplayStartX+((4*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
+
+			nvgMoveTo(args.vg, notesPlayingDisplayStartX+((5*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
+			nvgLineTo(args.vg, notesPlayingDisplayStartX+((5*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
+
+			nvgMoveTo(args.vg, notesPlayingDisplayStartX+((6*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
+			nvgLineTo(args.vg, notesPlayingDisplayStartX+((6*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
+
+			nvgStroke(args.vg);
+			nvgClosePath(args.vg);
+
+			// draw vertical part notes separator lines light
+
+			nvgBeginPath(args.vg);
+			nvgStrokeColor(args.vg, nvgRGBA( 0xc0,  0xc0, 0xc0, 0xff));
+		
+			nvgMoveTo(args.vg, notesPlayingDisplayStartX+((1*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
+			nvgLineTo(args.vg,notesPlayingDisplayStartX+((1*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
+
+			nvgMoveTo(args.vg, notesPlayingDisplayStartX+((2*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
+			nvgLineTo(args.vg, notesPlayingDisplayStartX+((2*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
+
+			nvgMoveTo(args.vg, notesPlayingDisplayStartX+((3*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
+			nvgLineTo(args.vg, notesPlayingDisplayStartX+((3*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
+
+			nvgMoveTo(args.vg, notesPlayingDisplayStartX+((7*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
+			nvgLineTo(args.vg, notesPlayingDisplayStartX+((7*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
+
+	
+			nvgStroke(args.vg);
+			nvgClosePath(args.vg);
+			
+
 			if (globalsInitialized)  // global fully initialized if Module!=NULL
 			{
-				
-			// redraw the box but smaller and with visible borders
-
-				float notesPlayingDisplayStartX=565.0;
-				float notesPlayingDisplayStartY=5.0;
-				float notesPlayingDisplayWidth=300.0;
-				float notesPlayingDisplayHeight=19.0;
-				float notesPlayingDisplayEndX=notesPlayingDisplayStartX+notesPlayingDisplayWidth;
-				float notesPlayingDisplayEndY=notesPlayingDisplayStartY+notesPlayingDisplayHeight;
-				float notesPlayingDisplayNoteWidth=37.5;
-				float notesPlayingDisplayNoteCenterY= notesPlayingDisplayStartY+(notesPlayingDisplayHeight/2.0);
-
-				nvgBeginPath(args.vg);
-
 				nvgFontSize(args.vg, 14);
 				if (textfont)
 				nvgFontFaceId(args.vg, textfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgFillColor(args.vg, panelTextColor);
-				snprintf(text, sizeof(text), "%s", "Playing Notes---->");  
-				pos=Vec(notesPlayingDisplayStartX-47, notesPlayingDisplayNoteCenterY);  
-				nvgText(args.vg, pos.x, pos.y, text, NULL);
-
-				nvgStrokeWidth(args.vg, 2.0);
-				nvgStrokeColor(args.vg, nvgRGBA( 0x00,  0x00, 0x00, 0xff));
-									
-				nvgMoveTo(args.vg, notesPlayingDisplayStartX,notesPlayingDisplayStartY);
-				nvgLineTo(args.vg, notesPlayingDisplayEndX, notesPlayingDisplayStartY);
-				nvgLineTo(args.vg, notesPlayingDisplayEndX, notesPlayingDisplayEndY);
-				nvgLineTo(args.vg, notesPlayingDisplayStartX, notesPlayingDisplayEndY);
-				nvgLineTo(args.vg, notesPlayingDisplayStartX, notesPlayingDisplayStartY);
-
-				nvgStroke(args.vg);
-				nvgClosePath(args.vg);
-
-				// draw vertical parts separator lines dark
-				nvgBeginPath(args.vg);
-				nvgStrokeWidth(args.vg, 2.0);
-		
-				nvgMoveTo(args.vg, notesPlayingDisplayStartX+((4*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
-				nvgLineTo(args.vg, notesPlayingDisplayStartX+((4*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
-
-				nvgMoveTo(args.vg, notesPlayingDisplayStartX+((5*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
-				nvgLineTo(args.vg, notesPlayingDisplayStartX+((5*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
-
-				nvgMoveTo(args.vg, notesPlayingDisplayStartX+((6*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
-				nvgLineTo(args.vg, notesPlayingDisplayStartX+((6*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
-
-				nvgStroke(args.vg);
-				nvgClosePath(args.vg);
-
-				// draw vertical part notes separator lines light
-
-				nvgBeginPath(args.vg);
-				nvgStrokeColor(args.vg, nvgRGBA( 0xc0,  0xc0, 0xc0, 0xff));
-			
-				nvgMoveTo(args.vg, notesPlayingDisplayStartX+((1*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
-				nvgLineTo(args.vg,notesPlayingDisplayStartX+((1*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
-
-				nvgMoveTo(args.vg, notesPlayingDisplayStartX+((2*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
-				nvgLineTo(args.vg, notesPlayingDisplayStartX+((2*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
-
-				nvgMoveTo(args.vg, notesPlayingDisplayStartX+((3*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
-				nvgLineTo(args.vg, notesPlayingDisplayStartX+((3*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
-
-				nvgMoveTo(args.vg, notesPlayingDisplayStartX+((7*notesPlayingDisplayNoteWidth)),notesPlayingDisplayStartY);
-				nvgLineTo(args.vg, notesPlayingDisplayStartX+((7*notesPlayingDisplayNoteWidth)), notesPlayingDisplayEndY);
-
-		
-				nvgStroke(args.vg);
-				nvgClosePath(args.vg);
-
-
-				nvgFontSize(args.vg, 14);
-				if (textfont)
-				nvgFontFaceId(args.vg, textfont->handle);
-				nvgTextLetterSpacing(args.vg, -1);
-				nvgFillColor(args.vg, panelTextColor);
+				nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 
 				// write last harmony note played 1
 				if (theMeanderState.theHarmonyParms.last[0].note!=0)
@@ -6196,6 +6189,7 @@ struct MeanderWidget : ModuleWidget
 			int last_chord_bass_note=theMeanderState.theHarmonyParms.last[0].note%12;
 			pos=convertSVGtoNVG(110, 62, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
 			nvgFontSize(args.vg, 30);
+			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 
 			nvgFillColor(args.vg, panelHarmonyPartColor); 
 
@@ -6285,26 +6279,31 @@ struct MeanderWidget : ModuleWidget
 				if (textfont)
 				{
 					nvgBeginPath(args.vg);
-			    	nvgFontSize(args.vg, 25);
+			    	nvgFontSize(args.vg, 30);
 					nvgFontFaceId(args.vg, textfont->handle);
 					nvgTextLetterSpacing(args.vg, -1);
 					nvgFillColor(args.vg, panelTextColor);
+					nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 					
 					char text[128];
 					snprintf(text, sizeof(text), "%s", "PS   Meander");  
-					Vec pos=Vec(295, 25);  
+					Vec pos=Vec(345, 17);  
+					nvgStrokeWidth(args.vg, 3.0);
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
 				
 
 					snprintf(text, sizeof(text), "%s", "Harmonic Progression Diatonic Circle of 5ths");  
-					nvgFontSize(args.vg, 12);
-					pos=Vec(270, 37);  
+					nvgFontSize(args.vg, 15);
+					pos=Vec(345, 35);  
+					nvgStrokeWidth(args.vg, 2.0);
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
 
 					nvgClosePath(args.vg);
 
 					nvgStrokeWidth(args.vg, 1.0);
 					nvgStrokeColor(args.vg, panelLineColor);
+
+					nvgTextAlign(args.vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
 								
 					nvgBeginPath(args.vg);
 				    float opacity = 128; 
@@ -6319,7 +6318,7 @@ struct MeanderWidget : ModuleWidget
 					snprintf(text, sizeof(text), "%s", "Major"); 
 					nvgFillColor(args.vg, panelTextColor);
 					nvgFontSize(args.vg, 10);
-					pos=Vec(261, 53);  
+					pos=Vec(261, 50);  
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
 					nvgClosePath(args.vg);
 
@@ -6335,7 +6334,7 @@ struct MeanderWidget : ModuleWidget
 					snprintf(text, sizeof(text), "%s", "Minor"); 
 					nvgFillColor(args.vg, panelTextColor);
 					nvgFontSize(args.vg, 10);
-					pos=Vec(336, 53);  
+					pos=Vec(336, 50);  
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
 					nvgClosePath(args.vg);
 
@@ -6351,7 +6350,7 @@ struct MeanderWidget : ModuleWidget
 					snprintf(text, sizeof(text), "%s", "Diminished"); 
 					nvgFillColor(args.vg, panelTextColor);
 					nvgFontSize(args.vg, 10);
-					pos=Vec(404, 53);  
+					pos=Vec(404, 50);  
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
 					nvgClosePath(args.vg);
 				}
@@ -6401,14 +6400,15 @@ struct MeanderWidget : ModuleWidget
 		
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander-light.svg")));
 		svgPanel=(SvgPanel*)getPanel();
-		svgPanel->visible =true;
+		svgPanel->setVisible((panelTheme) == 0);  
+		
 		panelcolor=nvgRGBA((unsigned char)230,(unsigned char)230,(unsigned char)230,(unsigned char)255);
 	
 	//	if (module)  // need to create dark panel regardeless of module
 		{
 			darkPanel = new SvgPanel();
 			darkPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Meander-dark.svg")));
-			darkPanel->visible = false;
+			darkPanel->setVisible((panelTheme) == 1);  
 			addChild(darkPanel);
 		}
 	
@@ -6434,7 +6434,7 @@ struct MeanderWidget : ModuleWidget
 			addChild(MeanderRootKeySelectDisplay);
 
 			ScaleSelectLineDisplay *MeanderScaleSelectDisplay = new ScaleSelectLineDisplay();
-			MeanderScaleSelectDisplay->box.pos = Vec(30.,223.);  
+			MeanderScaleSelectDisplay->box.pos = Vec(30.,228.); 
 			MeanderScaleSelectDisplay->box.size = Vec(130, 22); 
 			addChild(MeanderScaleSelectDisplay);
 
@@ -7478,7 +7478,7 @@ struct MeanderWidget : ModuleWidget
 				menu->addChild(holder);
 			}
 		}
-	}  // end MeanderWidget()
+	}  // end MeanderWidget() 
 
 	void step() override   // note, this is a widget step() which is not deprecated and is a GUI call.  This advances UI by one "frame"    
 	{  
@@ -7487,10 +7487,9 @@ struct MeanderWidget : ModuleWidget
 		if (true) // needs to happen even if module==null
 		{
 			if (svgPanel)
-				svgPanel->visible  = ((panelTheme) == 0);    
+			    svgPanel->setVisible((panelTheme) == 0);    
 			if (darkPanel)                             
-				darkPanel->visible  = ((panelTheme) == 1);
-
+				darkPanel->setVisible((panelTheme) == 1);    
 		
 			float contrast=panelContrast;
 
@@ -7504,7 +7503,7 @@ struct MeanderWidget : ModuleWidget
 				paramTextColor=nvgRGBA((unsigned char)color,(unsigned char)color,(unsigned char)0,(unsigned char)255);  // yellow text
 			
 				{
-					float r=panelHarmonyPartBaseColor.r;
+					float r=panelHarmonyPartBaseColor.r; 
 					float g=(1-contrast);
 					float b=(1-contrast);
 					panelHarmonyPartColor=nvgRGBA(r*255, g*255, b*255, 255);
@@ -7527,8 +7526,7 @@ struct MeanderWidget : ModuleWidget
 					float b=(1-contrast);
 					panelMelodyPartColor=nvgRGBA(r*255, g*255, b*255, 255);
 				}
-				
-			
+						
 			}
 			else  // dark theme
 			{
@@ -7541,20 +7539,20 @@ struct MeanderWidget : ModuleWidget
 
 				{
 					float r=panelHarmonyPartBaseColor.r*contrast;
-					float g=0;
-					float b=0;
+					float g=0.45;
+					float b=0.45;
 					panelHarmonyPartColor=nvgRGBA(r*255, g*255, b*255, 255);
 				}
 				{
 					float b=panelArpPartBaseColor.b*contrast;
-					float r=0;
-					float g=0;
+					float r=0.45;
+					float g=0.45;
 					panelArpPartColor=nvgRGBA(r*255, g*255, b*255, 255);
 				}
 				{
 					float g=panelBassPartBaseColor.g*contrast;
-					float r=0;
-					float b=0;
+					float r=0.45;
+					float b=0.45;
 					panelBassPartColor=nvgRGBA(r*255, g*255, b*255, 255);
 				}
 				{
@@ -7567,22 +7565,34 @@ struct MeanderWidget : ModuleWidget
 		}
 
 		if(module == NULL) return;  // don't do the rest if module is null
-	
+		  
 	   	if ((module != NULL)&&(module->instanceRunning))  
 		{  
 			module->onResetScale();  // make sure channels and scale notes outports are initialized for each frame, in case they have not been iniitialized
+			
+			theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=0;  // 0 will be interpreted elsewhere as "no connection", which may be overwritten below
+	
 			for (CableWidget* cwIn : APP->scene->rack->getCablesOnPort(inPortWidgets[Meander::IN_PROG_STEP_EXT_CV]))
-			{
+			{	
+				if (!cwIn->isComplete())        // new for testing, from    vcvrack-packone strip.cpp                                              
+                   continue;
+
+				theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=1;  // 1 will be interpreted elsewhere as an unknown complete connection, which may be overwritten below
+				
 				for (CableWidget* cwOut : APP->scene->rack->getCablesOnPort(outPortWidgets[Meander::OUT_CLOCK_BAR_OUTPUT]))
 				{
+					if (!cwOut->isComplete())        // new for testing, from    vcvrack-packone strip.cpp                                              
+                   		continue;
 					if (cwOut->cable->id == cwIn->cable->id)
 					{
-						theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BAR_OUTPUT;
+						theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BAR_OUTPUT;  // still crashes with this commented out
 					}
-					
+										
 				}
 				for (CableWidget* cwOut : APP->scene->rack->getCablesOnPort(outPortWidgets[Meander::OUT_CLOCK_BEAT_OUTPUT]))
 				{
+					if (!cwOut->isComplete())        // new for testing, from    vcvrack-packone strip.cpp                                              
+                   		continue;
 					if (cwOut->cable->id == cwIn->cable->id)
 					{
 						theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BEAT_OUTPUT;
@@ -7591,6 +7601,8 @@ struct MeanderWidget : ModuleWidget
 				}
 				for (CableWidget* cwOut : APP->scene->rack->getCablesOnPort(outPortWidgets[Meander::OUT_CLOCK_BEATX2_OUTPUT]))
 				{
+					if (!cwOut->isComplete())        // new for testing, from    vcvrack-packone strip.cpp                                              
+                   		continue;
 					if (cwOut->cable->id == cwIn->cable->id)
 					{
 						theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BEATX2_OUTPUT;
@@ -7599,6 +7611,8 @@ struct MeanderWidget : ModuleWidget
 				}
 				for (CableWidget* cwOut : APP->scene->rack->getCablesOnPort(outPortWidgets[Meander::OUT_CLOCK_BEATX4_OUTPUT]))
 				{
+					if (!cwOut->isComplete())        // new for testing, from    vcvrack-packone strip.cpp                                              
+                   		continue;
 					if (cwOut->cable->id == cwIn->cable->id)
 					{
 						theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BEATX4_OUTPUT;
@@ -7607,9 +7621,11 @@ struct MeanderWidget : ModuleWidget
 				}
 				for (CableWidget* cwOut : APP->scene->rack->getCablesOnPort(outPortWidgets[Meander::OUT_CLOCK_BEATX8_OUTPUT]))
 				{
+					if (!cwOut->isComplete())        // new for testing, from    vcvrack-packone strip.cpp                                              
+                   		continue;
 					if (cwOut->cable->id == cwIn->cable->id)
 					{
-						theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BEATX8_OUTPUT;
+						theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BEATX8_OUTPUT;  // this does not create the crash if no cable is connected here
 					}
 					
 				}
@@ -7618,7 +7634,8 @@ struct MeanderWidget : ModuleWidget
 			
 		}
 	
-		ModuleWidget::step();
+		Widget::step();  // most modules do this rather than ModuleWidget::step()
+		
 	} // end step()
 
 };  // end struct MeanderWidget
