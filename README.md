@@ -1,4 +1,4 @@
-## PurrSoftware Meander V2.0.13 plugin module for VCV Rack V2. 
+## PurrSoftware Meander V2.0.14 plugin module for VCV Rack V2. 
 
 ## Contents
 * [Manual](#manual) 
@@ -137,6 +137,12 @@ All knob or state buttons can accept an external CV signal to vary the parameter
 
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
+
+### V2.0.14 (February 2022)
+- Fixed a segment fault that could occur if a cable was connected to the STEP input port inside the circle of 5ths.  Github issue #13.
+- Several tweaks were made to the dark and light panel themes to make colors more readable over all contrasts and themes. Github issue #12.
+- A couple of panel parameter display boxes were moved down slightly to avoid tooltips from obscuring the display, if tooltips are enabled. Github issue #12.
+- Made a change to make the panel capture image in the web library correctly display all parameter displays.
 
 ### V2.0.13 (February 2022)
 - Added light and dark panels with adjustable contrast (through Meander right-click options menu).
