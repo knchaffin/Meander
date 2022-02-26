@@ -19,7 +19,7 @@ Meander is self contained except for actual sound generation.  It has it's own c
 
 Here is a minimal complexity but fully featured demo patch.
 
-![Meander](./res/Meander Demo Patch.png) 
+![Meander](./res/Meander-Demo-Patch.png) 
 
 ## General: 
 Meander is fundamentally a musical "expert" system that has quite a few rules for what makes western music sound good and
