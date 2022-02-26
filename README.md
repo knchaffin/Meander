@@ -17,6 +17,10 @@ Anything I say here about music theory and practice as well as how I have implem
 
 Meander is self contained except for actual sound generation.  It has it's own clock, so you do not need to connect a clock generator.  The minimum configuration is to connect the Harmony 1V/Oct output to a polyphonic VCO and the VCO to a mixer or Audio output module.  The sound will not be great, but that is the first step.  Then connect the melody and bass 1V/Oct outputs to their own VCOs.  The melody output is 1 channel monophonic.  The bass output is 1 or 2 channel polyphonic.  The harmony output is 3 or 4 channel polyphonic.  Next steps are to add an ADSR and VCA for each part.  The Meander gate outputs should control the ADSR trigger.  Everything else is just icing on the cake.
 
+Here is a minimal complexity but fully featured demo patch.
+
+![Meander](./res/Meander Demo Patch.png) 
+
 ## General: 
 Meander is fundamentally a musical "expert" system that has quite a few rules for what makes western music sound good and
 applies those rules to "sequence" other sound generation modules.  Meander has no audio sound generation or modification capabilities, so even though it is basically a complex application (which Meander is and has been over its 30+ year history), it is lightweight in terms of the load it puts on the CPU and DSP.  Meander has its own internal clock, so no inputs are required in order to start making music.
