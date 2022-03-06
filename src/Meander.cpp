@@ -41,6 +41,8 @@ struct Meander : Module
 
 	void onResetScale()
 	{
+		    // send ROOT output here to make sure it is initalized and updated
+			outputs[OUT_EXT_ROOT_OUTPUT].setVoltage(root_key/12.0);
 			// send Poly External Scale to output  
 						
 			if (scale_out_mode == HEPTATONIC_CHROMATIC_12CH) // aria's poly ext. scale  . This is still default to match V1
@@ -2615,7 +2617,7 @@ struct Meander : Module
 					lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+i].setBrightness(0.0f);
 				lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+circle_root_key].setBrightness(1.0f);
 				circleChanged=true;
-				outputs[OUT_EXT_ROOT_OUTPUT].setVoltage(root_key/12.0);
+			//	outputs[OUT_EXT_ROOT_OUTPUT].setVoltage(root_key/12.0);
 			}
 
 			
@@ -4117,7 +4119,7 @@ struct MinMaxQuantity : Quantity {
 	float getDefaultValue() override {return panelContrastDefault;}
 	std::string getLabel() override { return label; }
 	std::string getUnit() override { return " "; }
-};
+};    
 
 
 struct MeanderPanelThemeItem : MenuItem {   
