@@ -1,6 +1,17 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.15 (March 2022)
+- This change log file was added and the change log moved from the manual to here.
+- You can now add multiple instances of Meander to your patch.  Meander is no longer a "singleton".  Most changes are "under the hood" in Meander and while extensive, they do not change how Meander works or looks.  Existing V2 patches should continue to work fine.
+- If you change the panel color theme or in one Meander instance in a patch, the theme is applied to all other instances of Meander in the patch and in the browser.  Changing the panel theme contrast changes all instances of Meander in the patch but does not show up in the browser view.
+- The browser panel view methodology was changed.  For Meander now, the browser panel image is loaded from either a dark theme or light theme static PNG image file.  This results in a better user experience and more simple code as Meander no longer has to procedurally draw the panel image in the browser.
+- If the meandering notes happen to meander out of the MIDI specification range, the note is clamped to either the low octave or high octave root note, depending on which way the note went out of bounds.  Several additional range and bound checks were added to prevent possible invalid notes or note names.
+- For clarity, middle-C is denoted on the musical score display as C4.
+- A dark theme panel fBm text display problem was fixed.
+- "Root" output port values is always correctly initialized now.
+- The manual now has a bare-bones example/demo patch image.
+
 ### V2.0.14 (February 2022)
 - Fixed a segment fault that could occur if a cable was connected to the STEP input port inside the circle of 5ths.  Github issue #13.
 - Several tweaks were made to the dark and light panel themes to make colors more readable over all contrasts and themes. Github issue #12.
