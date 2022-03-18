@@ -2,8 +2,8 @@
 
 ## Contents
 * [Manual](#manual) 
-* [Meander Change Log](#meander-change-log)
 * [Meander Progression Presets](#meander-progression-presets)
+* [Meander Change Log](./CHANGELOG.md)
 
 ## <a name="manual"></a>  Manual
 
@@ -15,31 +15,42 @@ Anything I say here about music theory and practice as well as how I have implem
 
 ## Quickstart
 
-Meander is self contained except for actual sound generation.  It has it's own clock, so you do not need to connect a clock generator.  The minimum configuration is to connect the Harmony 1V/Oct output to a polyphonic VCO and the VCO to a mixer or Audio output module.  The sound will not be great, but that is the first step.  Then connect the melody and bass 1V/Oct outputs to their own VCOs.  The melody output is 1 channel monophonic.  The bass output is 1 or 2 channel polyphonic.  The harmony output is 3 or 4 channel polyphonic.  Next steps are to add an ADSR and VCA for each part.  The Meander gate outputs should control the ADSR trigger.  Everything else is just icing on the cake.
+Meander is self contained except for actual sound generation.  It has it's own clock, so you do not have to connect an external clock generator, but an external clock gives more control in advanced setup, particularly when Meander is used with other clocked modules.  The minimum configuration is to connect the Harmony 1V/Oct output to a polyphonic VCO and the VCO to a mixer or Audio output module.  The sound will not be great, but that is the first step.  Then connect the melody and bass 1V/Oct outputs to their own VCOs.  The melody output is 1 channel monophonic.  The bass output is 1 or 2 channel polyphonic.  The harmony output is 3 or 4 channel polyphonic.  Next steps are to add an ADSR and VCA for each part if needed.  The Meander gate outputs should control the ADSR trigger.  Everything else is just icing on the cake.
 
-Here is a minimal complexity but fully featured demo patch.
+Here is a minimal complexity but fully featured demo patch.  In this, FM-OP has its own ADSR and VCA.
 
 ![Meander](./res/Meander-Demo-Patch.png) 
 
 ## General: 
 Meander is fundamentally a musical "expert" system that has quite a few rules for what makes western music sound good and
-applies those rules to "sequence" other sound generation modules.  Meander has no audio sound generation or modification capabilities, so even though it is basically a complex application (which Meander is and has been over its 30+ year history), it is lightweight in terms of the load it puts on the CPU and DSP.  Meander has its own internal clock, so no inputs are required in order to start making music.
+applies those rules to "sequence" other sound generation modules.  Meander has no audio sound generation or modification capabilities, so even though it is basically a complex application (which Meander is and has been over its 30+ year history), it is lightweight in terms of the load it puts on the CPU and DSP .  Meander has its own internal clock, so no inputs are required in order to start making music.
 
 Is Meander a generative or algorithmic composition engine?  Probably, but I think of it more as an "improvisation system".  I've tried to incorporate elements of how musicians improvise melody against a harmonic progression and bassline.  The melody player might play scale runs, chord note runs and structured scale or chord note riffs or ostinatos in coordination with the harmony lead. Meander uses fBm time correlated noise to give fractal structure to the scale runs and chord arpeggios, while doing its best to sound good (or at least musical).
 
 Meander is limited to western music heptatonic (7) note scales, primarily so that the chord rules can be uniformly applied. Meander is founded on the 7 modes and 12 roots (~keys) for 84 combinations of mode and root.  The Circle of 5ths is the visualization device for seeing the mode and root harmonic intervals.  The proper key signature notation is displayed inside of the circle of 5ths.
 
-The Meander module panel is generated procedurally at runtime, rather than an relying on an SVG file.  It has an SVG file but that only has the panel size and background color. Only one functional instance of Meander can be loaded from the VCV Rack plugin browser.  If a second or other instance is loaded, the additional instances are disabled and the user is notified of that via a warning on the added panel image.  This is due to the complex issues of porting a large stand alone Windows application to Rack, and the complications of having extensive global memory data and code.
+The Meander module panel is generated procedurally at runtime, rather than an relying on an SVG file.  It has an SVG file but that only has the panel size and background color. As a result, it puts a somewhat higher demand on the GPU than many modules. 
+
+Whereas you only need one Meander module in a patch, beginning with V2.0.15, multiple instances of Meander can be added to a patch via the browser or by duplcating an existing instance.  Meander is no longer a "singleton".  If you change the panel theme or panel contrast for one Meander instance, it changes it for all Meander instances in the patch as well as changes the light/dark theme to match in the browser.  Whereas the PurrSoftware plugin still has some "global data", only the panel theme global variables are shared by multiple instances of Meander in a patch as are a small number of variables that deal with musical values that are shared across Meander instances, wuch as note names.  All other variables and parameters are stored at the Meander module instance level.  That means that any selections and settings you change on a given Meander instance panel are stored at the instance level and are independent from other Meander module instance settings.
+
+Whereas you can now have multiple instances of Meander in a patch now, that is an advanced topic and should probably only be tried once you are familar with the basics of Meander.  Synchronizing the multiple instances is a challenge.  Here are a few suggestions for how to synchronize multiple Meander module instances:
+* Use a CLOCKED module with an 8X CLK output as the 8x BPM Clock input on the first Meander instance and the CLOCKED BPM output as the BPM input on the first Meander instance as well as on subsequent Meander instances.  Then run the 8x BPM Clock output from the first Meander instance to the 8x BPM Clock inputs on subsequent Meander instances.  Run the CLOCKED RESET output to the RESET input on each Meander module.  In this setup, each Meander instances will be running at the same clock speed and BPM.
+* Use a separate ClOCKED module for each Meander instance.  Set each CLOCKED module BPM to powers of 2 relative settings.  Run the RESET output from the 1st CLOCKED module to the RESET inputs on each subsequent CLOCKED module as well as to the RESET input on each Meander module instance.  Run an X8 CLK output from each CLOCKED module to one of the Meander 8x BPM Clock inputs.  Run the RESET and RUN outputs from the first CLOCKED module to the RESET and RUN inputs on subsequent CLOCKED modules as well as to each Meander module.
+* Remember, the multiple Meander modules could be "playing" sound generators at the same time, or their outputs could be switched over time such that at any one time only one of the Meander modules is "playing" sound generators.
+* The possibilities are near infinite but will require a deep understanding on how to synchronize the multiple Meander modules in some way that sounds musical or "interesting". You are probably on your own if you go in this direction.
+
 
 All Meander panel control parameters can be controlled by an external 0-10V CV via the input jack just to the left of each parameter knob or button.  No external control is necessary to use Meander.  The CV control is there to allow you to do (almost) anything you can dream up.  Just be aware that CV parameter control actuallly changes the value of the param knobs and buttons and the knobs and buttons will change value depending on the CV input.  These are like "motorized controls" available for some high end audio equipment.
 
-The mode and root are selected by the control knobs on the far left side of the panel.  The 7 modes uccur in "modal brightness" order with the Lydian mode being the brightest and the Locrian mode being the darkest (with the most flatted scale notes). As you rotate these knobs, the circle of 5ths will rotate to show the chords that should be played for this mode and root. The root will always be at the I degree position and is also designated by a red light just inside of the inner circle. Only the colored segments should be played. Technically, this is a diatonic circle. Each colored segment is marked with the chord "degree", which are the Roman numerals I-VII.  The degrees are color coded as to whether the chord will be played as a major, minor or diminished chord.  Major chord degrees are designated with uppercase Roman numerals whereas minor chord degrees are designated with lower case Roman numerals. A diminished chord degree is designated with a lowercase Roman numeral and a superscript "degree" symbol.  All of this is done automatically by Meander, following music theory common practice. 
+The mode and root are selected by the control knobs on the far left side of the panel.  The 7 modes occur in "modal brightness" order with the Lydian mode being the brightest and the Locrian mode being the darkest (with the most flatted scale notes). As you rotate these knobs, the circle of 5ths will rotate to show the chords that should be played for this mode and root. The root will always be at the I degree position and is also designated by a red light just inside of the inner circle. Only the colored segments should be played. Technically, this is a diatonic circle. Each colored segment is marked with the chord "degree", which are the Roman numerals I-VII.  The degrees are color coded as to whether the chord will be played as a major, minor or diminished chord.  Major chord degrees are designated with uppercase Roman numerals whereas minor chord degrees are designated with lower case Roman numerals. A diminished chord degree is designated with a lowercase Roman numeral and a superscript "degree" symbol.  All of this is done automatically by Meander, following music theory common practice. 
 
 Meander has 3 main music "parts" sub-panels: Harmony (chords), Melody and Bass. The harmony drives the melody and the bass parts.  The melody drives the arpeggiator (arp) sub-part.  The arpeggiator is a melodic arpeggiator rather than a harmonic arpeggiator.  Each of the parts can be enabled or disabled via the "Enable" buttons at the top of the subpanels.  If the part is not enabled, Meander still composes that part (so that the harmony part is always available to the bass generator) but does not play that part.
 
-Each part has three output ports at the bottom of the panel.  Those are the 1V/octave, the gate and the volume outputs.  The 1v/Oct output is typically  connected to a VCO V/OCT input, whereas the Gate output is typcially connected to an ADSR gate input, which is connected to a VCA. Meander follows the Gate voltage standard (or optionally via the Meander options menun, a "volume over gate"  format that is not common practice, for which  gate off state is 0V and the gate on state is >=2.1V .  The gate on voltage also carries the volume for the note in the range of 2.1V-10V.  Thus, the gate output can also be used to control volume by modulating a VCA or controlling an ADSR Sustain parameter, or the channel level on a mixer, etc.  The gate could also be used as a CV for anything else you choose to use it for).  The volume output is totally optional for anything you might want to use it for.  It passes the part Volume setting out, but it may also be modulated by such things as bass part note accents.  It can safely be ignored until you become more experienced with Meander.
+Each part has three output ports at the bottom of the panel.  Those are the 1V/octave, the gate and the volume outputs.  The 1v/Oct output is typically  connected to a VCO V/OCT input, whereas the Gate output is typcially connected to an ADSR gate input, which is connected to a VCA. Meander follows the Gate voltage standard (or optionally via the Meander options menu, a "volume over gate"  format that is not common practice, for which  gate off state is 0V and the gate on state is >=2.1V .  The gate over voltage also carries the volume for the note in the range of 2.1V-10V.  Thus, the gate output can also be used to control volume by modulating a VCA or controlling an ADSR Sustain parameter, or the channel level on a mixer, etc.  The gate could also be used as a CV for anything else you choose to use it for).  The volume output is totally optional for anything you might want to use it for.  It passes the part Volume setting out, but it may also be modulated by such things as bass part note accents.  It can safely be ignored until you become more experienced with Meander.
 
 A big aspect of Meander is that the harmony, melody and bass parts "meander" according to some fairly complex fractal based math.  You do not have to worry about that unless you want to.  Meander uses "fractal Brownian motion" for producing meandering patterns.  The specic type of fBm variation is called 1/f noise and is made up of 1D quintic interpoldated Perlin noise, where the 1-D is time.
+
+Note: Meander uses middle C as C4.  That is denoted on the staves of the score display.
 
 Each of the three parts is discussed following in more detail:
 
@@ -49,9 +60,9 @@ Harmony is made up of chords made up of notes from the mode and root that is sel
 
 Technically, Meander uses the "diatonic circle of fifths" rather than the "chromatic circle of fifths". The 7 degrees of the diatonic scale are designated in color on the Meander panel, whereas the 5 remaining degrees of the chromatic scale are rendered in gray. The music theory behind the circle-of-fifths is beyond this manual, but the basic theory is that triad chords next to each other on the colored (diatonic) part of the circle always share one note between them.  Each degree going CW around the circle represents a 5th interval, thus the name circle of fifths. Going CCW, the interval is a 4th.  The shared note between two chords going CW is a 5th above the tonic or root note of the first chord.  Basically, the further away from each other two chords are on the circle, the more dissonance there will be.  A common progression is to start out on the I position and then jump several positions CW on the circle and then walk back CCW on the circle back to the I position.  Each step CCW gives a feeling of resolution of tension back to the I position.  There are a myriad ways to form the progression, but there are a few progressions that almost all popular western music is composed of.  Meander has 50+ such presets.  One of the most common progressions in popular music is I-V-vi-IV , which is #26 in the presets.  That same progression can be played in any of the 84 mode and root combinations, but may have s distinctly different feel in a different mode and root scale depending on  the "modal brightness".  Not all music is based on chord progressions, but a lot is, particularly popular music. Most progression based Western music limits the chord progression degrees to the 7 colored diatonic scale positions.
 
-Note, whereas the harmonic "degrees" (the Roman numerals) meaning and roles are fixed by definition, other aspects such as "harmonic function" are context, style and composer specific and relative.  In harmonic function analysis, chords are typically grouped using the circle of thirds as tonic, dominant and subdominant functions.  These represent the role (function) of the chord in the harmonic progression.  Different styles of music and different composers tend to have different roles for chords in the progression, such as which chords transition most often to other chords in the progression.  Different classical composers had their own style of harmonic functions that gave them their distinctive sound.  This is also why there are so many variations of popular harmonic progressions, where the harmonic degrees have different functions and contexts.  Meander for Windows made use of harmonic function nomenclature but since that was really just specific to classical music common practice era, I have dropped terms such as tonic, dominant and subdominant from Meander for VCV Rack.  In Meander, the harmonoc progression steps are designated as upper case Roman numerals.  Note, the standard practice is to show major chord degrees as upper case Roman and minor chord degrees as lower case Roman, but since the degrees may be major, or minor or diminished depending on the mode and root selected, only upper case Roman is used in Meander except on the circle of 5ths where the degrees will be displayed as upper or lowercase Roman numerals correctly per the current root and mode.
+Note, whereas the harmonic "degrees" (the Roman numerals) meaning and roles are fixed by definition, other aspects such as "harmonic function" are context, style and composer specific and relative.  In harmonic function analysis, chords are typically grouped using the circle of thirds as tonic, dominant and subdominant functions.  These represent the role (function) of the chord in the harmonic progression.  Different styles of music and different composers tend to have different roles for chords in the progression, such as which chords transition most often to other chords in the progression.  Different classical composers had their own style of harmonic functions that gave them their distinctive sound.  This is also why there are so many variations of popular harmonic progressions, where the harmonic degrees have different functions and contexts.  Meander for Windows made use of harmonic function nomenclature but since that was really just specific to classical music common practice era, I have dropped terms such as tonic, dominant and subdominant from Meander for VCV Rack.  In Meander, the harmonic progression steps are designated as upper case Roman numerals.  Note, the standard practice is to show major chord degrees as upper case Roman and minor chord degrees as lower case Roman, but since the degrees may be major, or minor or diminished depending on the mode and root selected, only upper case Roman is used in Meander except on the circle of 5ths where the degrees will be displayed as upper or lowercase Roman numerals correctly per the current root and mode.
 
-The fBm fractal noise results in harmony (chord) meandering, by allowing chords to wander over a range from a fraction of an octave to several octaves.  Rather than meandering in octave jumps, the chords meander through chord inversions across one or more octaves.  The playing chords shown inside the circle are in inversion notation if inverted.  If you see a chord such as G/D, that means a Gmaj chord where the G root is played above the D note in the major triad.  These inversions also allow the chord progression around the circle of 5ths to sound less melodic.  These are also two of the reasons that musicians use chord inversions.
+The fBm fractal noise results in harmony (chord) meandering, by allowing chords to wander over a range from a fraction of an octave to several octaves.  Rather than meandering in octave jumps, the chords meander through chord inversions across one or more octaves.  The playing chords shown inside the circle are in inversion notation if inverted.  If you see a chord such as G/D, that means a Gmaj chord where the G root is played above the D note in the major triad.  These inversions also allow the chord progression around the circle of 5ths to sound less melodic or chromatic.  These are also two of the reasons that musicians use chord inversions.
 
 The "Chords on 1/ " control determine when the chords play.  1/1=whole note, 1/2=half note, 1/4=quarter note, and so forth.
 
@@ -111,11 +122,11 @@ fBm can safely be ignored until and if you are interested it exlporing the possi
 
 ## Score
 
-The upper-mid-right portion of the panel is used to display the notes that are playing in standard musical notation on the bass and treble clef staffs. Chord notes are in red, bass notes are in green. Melody notes are in black and arp notes are in blue.  Note, You have to look at the key signature to determine if notes played are sharps or flats.  Since Meander does not allow accidentals, notes are always displayed without sharp or flat designation, even if they are played sharp or flat per the chosen scale.  This is the common practice in musical scores.  The score display displays one measure of notes and then starts over.  Depending on the note lengths per part,there could be many notes displayed per bar.  Meander will limit the number of displayed notes to 256 per bar. If desired, this display can be toggled on and off via the score "enable" button.
+The upper-mid-right portion of the panel is used to display the notes that are playing in standard musical notation on the bass and treble clef staffs. Middle C is designated as C4. Chord notes are in red, bass notes are in green. Melody notes are in black and arp notes are in blue.  Note, You have to look at the key signature to determine if notes played are sharps or flats.  Since Meander does not allow accidentals, notes are always displayed without sharp or flat designation, even if they are played sharp or flat per the chosen scale.  This is the common practice in musical scores.  The score display displays one measure of notes and then starts over.  Depending on the note lengths per part,there could be many notes displayed per bar.  Meander will limit the number of displayed notes to 256 per bar. If desired, this display can be toggled on and off via the score "enable" button.
 
 ## Piano Keyboard Display
 
-In the upper right portion of the keyboard is an 88 key piano keyboard.  Following the same rules as for the "score" display, the harmony, melody, arpeggiation and bass notes that are currently playing are rendered in their correct octaves on the piano keyboard.  If desired, this display can be toggled on and off via the keyboard "enable" button.
+In the upper right portion of the keyboard is an 88 key piano keyboard.  Following the same rules as for the "score" display, the harmony, melody, arpeggiation and bass notes that are currently playing are rendered in their correct octaves on the piano keyboard.  If desired, this display can be toggled on and off via the keyboard "enable" button.  Note, Meander (MIDI) notes run from 0 to 127 but only the notes from 21 (A0) to 108 (C8) can be displayed on the 88 key piano keyboard, so some low or high notes may play but not be shown as playing on the piano keyboard.
 
 ## Clocked Trigger Outputs
 
@@ -139,85 +150,13 @@ Whereas most harmonic progression presets are deterministic in the degree steps,
 
 All knob or state buttons can accept an external CV signal to vary the parameter over all allowed values.  The input CV should be from 0V-10.0V .  Meander will normalize the CV input ratio to 0.0-1.0 and then multiply this ratio times the parameter range and add to the minimum value to determine the new parameter value.  Only acceptable values will be set that are a reflection of the configParam() min and max.  The new value is displayed on the panel for your convenience.  If an exernal CV is > 0 V., it has control of the param.  If the external CV is <=0, control is returned to the Meander parameter knobs.  For buttons, the external CV should be 0V for the off state and >=1V for the on state.
 
-## Meander Change Log <a id="meander-change-log"></a>
-## Significant Version Changes (Changelog)
 
-### V2.0.14 (February 2022)
-- Fixed a segment fault that could occur if a cable was connected to the STEP input port inside the circle of 5ths.  Github issue #13.
-- Several tweaks were made to the dark and light panel themes to make colors more readable over all contrasts and themes. Github issue #12.
-- A couple of panel parameter display boxes were moved down slightly to avoid tooltips from obscuring the display, if tooltips are enabled. Github issue #12.
-- Made a change to make the panel capture image in the web library correctly display all parameter displays.
-
-### V2.0.13 (February 2022)
-- Added light and dark panels with adjustable contrast (through Meander right-click options menu).
-- Added "port labels" to all inports and outports. Right click on port to see port label info, including: port description, input or output voltage ranges and how CV maps to parameter range.
-- Added 88 key piano keyboard on which all parts are shown as they are played, color coded the panel parts. This can be enabled/disabled.
-- Musical staves display of playing notes can be enabled or disabled.
-- The "Root" note is output in 1V/oct format for use by drones or for external quantizers control.
-- "Poly Ext. Scale" output can now be in any of 4 types, chosen from the options menu.  The default is the "Poly External Scale" format implemented in Meander in 
-2020 as a 12 poly channel chromatic scale format.  Currently, the Grande Quant module is fully compatible with this format.  Run this to Grande Quant, but do not run the Meander root out to Grande and the Quant quantizer will use the current Meander mode and scale for quantizing outside of Meander but coordinated with Meander.  The second output format is "Heptatonic Diatonic STD-12ch" format which is a 7 channel poly out with the scale notes on their own channels.  This is usefult for running into external sequential switches, allowing sequenced scale runs or riffs to be played by exernal modules but in tune with the Meander mode and root scale.  There are also 2 pentatonic scale output modes, one as 5 channel pentatonic and the other as 12ch pentatonic chromatic scale.  The pentatonic modes are modified subsets of the mode and root scale in Meander.  For best results, have Meander set to either the Ionian major or the Aeolian natural minor modes.  These pentatonic scale outputs are experimental and hopefully will find some uses.  The basic thing going on is that pentatonic melodic scales can play over either a major or minor scale and still sound good, ideally.  Musicians do this often.  A use case would be to run the pentatonic scale output into a sequential switch, allowing sequencing in the melodic pentatonic scale. 
-- Meander can now act as a polyphonic quantizer for external modules, always quantizing to the current Meander mode and root scale.  In this use case, external modules can send up to 16 channels of notes to be quantized.  Meander will output the quantized notes to the same polyphonic channels, which can then be used to provide 1v/oct note data to other external sound source modules.
-- Several cosmetic changes were made.  For all new features, care was taken to not change the Meander behavior for existing V2 patches.
-
-
-### V2.0.12
-- Initial commit for Rack v2
-
-### V1.0.11
-- A clock outport was added, adjacent to the clock inport.  If no external clock is connected, the Meander generated clock is output.  If an external clock is connected, the external clock is output (as pass-through).
-- For octal radix degree.octave voltage control of the harmony and melody, you can now send a <1V or >=8V (typically from a sequencer) and Meander will ignore that step.  This allows for rhythmic chord and melody ostinatos.  A value of 0.0 is recommended as skip step designator.
-- All note duration gate signals were tested for all use cases and a few tweaks were made.
-- All textual notes played displays were checked and some changes made to correctly display note even if octal radix degree control of harmony or melody is being used.
-- Arp was fixed to track melody when melody is controlled by octal radix degree voltages.
-
-### V1.0.10
-- A bug was corrected so that note lengths are correct for all settings.  Legato and Staccato are now correctly handled. Staccato note lengths via the gate outputs are now 50% of the note length designation (1/4, 1/8,, etc.).  Legato (defualt) notes are 95% of the note length designation.
-- 8 new harmonic progressions were added for a new total of 59.  A few slight tweaks were made to existing progressions to fit tradition better.
-- An appendix was added at the end of this manual that lists the harmonic progression description and Roman number step degrees.  I've added some annotations about the progressions if you are interested in knowing more about harmonic theory.  I'm no expert, but I have worked with Meander for 32 years or so now.  I keep learning though.
-- The panel clock input text was changed to "EXT 8x BPM" to remind users that the clock should be an 8X clock.
-- Expanded the Harmony Presets text displays to allow maximum length in the space provided.
-
-### V1.0.9
-- Corrected issue with melody when arp is enabled.  It now sets the molody note duration to the arp notes duration if arp is enabled.  This makes sure the melody and arp gate output catches all notes.
-- The harmony chord output port now always puts the chord root or tonic note in channel 0.  This enables external modules to extract the root bass note from the chord.  Works for triads and tetrad 7ths.
-- The 12 bar blues progression (#13) was corrected to use the most standard or traditional form.
-- Standardized all progression degree steps to upper case Roman numerals with a space and dash in between steps.
-- Correct the #7 "strong" progression to actually be a strong progressions with each step approaching the tonic by 4ths.
-- Corrected the #22 "random coming home" progression to always return to the tonic via steps of a 4th.
-- When the BPM CV input is connected, Meander now sets the Meander BPM to track the external clock (ex. from CLOCKED) even if Meander is receiving an external clock.
-
-
-### V1.0.8
-- Support added for "Poly External Scale" output. https://aria.dog/modules/poly-external-scale/ Currently, only Aria Salvatrice's modules can interpret this data.  I specfically tested this with Aria's QQQQ quad quantizer module.  Basically, Meander sends its mode and root scale info out the "Poly Ext. Scale" out port.  QQQQ can receive this data and set up a quantizer that matches Meander's current scale.  Thus, QQQQ can be used in scale sequencers and arpeggiators you might build outside of Meander in the current VCV Rack patch.  QQQQ also adds to Meander by displaying the Meander current mode and root (key) scale notes on a piano keyboard display.  This graphical representation matches the Meander Mode parameter scale that is displayed on the panel below the mode name.
-
-### V1.0.7
-- Corrected several problems related to module browser and Libray panel appearance.
-
-### V1.0.6
-- Corrected a bug that caused the Meander module panel image to draw incorrectly in the plugin/module browser on some systems.
-
-### V1.0.5
-- Added CV Degree and Gate inputs to melody section.  Allows playing of the melody engine via octal radix degree.octave values from sequencers or standard note values from a MIDI keyboard or modules such as TWELVE-KEY.
-- Changed Harmony circle Degree and Gate inputs format to accept same control as the melody.  Allows playing of the harmony  engine via octal radix degree.octave values from sequencers or standard note values from a MIDI keyboard or modules such as TWELVE-KEY.
-- Harmony STEP input can now properly control stochastic progressions such as those with "Markov", "random" or "rand" in their names.
-- Harmony circle "STEP" can now be advanced via the Meander "1ms Clocked Trigger Pulses".  Warning, this introduces a 1/32nd note delay in the harmonic progression.  In most cases this is not noticeable, but beware.  
-- All play modes now handle 7th chords if selected.
-- All target octaves have been unified to play in the correct octave and display correctly on the panel.
-
-### V1.0.4
-- All button parameter internal variable states are now saved and restored in save and autosave and load via json.
-- Run and Reset logic was improved to behave predictably.
-- "All 7ths" was changed to "~Nice 7ths".  Attempts to only play "nice" sounding 7ths, which are V7, ii7, viidim7 and IVM7.  These sound a lot more harmonious and less dissonant.  A better choice is V7ths which almost always sound good and are extensively used in music, particlularly in jazz and the blues.
-
-### V1.0.3
-- Added a STEP button inside of the circle of 5ths to allow the harmony progression to be manually advanced, or via CV.
-- Panel cleanup.
  
 ## Meander Progression Presets <a id="meander-progression-presets"></a>
 ## Appendix I: Harmonic Progression Presets
 
 ###
-Note: for any of the following, you can select V7ths in Meander and it will almost always sound good, giving a more jazzy or bluesy sound.  Some progressions are tradionally played with non V 7ths in addition but Meander cannot handle arbitray 7ths in a progression.
+Note: for any of the following, you can select V7ths in Meander and it will almost always sound good, giving a more jazzy or bluesy sound.  Some progressions are tradionally played with non V 7ths in addition but Meander cannot handle arbitrary 7ths in a progression.  "Nice 7ths" can be selected and Meander will try to only play a 7th chord where done in common practice.  Use this with care as sometimes 7ths can be too dissonant. 
 
 * Progression #1: Description=  "50's Classic R&R do-wop and jazz" this is a circle progression, up by 4ths from VI to I
 * Progression #1: Degree steps= "I - VI - II - V" 
