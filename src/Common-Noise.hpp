@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License along with thi
 #define NN 0x1000000     // This needs to be a very large value so that when setup adds a value to it it is always positive, regardless of size of argument which may get quite large in fracal sums
 
 int pp[512];  // used by npnoise functions
-int permutation[] = { 151,160,137,91,90,15,
+int permutation[256] = { 151,160,137,91,90,15,
    131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
    190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
    88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,
@@ -44,7 +44,7 @@ double g3[B + B + 2][3];  // 3D
 #define setup(i,b0,b1,r0,r1) t = vec[i] + NN; b0 = ((int)t) & BM; b1 = (b0+1) & BM; r0 = t - (int)t; r1 = r0 - 1.;
 
 
-static double g_precomputed[][3]= {
+double g_precomputed[514][3]= {
 	{0.881927, 0.00933256, -0.471294},
 	{0.783613, 0.523784, 0.334067},
 	{0.16021, -0.224294, 0.961262},
@@ -558,7 +558,7 @@ static double g_precomputed[][3]= {
 	{0.317011, -0.926956, -0.20064},
 	{0.190026, 0.740102, -0.645089},
 	{0.881927, 0.00933256, -0.471294},
-	{0.783613, 0.523784, 0.334067},
+	{0.783613, 0.523784, 0.334067}
 };
 
 //#define fade(t) ( t )                                    // linear linterpolation   fast but poor
@@ -567,7 +567,7 @@ static double g_precomputed[][3]= {
 
 #define lerp(t, a, b) ( a + t * (b - a) )      // lerp="linear interpolation"
 
-static void normalize2(double v[2])
+void normalize2(double v[2])
 {
         double s;
 
@@ -575,23 +575,11 @@ static void normalize2(double v[2])
 	v[0] = v[0] / s;
 	v[1] = v[1] / s;
 }
-/* to avoid unused warning
-static void normalize3(double v[3])
-{
-        double s;
-
-	s = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-	v[0] = v[0] / s;
-	v[1] = v[1] / s;
-	v[2] = v[2] / s;
-}
-*/
-//double pnoise1(double vec[]);
 
 /* Coherent Perlin noise function over 1, 2 or 3 dimensions */
 // actually lattice noise of the gradient variety
 
-static double pnoise1(double vec[])
+double pnoise1(double vec[])
 {  
     int bx0=0, bx1=0;
     double rx0=0., rx1=0., sx=0., t=0., u=0., v=0.;
@@ -608,7 +596,7 @@ static double pnoise1(double vec[])
     return 2.1*lerp(sx, u, v);      // essentially scales a -.5 to +.5 distribution to -1 to 1
 }
 
-static double pnoise2(double vec[])
+double pnoise2(double vec[])
 {
 	int bx0, bx1, by0, by1, b00, b10, b01, b11;
         double rx0, rx1, ry0, ry1, *q, sx, sy, a, b, t, u, v;
@@ -643,7 +631,7 @@ static double pnoise2(double vec[])
 
 int test_count=0;
 
-static double pnoise3(double vec[])
+double pnoise3(double vec[])
 {
 	int bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
         double rx0, rx1, ry0, ry1, rz0, rz1, *q, sy, sz, a, b, c, d, t, u, v;
@@ -755,10 +743,10 @@ double fBm2DNoise(double x,double y,double InversePersistence,double Lacunarity,
    double val,sum = 0;
    double p[2],scale = 1;
 
-   static double   normalscale=1.;   // used to renormalize added octaves
-   static double   currentInversePersistence=0;
-   static double   currentLacunarity=0;
-   static int      currentnoctaves=0;
+   double   normalscale=1.;   // used to renormalize added octaves
+   double   currentInversePersistence=0;
+   double   currentLacunarity=0;
+   int      currentnoctaves=0;
 
    if (*NoiseResetFlag)
    if ((InversePersistence!=currentInversePersistence)||(Lacunarity!=currentLacunarity)||(n_octaves!=currentnoctaves))
@@ -803,8 +791,8 @@ double FastfBm2DNoise(double x,double y,int n_octaves,bool *NoiseResetFlag) // f
    double val,sum = 0;
    double p[2],scale = 1;
 
-   static double   normalscale=1.;   // used to renormalize added octaves
-   static int      currentnoctaves=0;
+   double   normalscale=1.;   // used to renormalize added octaves
+   int      currentnoctaves=0;
 
    if (*NoiseResetFlag)
    if (n_octaves!=currentnoctaves)
@@ -883,7 +871,7 @@ double npnoise3(double vec[])      // new improved perlin noise3
   }
 
 
-static double grad4(int hash, double x, double y, double z, double w)
+double grad4(int hash, double x, double y, double z, double w)
 {
    int h = hash & 31; // CONVERT LO 5 BITS OF HASH TO 32 GRAD DIRECTIONS.
    double a=y,b=z,c=w;            // X,Y,Z
@@ -970,10 +958,10 @@ double fBm3DNoise(double x,double y,double z,double InversePersistence,double La
    double val,sum = 0;
    double p[3],scale = 1;
 
-   static double   normalscale=1.;   // used to renormalize added octaves
-   static double   currentInversePersistence=0;
-   static double   currentLacunarity=0;
-   static int      currentnoctaves=0;
+   double   normalscale=1.;   // used to renormalize added octaves
+   double   currentInversePersistence=0;
+   double   currentLacunarity=0;
+   int      currentnoctaves=0;
 
    if (*NoiseResetFlag)
    if ((InversePersistence!=currentInversePersistence)||(Lacunarity!=currentLacunarity)||(n_octaves!=currentnoctaves))
@@ -1020,8 +1008,8 @@ double FastfBm3DNoise(double x,double y,double z,int n_octaves,bool *NoiseResetF
    double val,sum = 0;
    double p[3],scale = 1;
 
-   static double   normalscale=1.;   // used to renormalize added octaves
-   static int      currentnoctaves=0;
+   double   normalscale=1.;   // used to renormalize added octaves
+   int      currentnoctaves=0;
 
    if (*NoiseResetFlag)
    if (n_octaves!=currentnoctaves)
@@ -1071,10 +1059,10 @@ double fBm4DNoise(double x,double y,double z,double w,double InversePersistence,
    double val,sum = 0;
    double p[4],scale = 1;
 
-   static double   normalscale=1.;   // used to renormalize added octaves
-   static double   currentInversePersistence=0;
-   static double   currentLacunarity=0;
-   static int      currentnoctaves=0;
+   double   normalscale=1.;   // used to renormalize added octaves
+   double   currentInversePersistence=0;
+   double   currentLacunarity=0;
+   int      currentnoctaves=0;
 
    if (*NoiseResetFlag)
    if ((InversePersistence!=currentInversePersistence)||(Lacunarity!=currentLacunarity)||(n_octaves!=currentnoctaves))
@@ -1123,8 +1111,8 @@ double FastfBm4DNoise(double x,double y,double z,double w,int n_octaves, bool *N
    double val,sum = 0;
    double p[4],scale = 1;
 
-   static double   normalscale=1.;   // used to renormalize added octaves
-   static int      currentnoctaves=0;
+   double   normalscale=1.;   // used to renormalize added octaves
+   int      currentnoctaves=0;
 
    if (*NoiseResetFlag)
    if (n_octaves!=currentnoctaves)

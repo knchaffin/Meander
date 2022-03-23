@@ -4235,7 +4235,7 @@ struct ScaleSelectLineDisplay : LightWidget {
 		nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 		nvgFillColor(args.vg, paramTextColor);  
 	
-		if (module)
+		if (module)  
 		{
 			char text[128];
 			
@@ -4248,7 +4248,7 @@ struct ScaleSelectLineDisplay : LightWidget {
 			strcpy(text,"");
 			for (int i=0;i<mode_step_intervals[*val][0];++i)
 			{
-				strcat(text,note_desig[module->notes[i]%MAX_NOTES]);  
+				strcat(text,module->note_desig[module->notes[i]%MAX_NOTES]);  
 				strcat(text," ");
 			}
 			
@@ -5930,25 +5930,25 @@ struct MeanderWidget : ModuleWidget
 						int display_note=module->played_notes_circular_buffer[i].note;
 											
 						int scale_note=0;
-						if (strstr(note_desig[display_note%12],"C"))
+						if (strstr(module->note_desig[display_note%12],"C"))
 							scale_note=0;
 						else
-						if (strstr(note_desig[display_note%12],"D"))
+						if (strstr(module->note_desig[display_note%12],"D"))
 							scale_note=1;
 						else
-						if (strstr(note_desig[display_note%12],"E"))
+						if (strstr(module->note_desig[display_note%12],"E"))
 							scale_note=2;
 						else
-						if (strstr(note_desig[display_note%12],"F"))
+						if (strstr(module->note_desig[display_note%12],"F"))
 							scale_note=3;
 						else
-						if (strstr(note_desig[display_note%12],"G"))
+						if (strstr(module->note_desig[display_note%12],"G"))
 							scale_note=4;
 						else
-						if (strstr(note_desig[display_note%12],"A"))
+						if (strstr(module->note_desig[display_note%12],"A"))
 							scale_note=5;
 						else
-						if (strstr(note_desig[display_note%12],"B"))
+						if (strstr(module->note_desig[display_note%12],"B"))
 							scale_note=6;
 											
 						int octave=(display_note/12)-2;
@@ -6108,7 +6108,7 @@ struct MeanderWidget : ModuleWidget
 					if ((module->theMeanderState.theHarmonyParms.last[0].note>=0)&&(module->theMeanderState.theHarmonyParms.last[0].note<128))
 					{
 						pos=Vec(notesPlayingDisplayStartX+20, notesPlayingDisplayNoteCenterY);  
-						snprintf(text, sizeof(text), "%s%d", note_desig[(module->theMeanderState.theHarmonyParms.last[0].note%12)] , module->theMeanderState.theHarmonyParms.last[0].note/12);
+						snprintf(text, sizeof(text), "%s%d", module->note_desig[(module->theMeanderState.theHarmonyParms.last[0].note%12)] , module->theMeanderState.theHarmonyParms.last[0].note/12);
 						nvgFillColor(args.vg, panelHarmonyPartColor); 
 						nvgText(args.vg, pos.x, pos.y, text, NULL);
 						nvgFillColor(args.vg, panelTextColor);
@@ -6121,7 +6121,7 @@ struct MeanderWidget : ModuleWidget
 					if ((module->theMeanderState.theHarmonyParms.last[1].note>=0)&&(module->theMeanderState.theHarmonyParms.last[1].note<128))
 					{
 						pos=Vec(notesPlayingDisplayStartX+20+(1*37.5), notesPlayingDisplayNoteCenterY);  
-						snprintf(text, sizeof(text), "%s%d", note_desig[(module->theMeanderState.theHarmonyParms.last[1].note%12)], module->theMeanderState.theHarmonyParms.last[1].note/12);
+						snprintf(text, sizeof(text), "%s%d",module->note_desig[(module->theMeanderState.theHarmonyParms.last[1].note%12)], module->theMeanderState.theHarmonyParms.last[1].note/12);
 						nvgFillColor(args.vg, panelHarmonyPartColor); 
 						nvgText(args.vg, pos.x, pos.y, text, NULL);
 						nvgFillColor(args.vg, panelTextColor);
@@ -6134,7 +6134,7 @@ struct MeanderWidget : ModuleWidget
 					if ((module->theMeanderState.theHarmonyParms.last[2].note>=0)&&(module->theMeanderState.theHarmonyParms.last[2].note<128))
 					{
 						pos=Vec(notesPlayingDisplayStartX+20+(2*37.5), notesPlayingDisplayNoteCenterY); 
-						snprintf(text, sizeof(text), "%s%d", note_desig[(module->theMeanderState.theHarmonyParms.last[2].note%12)], module->theMeanderState.theHarmonyParms.last[2].note/12);
+						snprintf(text, sizeof(text), "%s%d", module->note_desig[(module->theMeanderState.theHarmonyParms.last[2].note%12)], module->theMeanderState.theHarmonyParms.last[2].note/12);
 						nvgFillColor(args.vg, panelHarmonyPartColor); 
 						nvgText(args.vg, pos.x, pos.y, text, NULL);
 						nvgFillColor(args.vg, panelTextColor);
@@ -6147,7 +6147,7 @@ struct MeanderWidget : ModuleWidget
 					{
 						pos=Vec(notesPlayingDisplayStartX+20+(3*37.5), notesPlayingDisplayNoteCenterY); 
 						if ((module->theMeanderState.theHarmonyParms.last_chord_type==2)||(module->theMeanderState.theHarmonyParms.last_chord_type==3)||(module->theMeanderState.theHarmonyParms.last_chord_type==4)||(module->theMeanderState.theHarmonyParms.last_chord_type==5))
-							snprintf(text, sizeof(text), "%s%d", note_desig[module->theMeanderState.theHarmonyParms.last[3].note%12], module->theMeanderState.theHarmonyParms.last[3].note/12);
+							snprintf(text, sizeof(text), "%s%d", module->note_desig[module->theMeanderState.theHarmonyParms.last[3].note%12], module->theMeanderState.theHarmonyParms.last[3].note/12);
 						else
 							snprintf(text, sizeof(text), "%s", "   ");
 						nvgFillColor(args.vg, panelHarmonyPartColor); 
@@ -6165,7 +6165,7 @@ struct MeanderWidget : ModuleWidget
 						if ((module->theMeanderState.theMelodyParms.last[0].note>=0)&&(module->theMeanderState.theMelodyParms.last[0].note<128))
 						{
 							pos=Vec(notesPlayingDisplayStartX+20+(4*37.5), notesPlayingDisplayNoteCenterY); 
-							snprintf(text, sizeof(text), "%s%d", note_desig[(module->theMeanderState.theMelodyParms.last[0].note%12)], (int)(module->theMeanderState.theMelodyParms.last[0].note/12 ));
+							snprintf(text, sizeof(text), "%s%d", module->note_desig[(module->theMeanderState.theMelodyParms.last[0].note%12)], (int)(module->theMeanderState.theMelodyParms.last[0].note/12 ));
 							nvgFillColor(args.vg, panelMelodyPartColor); 
 							nvgText(args.vg, pos.x, pos.y, text, NULL);
 							nvgFillColor(args.vg, panelTextColor);
@@ -6181,7 +6181,7 @@ struct MeanderWidget : ModuleWidget
 						if ((module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note>=0)&&(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note<128))
 						{
 							pos=Vec(notesPlayingDisplayStartX+20+(5*37.5), notesPlayingDisplayNoteCenterY); 
-							snprintf(text, sizeof(text), "%s%d", note_desig[(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note%12)], (int)(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note/12 ));
+							snprintf(text, sizeof(text), "%s%d", module->note_desig[(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note%12)], (int)(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note/12 ));
 							nvgFillColor(args.vg, panelArpPartColor); 
 							nvgText(args.vg, pos.x, pos.y, text, NULL);
 							nvgFillColor(args.vg, panelTextColor);
@@ -6195,7 +6195,7 @@ struct MeanderWidget : ModuleWidget
 					if ((module->theMeanderState.theBassParms.last[0].note>=0)&&(module->theMeanderState.theBassParms.last[0].note<128))
 					{
 						pos=Vec(notesPlayingDisplayStartX+20+(6*37.5), notesPlayingDisplayNoteCenterY); 
-						snprintf(text, sizeof(text), "%s%d", note_desig[(module->theMeanderState.theBassParms.last[0].note%12)], (module->theMeanderState.theBassParms.last[0].note/12));
+						snprintf(text, sizeof(text), "%s%d", module->note_desig[(module->theMeanderState.theBassParms.last[0].note%12)], (module->theMeanderState.theBassParms.last[0].note/12));
 						nvgFillColor(args.vg, panelBassPartColor); 
 						nvgText(args.vg, pos.x, pos.y, text, NULL);
 						nvgFillColor(args.vg, panelTextColor);
@@ -6210,7 +6210,7 @@ struct MeanderWidget : ModuleWidget
 						if ((module->theMeanderState.theBassParms.last[1].note>=0)&&(module->theMeanderState.theBassParms.last[1].note<128))
 						{
 							pos=Vec(notesPlayingDisplayStartX+20+(7*37.5), notesPlayingDisplayNoteCenterY); 
-							snprintf(text, sizeof(text), "%s%d", note_desig[(module->theMeanderState.theBassParms.last[1].note%12)], (module->theMeanderState.theBassParms.last[1].note/12));
+							snprintf(text, sizeof(text), "%s%d", module->note_desig[(module->theMeanderState.theBassParms.last[1].note%12)], (module->theMeanderState.theBassParms.last[1].note/12));
 							nvgFillColor(args.vg,panelBassPartColor); 
 							nvgText(args.vg, pos.x, pos.y, text, NULL);
 							nvgFillColor(args.vg, panelTextColor);
@@ -6250,9 +6250,9 @@ struct MeanderWidget : ModuleWidget
 				strcpy(chord_type_desc, "dim");
 
 			if (last_chord_bass_note!=last_chord_root) 
-				snprintf(text, sizeof(text), "%s%s/%s", note_desig[last_chord_root], chord_type_desc, note_desig[last_chord_bass_note]);
+				snprintf(text, sizeof(text), "%s%s/%s", module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
 			else
-				snprintf(text, sizeof(text), "%s%s", note_desig[last_chord_root], chord_type_desc);
+				snprintf(text, sizeof(text), "%s%s", module->note_desig[last_chord_root], chord_type_desc);
 
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
@@ -6301,7 +6301,8 @@ struct MeanderWidget : ModuleWidget
 				
 				if (panelTheme==0)  // light theme
 				{
-					std::shared_ptr<Image> lightPanelImage=lightPanelImage = APP->window->loadImage(asset::plugin(pluginInstance,"res/Meander-light.png"));
+				//	std::shared_ptr<Image> lightPanelImage=lightPanelImage = APP->window->loadImage(asset::plugin(pluginInstance,"res/Meander-light.png"));
+					std::shared_ptr<Image> lightPanelImage = APP->window->loadImage(asset::plugin(pluginInstance,"res/Meander-light.png"));
 					if (lightPanelImage) 
 					{
 						int height=0;
@@ -6314,7 +6315,7 @@ struct MeanderWidget : ModuleWidget
 				}
 				else // dark theme
 				{
-					std::shared_ptr<Image> darkPanelImage=darkPanelImage = APP->window->loadImage(asset::plugin(pluginInstance,"res/Meander-dark.png"));
+					std::shared_ptr<Image> darkPanelImage = APP->window->loadImage(asset::plugin(pluginInstance,"res/Meander-dark.png"));
 					if (darkPanelImage) 
 					{
 						int height=0;

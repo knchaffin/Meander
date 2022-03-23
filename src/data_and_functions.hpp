@@ -7,6 +7,8 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "Common-Noise.hpp" 
+
 //*********************************************************Module Vars************************************************
 
 bool moduleVarsInitialized=false;  //  initialized only during Module()
@@ -127,6 +129,7 @@ const char* noteNames[MAX_NOTES] = {"C","C#/Db","D","D#/Eb","E","F","F#/Gb","G",
 int circle_root_key=0; // root_key position on the circle 0,1,2... CW
 int root_key=0;  // 0 initially
 
+char note_desig[MAX_NOTES][MAXSHORTSTRLEN]={"C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"};
 int notate_mode_as_signature_root_key=0; // 0 initially
 // any mode and root_key is equivalent to a maj key by transposing down these numbers of major scale semitones
 // Mode        Transpose down by interval  or semitones

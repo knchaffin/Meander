@@ -4,8 +4,6 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Common-Noise.hpp" 
-
 //*********************************************************Globals************************************************
 
 using namespace rack;
@@ -46,9 +44,8 @@ enum noteTypes
 	NOTE_TYPE_EXTERNAL
 };
 
-char note_desig[MAX_NOTES][MAXSHORTSTRLEN]={"C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"};
-char note_desig_sharps[MAX_NOTES][MAXSHORTSTRLEN]={"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
-char note_desig_flats[MAX_NOTES][MAXSHORTSTRLEN]={"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"};
+static const char note_desig_sharps[MAX_NOTES][MAXSHORTSTRLEN]={"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
+static const char note_desig_flats[MAX_NOTES][MAXSHORTSTRLEN]={"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"};
 
 static const char root_key_names[MAX_ROOT_KEYS][MAXSHORTSTRLEN] = { "C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B" };
 
