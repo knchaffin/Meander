@@ -4158,7 +4158,7 @@ struct RootKeySelectLineDisplay : LightWidget {
 	
 	RootKeySelectLineDisplay() {
 	
-	}
+	} 
 
 	void draw(const DrawArgs &args) override {
 
@@ -6301,7 +6301,6 @@ struct MeanderWidget : ModuleWidget
 				
 				if (panelTheme==0)  // light theme
 				{
-				//	std::shared_ptr<Image> lightPanelImage=lightPanelImage = APP->window->loadImage(asset::plugin(pluginInstance,"res/Meander-light.png"));
 					std::shared_ptr<Image> lightPanelImage = APP->window->loadImage(asset::plugin(pluginInstance,"res/Meander-light.png"));
 					if (lightPanelImage) 
 					{
