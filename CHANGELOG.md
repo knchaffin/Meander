@@ -1,6 +1,9 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.16 (April 2022)
+- Cosmetic change only for light panel theme PNG file to fix slight misalignment with panel ports and controls for in browswer and library.
+
 ### V2.0.15 (March/April 2022)
 - This change log file was added and the change log moved from the manual to here.
 - Almost all global variables were moved to the module instance scope. Most, if not all globals are now read only.
