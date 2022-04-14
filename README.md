@@ -1,4 +1,4 @@
-## PurrSoftware Meander V2.0.15 plugin module for VCV Rack V2. 
+## PurrSoftware Meander plugin module for VCV Rack V2. 
 
 ## Contents
 * [Manual](#manual) 
