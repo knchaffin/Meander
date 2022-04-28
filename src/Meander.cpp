@@ -504,7 +504,7 @@ struct Meander : Module
 		NUM_LIGHTS
 	};
 
-	#include "data_and_functions.hpp" // for module vars
+	#include "data_and_functions.hpp" // for module vars 
 
 	enum ScaleOutMode {
 		HEPTATONIC_CHROMATIC_12CH,
@@ -610,7 +610,8 @@ struct Meander : Module
 			{
 				theMeanderState.theHarmonyParms.last[j].note=note_to_play;
 				theMeanderState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
-				theMeanderState.theHarmonyParms.last[j].length=1;  // whole  note for now
+			//	theMeanderState.theHarmonyParms.last[j].length=1;  // whole  note for now
+				theMeanderState.theHarmonyParms.last[j].length=theMeanderState.theHarmonyParms.note_length_divisor;  
 				theMeanderState.theHarmonyParms.last[j].time32s=barts_count;
 				theMeanderState.theHarmonyParms.last[j].countInBar=bar_note_count;
 				theMeanderState.theHarmonyParms.last[j].isPlaying=true;
@@ -830,7 +831,8 @@ struct Meander : Module
 					{
 						theMeanderState.theHarmonyParms.last[j].note=note_to_play;
 						theMeanderState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
-						theMeanderState.theHarmonyParms.last[j].length=1;  // need chords per measure
+					//	theMeanderState.theHarmonyParms.last[j].length=1;  // need chords per measure
+						theMeanderState.theHarmonyParms.last[j].length=theMeanderState.theHarmonyParms.note_length_divisor;
 						theMeanderState.theHarmonyParms.last[j].time32s=barts_count;
 						theMeanderState.theHarmonyParms.last[j].countInBar=bar_note_count;
 						theMeanderState.theHarmonyParms.last[j].isPlaying=true;
@@ -1184,7 +1186,8 @@ struct Meander : Module
 			
 			theMeanderState.theBassParms.last[0].note=theMeanderState.last_harmony_chord_root_note+ (theMeanderState.theBassParms.target_octave*12);  
 			theMeanderState.theBassParms.last[0].noteType=NOTE_TYPE_BASS;
-			theMeanderState.theBassParms.last[0].length=1;  // need bass notes per measure
+		//	theMeanderState.theBassParms.last[0].length=1;  // need bass notes per measure
+			theMeanderState.theBassParms.last[0].length=theMeanderState.theBassParms.note_length_divisor;
 			theMeanderState.theBassParms.last[0].time32s=barts_count;
 			theMeanderState.theBassParms.last[0].countInBar=bar_note_count;
 			theMeanderState.theBassParms.last[0].isPlaying=true;
@@ -1198,7 +1201,8 @@ struct Meander : Module
 		
 				theMeanderState.theBassParms.last[1].note=theMeanderState.theBassParms.last[0].note+12; 
 				theMeanderState.theBassParms.last[1].noteType=NOTE_TYPE_BASS;
-				theMeanderState.theBassParms.last[1].length=1;  // need bass notes per measure
+			//	theMeanderState.theBassParms.last[1].length=1;  // need bass notes per measure
+				theMeanderState.theBassParms.last[1].length=theMeanderState.theBassParms.note_length_divisor;
 				theMeanderState.theBassParms.last[1].time32s=barts_count;
 				theMeanderState.theBassParms.last[1].countInBar=bar_note_count;
 				theMeanderState.theBassParms.last[1].isPlaying=true;
@@ -4090,7 +4094,7 @@ struct MinMaxQuantity : Quantity {
 };    
 
 
-struct MeanderPanelThemeItem : MenuItem {   
+struct MeanderPanelThemeItem : MenuItem {    
     
 		Meander  *module;
         int theme;
@@ -4163,7 +4167,7 @@ struct RootKeySelectLineDisplay : LightWidget {
 	void draw(const DrawArgs &args) override {
 
 		if (!module)
-			return;
+			return; 
 
 		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
 			
@@ -4447,8 +4451,7 @@ struct MeanderWidget : ModuleWidget
 				return;
 
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
-			
+					
 			for (int i=0; i<MAX_CIRCLE_STATIONS; ++i)
 			{
 					// draw root_key annulus sector
@@ -4503,8 +4506,7 @@ struct MeanderWidget : ModuleWidget
 				return;
 
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
-					
+						
 			int chord_type=0;
 
 			for (int i=0; i<MAX_HARMONIC_DEGREES; ++i)
@@ -4717,8 +4719,7 @@ struct MeanderWidget : ModuleWidget
 		void drawLabelAbove(const DrawArgs &args, Rect rect, const char* label, float fontSize)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
-				    	
+						    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, panelTextColor);
 			nvgFontSize(args.vg, fontSize);
@@ -4732,8 +4733,7 @@ struct MeanderWidget : ModuleWidget
 		void drawLabelRight(const DrawArgs &args, Rect rect, const char* label)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
-				    	
+						    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, panelTextColor);
 			nvgFontSize(args.vg, 14);
@@ -4747,8 +4747,7 @@ struct MeanderWidget : ModuleWidget
 		void drawLabelLeft(const DrawArgs &args, Rect rect, const char* label, float xoffset)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
-				    	
+						    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, panelTextColor);
 			nvgFontSize(args.vg, 14);
@@ -4762,8 +4761,7 @@ struct MeanderWidget : ModuleWidget
 		void drawLabelOffset(const DrawArgs &args, Rect rect, const char* label, float xoffset, float yoffset)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
-				    	
+						    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, panelTextColor);
 			nvgFontSize(args.vg, 14);
@@ -4777,8 +4775,7 @@ struct MeanderWidget : ModuleWidget
 		void drawOutport(const DrawArgs &args, Vec OutportPos, const char* label, float value, int valueDecimalPoints, float scale=1.0)  // scale is vertical only
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
-				
+						
 			Vec displayRectPos= OutportPos.plus(Vec(-3, -scale*15));  // specific for 30x43 size
 			nvgBeginPath(args.vg);
 		    nvgRoundedRect(args.vg, displayRectPos.x,displayRectPos.y, 30.f, scale*43.f, 3.f);
@@ -4848,7 +4845,7 @@ struct MeanderWidget : ModuleWidget
 
 		void drawKey(const DrawArgs &args, int k, bool state, int source) // state true means key pressed. Source 0=generic, 1=harmony chord, 2=melody, 3=arp, 4= bass, 5=drone
 		{
-			if ((k<21)||(k>108))
+			if ((k<21)||(k>108)) 
 			  return;
 
 			NVGcolor whiteNoteOnColor;
@@ -5113,7 +5110,7 @@ struct MeanderWidget : ModuleWidget
 				return;
 
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Musisync-KVLZ.ttf"));
+			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Bravura.otf"));
 
 						    	
 			if (true)  // Harmony  position a paramwidget  can't access paramWidgets here  
@@ -5384,7 +5381,7 @@ struct MeanderWidget : ModuleWidget
 			if (true)  // update bass panel
 			{
 				nvgBeginPath(args.vg);
-				nvgRoundedRect(args.vg, 869.f, 120.f, 155.f, 258.f, 4.f);
+				nvgRoundedRect(args.vg, 869.f, 137.859f, 155.f, 239.1f, 4.f);
 			   	nvgFillColor(args.vg, nvgRGBA( panelcolor.r,  panelcolor.g, panelcolor.b, panelcolor.a));
 				nvgStrokeColor(args.vg,nvgRGBA( 0x80,  0x80 , 0x80, 0x80));
 				nvgStrokeWidth(args.vg, 2.5);
@@ -5440,7 +5437,7 @@ struct MeanderWidget : ModuleWidget
 			if (true)  // update fBm panel
 			{
 				nvgBeginPath(args.vg);
-				nvgRoundedRect(args.vg, 1025.f, 120.f, 171.f, 258.f, 4.f);
+				nvgRoundedRect(args.vg, 1025.f, 137.859f, 171.f, 239.1f, 4.f);
 				nvgFillColor(args.vg, nvgRGBA( panelcolor.r,  panelcolor.g, panelcolor.b, panelcolor.a));
 				nvgStrokeColor(args.vg,nvgRGBA( 0x80,  0x80 , 0x80, 0x80));
 				nvgStrokeWidth(args.vg, 2.5);
@@ -5644,13 +5641,13 @@ struct MeanderWidget : ModuleWidget
 			
 			float beginEdge = 295; 
 			float beginTop =115;
-			float lineWidth=1.0; 
+			float lineWidth=0.75; 
 			float stafflineLength=100;
 			float barLineVoffset=36.;
 			float barLineVlength=60.;
 			int yLineSpacing=6;
 			float yHalfLineSpacing=3.0f;
-
+	
 		    // draw bar left vertical edge
 			if (beginEdge > 0) {
 				nvgBeginPath(args.vg);
@@ -5668,20 +5665,20 @@ struct MeanderWidget : ModuleWidget
 			}
 			nvgStrokeColor(args.vg, panelLineColor);
 			nvgStrokeWidth(args.vg, lineWidth);
-			nvgStroke(args.vg);
+			nvgStroke(args.vg); 
 
-			nvgFontSize(args.vg, 45);
+			nvgFontSize(args.vg, 90);
 			if (musicfont)
 			nvgFontFaceId(args.vg, musicfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
 			nvgFillColor(args.vg, panelLineColor);
-			pos=Vec(beginEdge+10, beginTop+45);  
-			snprintf(text, sizeof(text), "%s", "G");  // treble clef
+			pos=Vec(beginEdge+12, beginTop+54); 
+			snprintf(text, sizeof(text), "%s", gClef.c_str());  
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
-			nvgFontSize(args.vg, 35);
+			nvgFontSize(args.vg, 90);
 			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-			snprintf(text, sizeof(text), "%s", "B");  // sharp
+			snprintf(text, sizeof(text), "%s", sharp.c_str());  
 			
 			int num_sharps1=0;
 			int vertical_offset1=0;
@@ -5691,14 +5688,14 @@ struct MeanderWidget : ModuleWidget
 				if (root_key_signatures_chromaticForder[module->notate_mode_as_signature_root_key][i]==1)
 				{
 					vertical_offset1=root_key_sharps_vertical_display_offset[num_sharps1];
-					pos=Vec(beginEdge+20+(num_sharps1*5), beginTop+24+(vertical_offset1*yHalfLineSpacing));
+					pos=Vec(beginEdge+24+(num_sharps1*5), beginTop+33+(vertical_offset1*yHalfLineSpacing));
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
 					++num_sharps1;
 				}
 				nvgClosePath(args.vg);
 			}	
 		
-			snprintf(text, sizeof(text), "%s", "b");  // flat
+			snprintf(text, sizeof(text), "%s", flat.c_str());  
 			int num_flats1=0;
 			vertical_offset1=0;
 			for (int i=6; i>=0; --i)
@@ -5707,7 +5704,7 @@ struct MeanderWidget : ModuleWidget
 				if (root_key_signatures_chromaticForder[module->notate_mode_as_signature_root_key][i]==-1)
 				{
 					vertical_offset1=root_key_flats_vertical_display_offset[num_flats1];
-					pos=Vec(beginEdge+20+(num_flats1*5), beginTop+24+(vertical_offset1*yHalfLineSpacing));
+					pos=Vec(beginEdge+24+(num_flats1*5), beginTop+33+(vertical_offset1*yHalfLineSpacing));
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
 					++num_flats1;
 				}
@@ -5752,14 +5749,14 @@ struct MeanderWidget : ModuleWidget
 			{
 				beginEdge = 890;
 				beginTop =8;
-				lineWidth=1.0; 
+				lineWidth=0.75; 
 				
 				stafflineLength=300;
 				barLineVoffset=36.;
 				barLineVlength=60.;
 				yLineSpacing=6;
 				yHalfLineSpacing=3.0f;
-
+				
 				// draw bar left vertical edge
 
 				if (beginEdge > 0) {
@@ -5788,51 +5785,238 @@ struct MeanderWidget : ModuleWidget
 						nvgMoveTo(args.vg, beginEdge, beginTop+y);
 						nvgLineTo(args.vg, beginEdge+stafflineLength, beginTop+y);
 					}
-				} 
+				}  
 
 				nvgStrokeColor(args.vg, panelLineColor);
 				nvgStrokeWidth(args.vg, lineWidth);
 				nvgStroke(args.vg);
 
-				nvgFontSize(args.vg, 45);
+				nvgFontSize(args.vg, 90);
 				if (musicfont)
 				nvgFontFaceId(args.vg, musicfont->handle);
 				nvgTextLetterSpacing(args.vg, -1);
 				nvgFillColor(args.vg, panelLineColor);
-				pos=Vec(beginEdge+1, beginTop+45);  
-				snprintf(text, sizeof(text), "%s", "G");  // treble clef
+				pos=Vec(beginEdge+3, beginTop+54);  
+				snprintf(text, sizeof(text), "%s", gClef.c_str());  
 				nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-				nvgFontSize(args.vg, 36);
-				pos=Vec(beginEdge+1, beginTop+80); 
-				snprintf(text, sizeof(text), "%s", "?");   // bass clef
+				nvgFontSize(args.vg, 90);
+				pos=Vec(beginEdge+3, beginTop+78.5); 
+				snprintf(text, sizeof(text), "%s", fClef.c_str());  
 				nvgText(args.vg, pos.x, pos.y, text, NULL);
 				
-				nvgFontSize(args.vg, 40);
-				pos=Vec(beginEdge+53, beginTop+33);
-				snprintf(text, sizeof(text), "%d",module->time_sig_top);
+				nvgFontSize(args.vg, 90);
+			
+				// draw time signature top number
+				int time_sig_top_tens=module->time_sig_top/10;
+				int time_sig_top_units=module->time_sig_top%10;
+
+				// draw time sig top number units digit     
+				switch(time_sig_top_units)
+				{
+					case 0:
+						snprintf(text, sizeof(text), "%s", timeSig0.c_str());  
+						break;
+					case 1:
+						snprintf(text, sizeof(text), "%s", timeSig1.c_str());  
+						break;
+					case 2:
+						snprintf(text, sizeof(text), "%s", timeSig2.c_str());  
+						break;
+					case 3:
+						snprintf(text, sizeof(text), "%s", timeSig3.c_str());  
+						break;
+					case 4:
+						snprintf(text, sizeof(text), "%s", timeSig4.c_str());  
+						break;
+					case 5:
+						snprintf(text, sizeof(text), "%s", timeSig5.c_str());  
+						break;
+					case 6:
+						snprintf(text, sizeof(text), "%s", timeSig6.c_str());  
+						break;
+					case 7:
+						snprintf(text, sizeof(text), "%s", timeSig7.c_str());  
+						break;
+					case 8:
+						snprintf(text, sizeof(text), "%s", timeSig8.c_str());  
+						break;
+					case 9:
+						snprintf(text, sizeof(text), "%s", timeSig9.c_str());  
+						break;
+					default:
+						snprintf(text, sizeof(text), "%s", "");  
+						break;
+				}
+
+				// draw on treble clef staves    
+			    if (time_sig_top_tens>0)
+					pos=Vec(beginEdge+65, beginTop+43);
+				else
+					pos=Vec(beginEdge+60, beginTop+43);
+
+				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				// draw on bass clef staves 
+				if (time_sig_top_tens>0)
+					pos=Vec(beginEdge+65, beginTop+79);
+				else
+					pos=Vec(beginEdge+60, beginTop+79);
+				nvgText(args.vg, pos.x, pos.y, text, NULL); 
+
+				// draw time sig top number tens digit     
+				if (time_sig_top_tens>0)
+				{
+					switch(time_sig_top_tens)
+					{
+						case 0:
+							snprintf(text, sizeof(text), "%s", timeSig0.c_str());  
+							break;
+						case 1:
+							snprintf(text, sizeof(text), "%s", timeSig1.c_str());  
+							break;
+						case 2:
+							snprintf(text, sizeof(text), "%s", timeSig2.c_str());  
+							break;
+						case 3:
+							snprintf(text, sizeof(text), "%s", timeSig3.c_str());  
+							break;
+						case 4:
+							snprintf(text, sizeof(text), "%s", timeSig4.c_str());  
+							break;
+						case 5:
+							snprintf(text, sizeof(text), "%s", timeSig5.c_str());  
+							break;
+						case 6:
+							snprintf(text, sizeof(text), "%s", timeSig6.c_str());  
+							break;
+						case 7:
+							snprintf(text, sizeof(text), "%s", timeSig7.c_str());  
+							break;
+						case 8:
+							snprintf(text, sizeof(text), "%s", timeSig8.c_str());  
+							break;
+						case 9:
+							snprintf(text, sizeof(text), "%s", timeSig9.c_str());  
+							break;
+						default:
+							snprintf(text, sizeof(text), "%s", "");  
+							break;
+					}	
+					// draw on treble clef staves  
+					pos=Vec(beginEdge+55, beginTop+43);
+					nvgText(args.vg, pos.x, pos.y, text, NULL);
+					// draw on bass clef staves  
+					pos=Vec(beginEdge+55, beginTop+79);
+				    nvgText(args.vg, pos.x, pos.y, text, NULL);
+				}
+
+				// draw time signature bottom number
+				int time_sig_bottom_tens=module->time_sig_bottom/10;
+				int time_sig_bottom_units=module->time_sig_bottom%10;
+
+				// draw time sig bottom number units digit     		     
+				switch(time_sig_bottom_units)
+				{
+					case 0:
+						snprintf(text, sizeof(text), "%s", timeSig0.c_str());  
+						break;
+					case 1:
+						snprintf(text, sizeof(text), "%s", timeSig1.c_str());  
+						break;
+					case 2:
+						snprintf(text, sizeof(text), "%s", timeSig2.c_str());  
+						break;
+					case 3:
+						snprintf(text, sizeof(text), "%s", timeSig3.c_str());  
+						break;
+					case 4:
+						snprintf(text, sizeof(text), "%s", timeSig4.c_str());  
+						break;
+					case 5:
+						snprintf(text, sizeof(text), "%s", timeSig5.c_str());  
+						break;
+					case 6:
+						snprintf(text, sizeof(text), "%s", timeSig6.c_str());  
+						break;
+					case 7:
+						snprintf(text, sizeof(text), "%s", timeSig7.c_str());  
+						break;
+					case 8:
+						snprintf(text, sizeof(text), "%s", timeSig8.c_str());  
+						break;
+					case 9:
+						snprintf(text, sizeof(text), "%s", timeSig9.c_str());  
+						break;
+					default:
+						snprintf(text, sizeof(text), "%s", "");  
+						break;
+				}
+			
+				// draw on treble clef staves  
+				if (time_sig_bottom_tens>0)
+					pos=Vec(beginEdge+65, beginTop+53);
+				else
+					pos=Vec(beginEdge+60, beginTop+53);
+				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				// draw on bass clef staves  
+				if (time_sig_bottom_tens>0)
+					pos=Vec(beginEdge+65, beginTop+89);
+				else
+					pos=Vec(beginEdge+60, beginTop+89);
 				nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-				nvgFontSize(args.vg, 40);
-				pos=Vec(beginEdge+53, beginTop+69);
-				snprintf(text, sizeof(text), "%d",module->time_sig_top);  
-				nvgText(args.vg, pos.x, pos.y, text, NULL);
+				// draw time sig bottom number tens digit     
+				if (time_sig_bottom_tens>0)
+				{
+					switch(time_sig_bottom_tens)
+					{
+						case 0:
+							snprintf(text, sizeof(text), "%s", timeSig0.c_str());  
+							break;
+						case 1:
+							snprintf(text, sizeof(text), "%s", timeSig1.c_str());  
+							break;
+						case 2:
+							snprintf(text, sizeof(text), "%s", timeSig2.c_str());  
+							break;
+						case 3:
+							snprintf(text, sizeof(text), "%s", timeSig3.c_str());  
+							break;
+						case 4:
+							snprintf(text, sizeof(text), "%s", timeSig4.c_str());  
+							break;
+						case 5:
+							snprintf(text, sizeof(text), "%s", timeSig5.c_str());  
+							break;
+						case 6:
+							snprintf(text, sizeof(text), "%s", timeSig6.c_str());  
+							break;
+						case 7:
+							snprintf(text, sizeof(text), "%s", timeSig7.c_str());  
+							break;
+						case 8:
+							snprintf(text, sizeof(text), "%s", timeSig8.c_str());  
+							break;
+						case 9:
+							snprintf(text, sizeof(text), "%s", timeSig9.c_str());  
+							break;
+						default:
+							snprintf(text, sizeof(text), "%s", "");  
+							break;
+					}	
 
-				nvgFontSize(args.vg, 40);
-				pos=Vec(beginEdge+53, beginTop+45);
-				snprintf(text, sizeof(text), "%d",module->time_sig_bottom);
-				nvgText(args.vg, pos.x, pos.y, text, NULL);
-
-				nvgFontSize(args.vg, 40);
-				pos=Vec(beginEdge+53, beginTop+81);
-				snprintf(text, sizeof(text), "%d",module->time_sig_bottom);  
-				nvgText(args.vg, pos.x, pos.y, text, NULL);
-
+					// draw on treble clef staves  
+					pos=Vec(beginEdge+55, beginTop+53);
+				    nvgText(args.vg, pos.x, pos.y, text, NULL);
+					// draw on treble clef staves  
+					pos=Vec(beginEdge+55, beginTop+89);
+				    nvgText(args.vg, pos.x, pos.y, text, NULL);
+				}
+			
 				// do root_key signature
 				
-				nvgFontSize(args.vg, 35);
 				nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-				snprintf(text, sizeof(text), "%s", "B");  // # sharp
+				snprintf(text, sizeof(text), "%s", sharp.c_str());  
 				
 				num_sharps1=0;
 				vertical_offset1=0;
@@ -5842,14 +6026,14 @@ struct MeanderWidget : ModuleWidget
 					if (root_key_signatures_chromaticForder[module->notate_mode_as_signature_root_key][i]==1)
 					{
 						vertical_offset1=root_key_sharps_vertical_display_offset[num_sharps1];
-						pos=Vec(beginEdge+20+(num_sharps1*5), beginTop+24+(vertical_offset1*yHalfLineSpacing));
+						pos=Vec(beginEdge+24+(num_sharps1*5), beginTop+33+(vertical_offset1*yHalfLineSpacing));
 						nvgText(args.vg, pos.x, pos.y, text, NULL);
 						++num_sharps1;
 					}
 					nvgClosePath(args.vg);
 				}	
 			
-				snprintf(text, sizeof(text), "%s", "b");  // b flat
+				snprintf(text, sizeof(text), "%s", flat.c_str());  
 				num_flats1=0;
 				vertical_offset1=0;
 				for (int i=6; i>=0; --i)  
@@ -5858,7 +6042,7 @@ struct MeanderWidget : ModuleWidget
 					if (root_key_signatures_chromaticForder[module->notate_mode_as_signature_root_key][i]==-1)
 					{
 						vertical_offset1=root_key_flats_vertical_display_offset[num_flats1];
-						pos=Vec(beginEdge+20+(num_flats1*5), beginTop+24+(vertical_offset1*yHalfLineSpacing));
+						pos=Vec(beginEdge+24+(num_flats1*5), beginTop+33+(vertical_offset1*yHalfLineSpacing));
 						nvgText(args.vg, pos.x, pos.y, text, NULL);
 						++num_flats1;
 					}
@@ -5867,9 +6051,9 @@ struct MeanderWidget : ModuleWidget
 
 				// now do for bass clef
 
-				nvgFontSize(args.vg, 35);
+				nvgFontSize(args.vg, 90);
 				nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-				snprintf(text, sizeof(text), "%s", "B");  // # sharp
+				snprintf(text, sizeof(text), "%s", sharp.c_str());  
 				
 				num_sharps1=0;
 				vertical_offset1=0;
@@ -5879,14 +6063,14 @@ struct MeanderWidget : ModuleWidget
 					if (root_key_signatures_chromaticForder[module->notate_mode_as_signature_root_key][i]==1)
 					{
 						vertical_offset1=root_key_sharps_vertical_display_offset[num_sharps1];
-						pos=Vec(beginEdge+20+(num_sharps1*5), beginTop+67+(vertical_offset1*yHalfLineSpacing));
+						pos=Vec(beginEdge+24+(num_sharps1*5), beginTop+75+(vertical_offset1*yHalfLineSpacing));
 						nvgText(args.vg, pos.x, pos.y, text, NULL);
 						++num_sharps1;
 					}
 					nvgClosePath(args.vg);
 				}	
 			
-				snprintf(text, sizeof(text), "%s", "b");  // b flat
+				snprintf(text, sizeof(text), "%s", flat.c_str());  
 				num_flats1=0;
 				vertical_offset1=0;
 				for (int i=6; i>=0; --i)
@@ -5895,7 +6079,7 @@ struct MeanderWidget : ModuleWidget
 					if (root_key_signatures_chromaticForder[module->notate_mode_as_signature_root_key][i]==-1)
 					{
 						vertical_offset1=root_key_flats_vertical_display_offset[num_flats1];
-						pos=Vec(beginEdge+20+(num_flats1*5), beginTop+67+(vertical_offset1*yHalfLineSpacing));
+						pos=Vec(beginEdge+24+(num_flats1*5), beginTop+75+(vertical_offset1*yHalfLineSpacing));
 						nvgText(args.vg, pos.x, pos.y, text, NULL);
 						++num_flats1;
 					}
@@ -5916,10 +6100,11 @@ struct MeanderWidget : ModuleWidget
 		
 				// draw notes on staves
 				float display_note_position=0; 
+				char noteText[128];
 		
 				if (module->moduleVarsInitialized)  // only initialized if Module!=NULL
 				{
-					nvgFontSize(args.vg, 30);
+					nvgFontSize(args.vg, 90);
 					if (musicfont)
 					nvgFontFaceId(args.vg, musicfont->handle);
 					nvgTextLetterSpacing(args.vg, -1);
@@ -5928,6 +6113,7 @@ struct MeanderWidget : ModuleWidget
 					for (int i=0; ((i<module->bar_note_count)&&(i<256)); ++i)
 					{
 						int display_note=module->played_notes_circular_buffer[i].note;
+					//	DEBUG("display_note=%d", display_note);
 											
 						int scale_note=0;
 						if (strstr(module->note_desig[display_note%12],"C"))
@@ -5951,13 +6137,12 @@ struct MeanderWidget : ModuleWidget
 						if (strstr(module->note_desig[display_note%12],"B"))
 							scale_note=6;
 											
-						int octave=(display_note/12)-2;
+						int octave=(display_note/12)-2; 
 											
-						display_note_position = 108.0-(octave*21.0)-(scale_note*3.0)-7.5;
+						display_note_position = 108.0-(octave*21.0)-(scale_note*3.0);
 											
-						
 						float note_x_spacing= 230.0/(32*module->time_sig_top/module->time_sig_bottom);  // experimenting with note spacing function of time_signature.  barts_count_limit is not in scope, needs to be global
-						pos=Vec(beginEdge+70+(module->played_notes_circular_buffer[i].time32s*note_x_spacing), beginTop+display_note_position);  
+						pos=Vec(beginEdge+80+(module->played_notes_circular_buffer[i].time32s*note_x_spacing), beginTop+display_note_position);   
 						if (true)  // color code notes in staff rendering
 						{ 
 							if (module->played_notes_circular_buffer[i].noteType==NOTE_TYPE_CHORD)
@@ -5975,47 +6160,256 @@ struct MeanderWidget : ModuleWidget
 						}
 
 						
-						nvgFontSize(args.vg, 30);
+						nvgFontSize(args.vg, 90);
 						if (module->played_notes_circular_buffer[i].length==1)
-							snprintf(text, sizeof(text), "%s", "w");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+						{
+							snprintf(noteText, sizeof(noteText), "%s", noteWhole.c_str());  
+						}
 						else
 						if (module->played_notes_circular_buffer[i].length==2)
-							snprintf(text, sizeof(text), "%s", "h");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+						{
+							if ((display_note<38)||((display_note>47)&&(display_note<59)))
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteHalfUp.c_str()); 
+								pos.x+=1.0;  // move up stem notes a bit to right to avoid collisions with down stem notes
+							}
+							else
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteHalfDown.c_str()); 
+								pos.x-=1.0;  // move down stem notes a bit to left to avoid collisions with up stem notes
+							}
+						}
 						else
 						if (module->played_notes_circular_buffer[i].length==4)
-							snprintf(text, sizeof(text), "%s", "q");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+						{
+							if ((display_note<38)||((display_note>47)&&(display_note<59)))
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteQuarterUp.c_str()); 
+								pos.x+=1.0;  // move up stem notes a bit to right to avoid collisions with down stem notes
+							}
+							else
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteQuarterDown.c_str()); 
+								pos.x-=1.0;  // move down stem notes a bit to left to avoid collisions with up stem notes
+							}
+						}
 						else
 						if (module->played_notes_circular_buffer[i].length==8)
-							snprintf(text, sizeof(text), "%s", "e");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+						{
+							if ((display_note<38)||((display_note>47)&&(display_note<59)))
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteEighthUp.c_str()); 
+								pos.x+=1.0;  // move up stem notes a bit to right to avoid collisions with down stem notes
+							}
+							else
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteEighthDown.c_str()); 
+								pos.x-=1.0;  // move down stem notes a bit to left to avoid collisions with up stem notes
+							}
+						}
 						else
 						if (module->played_notes_circular_buffer[i].length==16)
-							snprintf(text, sizeof(text), "%s", "s");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
+						{
+							if ((display_note<38)||((display_note>47)&&(display_note<59)))
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteSixteenthUp.c_str()); 
+								pos.x+=1.0;  // move up stem notes a bit to right to avoid collisions with down stem notes
+							}
+							else
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteSixteenthDown.c_str()); 
+								pos.x-=1.0;  // move down stem notes a bit to left to avoid collisions with up stem notes
+							}
+						}
 						else
 						if (module->played_notes_circular_buffer[i].length==32)
-							snprintf(text, sizeof(text), "%s", "s");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-						nvgText(args.vg, pos.x, pos.y, text, NULL);
-
-						if (module->played_notes_circular_buffer[i].length==32)  // do overstrike for 1/32 symbol
 						{
-							nvgFontSize(args.vg, 15);
-							snprintf(text, sizeof(text), "%s", "e");  // mnemonic W=whole, h=half, q-quarter, e=eighth, s=sixteenth notes
-							nvgText(args.vg, pos.x-.5, pos.y+4.5, text, NULL);
+							if ((display_note<38)||((display_note>47)&&(display_note<59)))
+							{
+								snprintf(noteText, sizeof(noteText), "%s", noteThirtysecondthUp.c_str()); 
+								pos.x+=1.0;  // move up stem notes a bit to right to avoid collisions with down stem notes
+							}
+							else
+							{
+								snprintf(text, sizeof(noteText), "%s", noteThirtysecondthDown.c_str()); 
+								pos.x-=1.0;  // move down stem notes a bit to left to avoid collisions with up stem notes
+							}
+						}   
+					//	nvgText(args.vg, pos.x, pos.y, noteText, NULL);  // defer note draw to after ledger lines draw
+
+						// do ledger lines
+						int onLineNumberAboveStaves=0;  // value= 1,2,3
+						int onLineNumberBetweenStaves=0;// valid=1
+						int onLineNumberBelowStaves=0;  // value= 1,2,3
+						int onSpaceNumberAboveStaves=0;  // value= 1,2,3
+						int onSpaceNumberBetweenStaves=0;// valid=1
+						int onSpaceNumberBelowStaves=0;  // value= 1,2,3
+
+						// ((scale_note==0)&&(octave==2))  //C4, middle C as drawn
+
+						// detect notes on lines
+						if ((scale_note==3)&&(octave==5))                       //F7
+							onLineNumberAboveStaves=7;
+						else					
+						if ((scale_note==1)&&(octave==5))                       //D7
+							onLineNumberAboveStaves=6;
+						else					
+						if ((scale_note==6)&&(octave==4))                       //B6
+							onLineNumberAboveStaves=5;
+						else				
+						if ((scale_note==4)&&(octave==4))                       //G6
+							onLineNumberAboveStaves=4;
+						else				
+						if ((scale_note==2)&&(octave==4))                       //E6
+							onLineNumberAboveStaves=3;
+						else
+						if ((scale_note==0)&&(octave==4))                       //C6
+							onLineNumberAboveStaves=2;
+						else
+						if ((scale_note==5)&&(octave==3))                       //A5
+							onLineNumberAboveStaves=1;
+						else
+						if ((scale_note==0)&&(octave==2))                       //C4
+							onLineNumberBetweenStaves=1;
+						else
+						if ((scale_note==2)&&(octave==0))                       //E2
+							onLineNumberBelowStaves=1;
+						else
+						if ((scale_note==0)&&(octave==0))                       //C2
+							onLineNumberBelowStaves=2;
+						else
+						if ((scale_note==5)&&(octave==-1))		                //A1
+							onLineNumberBelowStaves=3;
+						else
+						if ((scale_note==3)&&(octave==-1))		                //F1
+							onLineNumberBelowStaves=4;
+						else
+						if ((scale_note==1)&&(octave==-1))		                //D1
+							onLineNumberBelowStaves=5;
+						else
+						if ((scale_note==6)&&(octave==-2))		                //B0
+							onLineNumberBelowStaves=6;
+
+						Vec ledgerPos=pos;
 						
-						}
-
-
-						if (((scale_note==5)&&(octave==3))  //A3
-						||((scale_note==0)&&(octave==4))  //C4
-						||((scale_note==0)&&(octave==2))  //C2
-						||((scale_note==2)&&(octave==0))  //E0 
-						||((scale_note==0)&&(octave==0))) //C0 
+						if ((onLineNumberAboveStaves!=0)||(onLineNumberBelowStaves!=0)||(onLineNumberBetweenStaves!=0))
 						{
-							nvgFontSize(args.vg, 30);
-							pos.x -= 2.0;
-							pos.y -= 4.4;
-							snprintf(text, sizeof(text), "%s", "_");  
-							nvgText(args.vg, pos.x, pos.y, text, NULL);
+							nvgFontSize(args.vg, 90);
+							nvgFillColor(args.vg, panelTextColor);
+							nvgStrokeWidth(args.vg, lineWidth);
+													
+							if ((module->played_notes_circular_buffer[i].length==8)||(module->played_notes_circular_buffer[i].length==16)||(module->played_notes_circular_buffer[i].length==32))
+								ledgerPos.x -= 2.75;
+							else
+								ledgerPos.x += 0.25;
+
+							ledgerPos.y += 11.5;
+							snprintf(text, sizeof(text), "%s", staff1Line.c_str()); 
+						//	snprintf(text, sizeof(text), "%s", ledgerLine.c_str()); 
+							nvgText(args.vg, ledgerPos.x, ledgerPos.y, text, NULL);
+							for (int j=onLineNumberAboveStaves; j>1; --j)
+							{
+								ledgerPos.y += 6.0;
+								nvgText(args.vg,ledgerPos.x, ledgerPos.y, text, NULL);
+							}
+							for (int j=onLineNumberBelowStaves; j>1; --j)
+							{
+								ledgerPos.y -= 6.0;
+								nvgText(args.vg, ledgerPos.x, ledgerPos.y, text, NULL);
+							}
 						} 
+
+						if ((onLineNumberAboveStaves==0)&&(onLineNumberBelowStaves==0))  // prevent triggering both line and space
+						{
+							// detect notes on spaces
+						
+							if ((scale_note==4)&&(octave==5))                   //G7
+								onSpaceNumberAboveStaves=8;
+							else
+							if ((scale_note==2)&&(octave==5))                   //E7
+								onSpaceNumberAboveStaves=7;
+							else
+							if ((scale_note==0)&&(octave==5))                   //C7
+								onSpaceNumberAboveStaves=6;
+							else
+							if ((scale_note==5)&&(octave==4))                   //A6
+								onSpaceNumberAboveStaves=5;
+							else
+							if ((scale_note==3)&&(octave==4))                   //F6
+								onSpaceNumberAboveStaves=4;
+							else
+							if ((scale_note==1)&&(octave==4))                   //D6
+								onSpaceNumberAboveStaves=3;
+							else
+							if ((scale_note==6)&&(octave==3))                   //B5
+								onSpaceNumberAboveStaves=2;
+							else
+							if ((scale_note==4)&&(octave==3))                   //G5
+								onSpaceNumberAboveStaves=1;
+						//	else
+						//	if ((scale_note==0)&&(octave==2))  //C4
+						//		onSpaceNumberBetweenStaves=1;
+							else
+							if ((scale_note==3)&&(octave==0))                   //F2
+								onSpaceNumberBelowStaves=1;
+							else
+							if ((scale_note==1)&&(octave==0))                   //D2
+								onSpaceNumberBelowStaves=2;
+							else
+							if ((scale_note==6)&&(octave==-1))                  //B1
+								onSpaceNumberBelowStaves=3;
+							else
+							if ((scale_note==4)&&(octave==-1))                  //G1
+								onSpaceNumberBelowStaves=4;
+							else
+							if ((scale_note==2)&&(octave==-1))                  //E1
+								onSpaceNumberBelowStaves=5;
+							else
+							if ((scale_note==0)&&(octave==-1))                  //C1
+								onSpaceNumberBelowStaves=6;
+							
+							// Draw lines for spaces
+							if ((onSpaceNumberAboveStaves!=0)||(onSpaceNumberBelowStaves!=0)||(onSpaceNumberBetweenStaves!=0))
+							{
+								nvgFontSize(args.vg, 90);
+								nvgFillColor(args.vg, panelTextColor);
+								nvgStrokeWidth(args.vg, lineWidth);
+								
+								if ((module->played_notes_circular_buffer[i].length==8)||(module->played_notes_circular_buffer[i].length==16)||(module->played_notes_circular_buffer[i].length==32))
+									ledgerPos.x -= 2.75;
+								else
+									ledgerPos.x += 0.25;
+
+								snprintf(text, sizeof(text), "%s", staff1Line.c_str()); 
+							//	snprintf(text, sizeof(text), "%s", ledgerLine.c_str()); 
+								for (int j=onSpaceNumberAboveStaves; j>=1; --j)
+								{
+									ledgerPos.y=55.5-(j*6.0);
+									nvgText(args.vg, ledgerPos.x, ledgerPos.y, text, NULL);
+								}
+								for (int j=onSpaceNumberBelowStaves; j>=1; --j)
+								{
+									ledgerPos.y=115.70+(j*6.0);
+									nvgText(args.vg, ledgerPos.x, ledgerPos.y, text, NULL);
+								}
+							}
+						} 
+						if (true)  // color code notes in staff rendering
+						{ 
+							if (module->played_notes_circular_buffer[i].noteType==NOTE_TYPE_CHORD)
+								nvgFillColor(args.vg, panelHarmonyPartColor); 
+							else
+							if (module->played_notes_circular_buffer[i].noteType==NOTE_TYPE_MELODY)
+								nvgFillColor(args.vg, panelMelodyPartColor); 
+							else
+							if (module->played_notes_circular_buffer[i].noteType==NOTE_TYPE_ARP)
+								nvgFillColor(args.vg, panelArpPartColor); 
+							else
+							if (module->played_notes_circular_buffer[i].noteType==NOTE_TYPE_BASS)
+								nvgFillColor(args.vg, panelBassPartColor); 
+							
+						}
+						nvgText(args.vg, pos.x, pos.y, noteText, NULL);  // now draw notes after ledger lines
 					}
 				}
 			}
@@ -6178,7 +6572,8 @@ struct MeanderWidget : ModuleWidget
 				{
 					if (module->played_notes_circular_buffer[i].noteType==NOTE_TYPE_ARP)  // display even if ended to avoid strobing display
 					{
-						if ((module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note>=0)&&(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note<128))
+					//	if ((module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note>=0)&&(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note<128))
+						if ((module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note>0)&&(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note<128))
 						{
 							pos=Vec(notesPlayingDisplayStartX+20+(5*37.5), notesPlayingDisplayNoteCenterY); 
 							snprintf(text, sizeof(text), "%s%d", module->note_desig[(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note%12)], (int)(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note/12 ));
@@ -6915,7 +7310,7 @@ struct MeanderWidget : ModuleWidget
 			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ENABLE]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305, 10.378)), module, Meander::LIGHT_LEDBUTTON_BASS_ENABLE);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ENABLE]);
 			
-			paramWidgets[Meander::CONTROL_BASS_VOLUME_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(305, 21.217)), module, Meander::CONTROL_BASS_VOLUME_PARAM);
+		    paramWidgets[Meander::CONTROL_BASS_VOLUME_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(305, 21.217)), module, Meander::CONTROL_BASS_VOLUME_PARAM);
 			addParam(paramWidgets[Meander::CONTROL_BASS_VOLUME_PARAM]);
 		
 			paramWidgets[Meander::CONTROL_BASS_TARGETOCTAVE_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(305,  29.217)), module, Meander::CONTROL_BASS_TARGETOCTAVE_PARAM);
@@ -6939,17 +7334,19 @@ struct MeanderWidget : ModuleWidget
 			
 			paramWidgets[Meander::BUTTON_BASS_OCTAVES_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305,  53.217)), module, Meander::BUTTON_BASS_OCTAVES_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_BASS_OCTAVES_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305,  53.217)), module, Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305,  74.076)), module, Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM]);
 			
 			paramWidgets[Meander::CONTROL_BASS_DIVISOR_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(305, 61.217)), module, Meander::CONTROL_BASS_DIVISOR_PARAM);
 			dynamic_cast<Knob*>(paramWidgets[Meander::CONTROL_BASS_DIVISOR_PARAM])->snap=true;
 			addParam(paramWidgets[Meander::CONTROL_BASS_DIVISOR_PARAM]);
 			
-			paramWidgets[Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305, 70)), module, Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM);
+			paramWidgets[Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305, 88.859)), module, Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM]);
 			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305, 70)), module, Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM]);
+
+	//************************		
 
 			paramWidgets[Meander::BUTTON_ENABLE_KEYBOARD_RENDER_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(880, 12)), module, Meander::BUTTON_ENABLE_KEYBOARD_RENDER_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_KEYBOARD_RENDER_PARAM]);
@@ -7261,7 +7658,7 @@ struct MeanderWidget : ModuleWidget
 			paramWidgets[Meander::BUTTON_ENABLE_ARP_SCALER_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::BUTTON_ENABLE_ARP_SCALER_PARAM]->box.size.div(2.));
 			lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE_SCALER]->box.pos=drawCenter.minus(lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE_SCALER]->box.size.div(2.));
 							
-			drawCenter=Vec(900., 130.);
+			drawCenter=Vec(900., 148.859);
 		
 			paramWidgets[Meander::BUTTON_ENABLE_BASS_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::BUTTON_ENABLE_BASS_PARAM]->box.size.div(2.));
 			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ENABLE]->box.pos=drawCenter.minus(lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ENABLE]->box.size.div(2.));
@@ -7289,7 +7686,8 @@ struct MeanderWidget : ModuleWidget
 			
 			// fBm controls
 
-			drawCenter=Vec(1055., 150.);
+			drawCenter=Vec(1055., 168.859);
+
 
 			paramWidgets[Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::CONTROL_HARMONY_FBM_OCTAVES_PARAM]->box.size.div(2.));
 			drawCenter=drawCenter.plus(Vec(0,22));
@@ -7583,7 +7981,7 @@ struct MeanderWidget : ModuleWidget
 					float r=panelHarmonyPartBaseColor.r; 
 					float g=(1-contrast);
 					float b=(1-contrast);
-					panelHarmonyPartColor=nvgRGBA(r*255, g*255, b*255, 255);
+					panelHarmonyPartColor=nvgRGBA(r*156, g*255, b*255, 255);
 				}
 				{
 					float r=(1-contrast);
@@ -7595,7 +7993,7 @@ struct MeanderWidget : ModuleWidget
 					float r=(1-contrast);
 					float g=panelBassPartBaseColor.g;
 					float b=(1-contrast);
-					panelBassPartColor=nvgRGBA(r*255, g*255, b*255, 255);
+					panelBassPartColor=nvgRGBA(r*255, g*128, b*255, 255);
 				}
 				{
 					float r=(1-contrast);
@@ -7636,7 +8034,7 @@ struct MeanderWidget : ModuleWidget
 					float r=(contrast);
 					float g=(contrast);
 					float b=(contrast);
-					panelMelodyPartColor=nvgRGBA(r*255, g*255, b*255, 255);
+					panelMelodyPartColor=nvgRGBA(r*228, g*228, b*228, 255);
 				}
 			}
 		}

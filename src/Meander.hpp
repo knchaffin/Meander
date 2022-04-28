@@ -112,7 +112,7 @@ static const int root_key_flats_vertical_display_offset[6]={5, 2, 6, 3, 7, 4};  
 // these are not static and may be written to by any module but will be read by all modules
 int panelTheme=0;
 float panelContrast=1.0;
-float panelContrastDefault = 1.0f;  // reset value
+float panelContrastDefault = 1.0f;  // reset value 
 
 // base colors remain fixed
 NVGcolor panelHarmonyPartBaseColor=nvgRGBA((unsigned char)255,(unsigned char)0,(unsigned char)0,(unsigned char)255);  // red
@@ -136,4 +136,32 @@ NVGcolor panelMelodyKeyboardColor=nvgRGBA((unsigned char)0xc0,(unsigned char)0xc
 NVGcolor panelArpKeyboardColor=nvgRGBA((unsigned char)0x80,(unsigned char)0x80,(unsigned char)255,(unsigned char)255);  // blueish
 NVGcolor panelBassKeyboardColor=nvgRGBA((unsigned char)0x80,(unsigned char)0xff,(unsigned char)0x80,(unsigned char)255);  // greenish
 
-
+// Bravura unicode music font glyph codes
+const std::string noteWhole = u8"\ue1D2";
+const std::string noteHalfUp = u8"\ue1D3";
+const std::string noteHalfDown = u8"\ue1D4";
+const std::string noteQuarterUp = u8"\ue1d5";
+const std::string noteQuarterDown = u8"\ue1d6";
+const std::string noteEighthUp = u8"\ue1D7";
+const std::string noteEighthDown = u8"\ue1D8";
+const std::string noteSixteenthUp = u8"\ue1D9";
+const std::string noteSixteenthDown = u8"\ue1DA";
+const std::string noteThirtysecondthUp = u8"\ue1DB";
+const std::string noteThirtysecondthDown = u8"\ue1DC";
+const std::string staffFiveLines = u8"\ue014";
+const std::string gClef = u8"\ue050";
+const std::string fClef = u8"\ue062";
+const std::string ledgerLine = u8"\ue022";
+const std::string flat = u8"\ue260";
+const std::string sharp = u8"\ue262";
+const std::string timeSig0 = u8"\ue080";
+const std::string timeSig1 = u8"\ue081";
+const std::string timeSig2 = u8"\ue082";
+const std::string timeSig3 = u8"\ue083";
+const std::string timeSig4 = u8"\ue084";
+const std::string timeSig5 = u8"\ue085";
+const std::string timeSig6 = u8"\ue086";
+const std::string timeSig7 = u8"\ue087";
+const std::string timeSig8 = u8"\ue088";
+const std::string timeSig9 = u8"\ue089";
+const std::string staff1Line = u8"\ue010";  // short line

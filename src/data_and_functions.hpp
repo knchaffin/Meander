@@ -29,8 +29,8 @@ struct CircleElement
 {
 	// this data is mostly static, once created
 	int chordType=0;  // may be overridden by degree semicircle
-	float startDegree; // of annular segment
-	float endDegree;   // of annular segment
+	float startDegree=0; // of annular segment
+	float endDegree=0;   // of annular segment
 	Vec pt1;  //vertices of annular ring segment
 	Vec pt2;
 	Vec pt3;
@@ -43,8 +43,8 @@ struct DegreeElement
 {
 	// this data varies with root_key and mode
 	int chordType=0;
-	float startDegree;  // of pie slice
-	float endDegree;
+	float startDegree=0;  // of pie slice
+	float endDegree=0;
 	Vec pt1; //vertices of annular ring segment
 	Vec pt2;
 	Vec pt3;
@@ -111,12 +111,12 @@ int  mode=1;  // Ionian/Major
 
 struct note
 {
-	int note;
-	int noteType; // NOTE_TYPE_CHORD etc.
-	int time32s;
-	int length;  // 1/1,2,4,8
-	int countInBar;
-	bool isPlaying; // set when note played. unset upon next gate end for noteType
+	int note=0;
+	int noteType=0; // NOTE_TYPE_CHORD etc.
+	int time32s=0;
+	int length=0;  // 1/1,2,4,8
+	int countInBar=0;
+	bool isPlaying=false; // set when note played. unset upon next gate end for noteType
 };
 
 int bar_note_count=0;  // how many notes have been played in bar.  Use it as index into  played_notes_circular_buffer[]
@@ -294,7 +294,7 @@ bool randomize_harmony=false;
 
 struct HarmonyType
 {
-	int    harmony_type;  // used by theActiveHarmonyType
+	int    harmony_type=0;  // used by theActiveHarmonyType
 	char   harmony_type_desc[64]; 
 	char   harmony_degrees_desc[128]; 
 	int    num_harmony_steps=1;
