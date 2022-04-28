@@ -1,8 +1,19 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
-### V2.0.16 (April 2022)
-- Cosmetic change only for light panel theme PNG file to fix slight misalignment with panel ports and controls for in browswer and library.
+### V2.0.17 (April 2022)
+
+### V2.0.16 (April/May 2022)
+- Made sure variables are initialized.
+- Switched to the Bravura.otf music notation font.
+- Redid the "score" display area with the following changes:
+  . Switched to Bravura music font.
+  . Expanded the score display area on the low end.
+  . All notes now draw as played, e.g., whole, half, quarter, eighth, sixteenth and thirtysecond notes.
+  . Common practice rules were implemented for whether stemmed notes have stems up or stems down.
+  . Common practice rules were implemented to horizontally offset notes slightly when stems and notes may collide.
+  . Ledger lines were added for when played notes are above, between or below the treble and bass staffs.
+  . Colors were tweaked based on user requests for visibility.
 
 ### V2.0.15 (March/April 2022)
 - This change log file was added and the change log moved from the manual to here.
