@@ -4168,8 +4168,8 @@ struct RootKeySelectLineDisplay : LightWidget {
 
 		if (!module)
 			return; 
-
-		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
+	
+		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
 			
 		Vec textpos = Vec(19,11); 
 		
@@ -4190,6 +4190,7 @@ struct RootKeySelectLineDisplay : LightWidget {
 		nvgTextLetterSpacing(args.vg, -1);
 		nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 		nvgFillColor(args.vg, paramTextColor);
+		nvgStrokeWidth(args.vg, 3.0);
 
 		char text[128];
 		
@@ -4215,7 +4216,7 @@ struct ScaleSelectLineDisplay : LightWidget {
 		if (!module)
 			return;
 
-		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
+		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
 	
 		Vec textpos = Vec(65,12); 
 		
@@ -4247,7 +4248,8 @@ struct ScaleSelectLineDisplay : LightWidget {
 			nvgText(args.vg, textpos.x, textpos.y, text, NULL);
 
 			// add on the scale notes display out of this box
-			nvgFontSize(args.vg, 14);
+		//	nvgFontSize(args.vg, 14);
+			nvgFontSize(args.vg, 20);
 			nvgFillColor(args.vg, panelTextColor);
 			strcpy(text,"");
 			for (int i=0;i<mode_step_intervals[*val][0];++i)
