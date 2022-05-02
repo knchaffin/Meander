@@ -3808,7 +3808,7 @@ struct RootKeySelectLineDisplay : LightWidget {
 	std::shared_ptr<Font> font;
 
 	RootKeySelectLineDisplay() {
-		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
+		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
 	}
 
 	void draw(const DrawArgs &ctx) override {
@@ -3849,7 +3849,7 @@ struct ScaleSelectLineDisplay : LightWidget {
 	std::shared_ptr<Font> font;
 
 	ScaleSelectLineDisplay() {
-		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/EurostileBold.ttf"));
+		font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
 	}
 
 	void draw(const DrawArgs &ctx) override {
