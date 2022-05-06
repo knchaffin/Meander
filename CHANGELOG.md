@@ -3,6 +3,7 @@
 
 ### V2.0.18 (May 2022)
 - Changed a font based on possible license issue.
+- Fixed problem with pentatonic scale output option.
 
 ### V2.0.17 (April/May 2022)
 - Made sure variables are initialized.
