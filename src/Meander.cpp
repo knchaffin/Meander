@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License along with thi
 // the following is for performance profiling under Windows by the developer and should not be defined in the release distribution
 // #define _USE_WINDOWS_PERFTIME
 
-#if defined(_USE_WINDOWS_PERFTIME)
+#if defined(_USE_WINDOWS_PERFTIME) 
 #include <windows.h>
 #endif
 
@@ -77,7 +77,7 @@ struct Meander : Module
 				for (int i=0;i<mode_step_intervals[mode][0];++i)
 				{
 					int note=(int)(notes[i]%(MAX_NOTES)); 
-					if ((i!=3)&&(i!=6)&&(scale_note_index<5))  // not 4th or 7th
+					if ((i!=3)&&(i!=6)&&(scale_note_index<5))  // remove 4th and 7th (i=3,6)
 					{
 						outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage((float)note/12.0,scale_note_index);  // (scale note, channel) 
 						++scale_note_index;
@@ -92,20 +92,16 @@ struct Meander : Module
 				for (int i=0;i<mode_step_intervals[mode][0];++i)
 				{
 					int note=(int)(notes[i]%(MAX_NOTES));  
-					if ((i!=1)&&(i!=5)&&(scale_note_index<5))  // not 2nd or 6th
+					if ((i!=1)&&(i!=5)&&(scale_note_index<5))  // remove 2nd and  6th (i=1,5)
 					{
-						if (scale_note_index==1)
-						  note-=1;
-						else
-						if (scale_note_index==4)
-						  note-=1;
 						outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage((float)note/12.0,scale_note_index);  // (scale note, channel) 
 						++scale_note_index;
 					}
 				}
 			}	
 
-			if ((scale_out_mode == PENTATONIC_CHROMATIC_12CH)&&((mode==0)||(mode==1)||(mode==2)))   // major modes
+			// if pentatonic major
+			if ((scale_out_mode == PENTATONIC_CHROMATIC_12CH)&&((mode==0)||(mode==1)||(mode==2)))   // major modes  Lydian, Ionian, Mixolydian
 			{
 				outputs[OUT_EXT_POLY_SCALE_OUTPUT].setChannels(12);  // set polyphony to 12 channels
 				for (int i=0; i<12; ++i)
@@ -115,7 +111,7 @@ struct Meander : Module
 				for (int i=0;i<mode_step_intervals[mode][0];++i)
 				{
 					int note=(int)(notes[i]%(MAX_NOTES)); 
-					if ((i!=3)&&(i!=6))  // not 4th or 7th
+					if ((i!=3)&&(i!=6))  // remove 4th and 7th (i=3,6)
 					{
 							if (note==root_key)
 							outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(10.0,(int)note);  // (scale note, channel) 
@@ -125,7 +121,8 @@ struct Meander : Module
 				}
 			}
 		
-			if ((scale_out_mode == PENTATONIC_CHROMATIC_12CH)&&((mode==3)||(mode==4)||(mode==5)||(mode==6)))   // minor modes
+			// if pentatonic minor
+			if ((scale_out_mode == PENTATONIC_CHROMATIC_12CH)&&((mode==3)||(mode==4)||(mode==5)||(mode==6)))   // minor modes: Dorian, Aeolian, Phrygian, Locrian
 			{
 				outputs[OUT_EXT_POLY_SCALE_OUTPUT].setChannels(12);  // set polyphony to 12 channels
 				for (int i=0; i<12; ++i)
@@ -135,13 +132,8 @@ struct Meander : Module
 				for (int i=0;i<mode_step_intervals[mode][0];++i)
 				{
 					int note=(int)(notes[i]%(MAX_NOTES)); 
-					if ((i!=1)&&(i!=5))  // not 2nd or 6th
+					if ((i!=1)&&(i!=5))  // remove 2nd and  6th (i=1,5)
 					{
-						if (i==2)
-						  note-=1;
-						else
-						if (i==6)
-						  note-=1;
 						if (note==root_key)
 							outputs[OUT_EXT_POLY_SCALE_OUTPUT].setVoltage(10.0,(int)note);  // (scale note, channel) 
 						else
@@ -4170,7 +4162,7 @@ struct RootKeySelectLineDisplay : LightWidget {
 			return; 
 	
 		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-			
+				
 		Vec textpos = Vec(19,11); 
 		
 		// Background
@@ -4217,7 +4209,7 @@ struct ScaleSelectLineDisplay : LightWidget {
 			return;
 
 		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-	
+		
 		Vec textpos = Vec(65,12); 
 		
 		// Background
@@ -4397,6 +4389,7 @@ struct RSLabelCentered : LedDisplay {
 	void draw(const DrawArgs &args) override {
 
 		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/DejaVuSansMono.ttf"));  // load a not textfont
+		
 		if (font)
 		{	
 			if(font->handle >= 0) {
