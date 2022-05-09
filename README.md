@@ -160,7 +160,7 @@ With this option, the 7 diatonic scale notes are mapped to a chromatic 12 channe
 
 Note: Pentatonic scales are formed from Meander diatonic scales according to the following common practices:
 
-For major scales, remove the 4th and 7th interval scale notes.  In Meander these are the Locrian, Ionian and Mixolydian modes.
+For major scales, remove the 4th and 7th interval scale notes.  In Meander these are the Lydian, Ionian and Mixolydian modes.
 For minor scales, remove the 2nd and 6th interval scale notes.  In Meander these are the Dorian, Aeolian, Phrygian and Locrian modes.
 
 
