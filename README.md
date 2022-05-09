@@ -27,7 +27,7 @@ applies those rules to "sequence" other sound generation modules.  Meander has n
 
 Is Meander a generative or algorithmic composition engine?  Probably, but I think of it more as an "improvisation system".  I've tried to incorporate elements of how musicians improvise melody against a harmonic progression and bassline.  The melody player might play scale runs, chord note runs and structured scale or chord note riffs or ostinatos in coordination with the harmony lead. Meander uses fBm time correlated noise to give fractal structure to the scale runs and chord arpeggios, while doing its best to sound good (or at least musical).
 
-Meander is limited to western music heptatonic (7) note scales, primarily so that the chord rules can be uniformly applied. Meander is founded on the 7 modes and 12 roots (~keys) for 84 combinations of mode and root.  The Circle of 5ths is the visualization device for seeing the mode and root harmonic intervals.  The proper key signature notation is displayed inside of the circle of 5ths.
+With the exception of the Poly External Scale output port, discussed in detail below, Meander is limited to western music heptatonic (7) note scales, primarily so that the chord rules can be uniformly applied. Meander is founded on the 7 modes and 12 roots (~keys) for 84 combinations of mode and root.  The Circle of 5ths is the visualization device for seeing the mode and root harmonic intervals.  The proper key signature notation is displayed inside of the circle of 5ths.
 
 The Meander module panel is generated procedurally at runtime, rather than an relying on an SVG file.  It has an SVG file but that only has the panel size and background color. As a result, it puts a somewhat higher demand on the GPU than many modules. 
 
@@ -141,6 +141,31 @@ Note: The preceding is based on running Meander clocked via Impromptu CLOCKED in
 ## Play controls
 
 Meander takes external Run and Reset signals, executes them and passes them to the Meander Run and Reset OUT ports.  Thus, Meander can be started, stopped (paused) and reset by an external clock generator.  Toggling Run does not reset the sequencer in any way. Thus, the Run button can pause Meander and it will resume where you left off when clicked again. Clicking Reset does reset the sequencer and reinitializes everything.  If you click Reset while Run is in the off state, a reinitialization occurs and Meander will start at the beginning of the progression when Run is pressed again.
+
+## Poly External (Ext) Scale Output
+
+The current diatonic heptatonic (7 note) scale, or a compatible pentatonic (5 note) scale is output from the Meander "Poly Ext Scale" out port.  The format of the output is determined from within the Meander options menu "Scale Out Mode" section.  This is called "External" because it is designed to be used by other modules, external to Meander.  There are 4 scale output format options available.
+
+* Heptatonic Chromatic Scale-12ch :
+With this option, the 7 diatonic scale notes are mapped to a chromatic 12 channels in the "Poly External Scale" output where a scale note is designated with a value of 8.0, the root note with a value of 10.0 and non-scale notes with a value of 0.0.   This type of external scale is most useful for sending the Meander scale notes to a quantizer that understands the "Poly External Scale" format.  My favorite quantizer for this use-case is the Grande Quant. Send the Meander Poly Out Scale to the Grande Quant "Scale" input. Do not send the Meander root note output to the Grande Quant "Root" input.
+
+* Heptatonic Diatonic STD-7ch :
+With this default (STD) option, the 7 diatonic scale notes are mapped to a 7 channels in the "Poly External Scale" output where a scale note is designated with a 1v/oct value of the note. This type of external scale is useful for  splitting the channels and sending each channel to a sequential switch, for example, and having the switch sequence through the 7 scale notes as desired.  My favorite sequential switches for this use case are the Count Modula SWITCH 8-1 or 16-1 and the ML Modules Sequential Switch 8 to 1.
+
+* Pentatonic-5ch :
+With this option, the 7 diatonic scale notes are mapped to 5 channels in the "Poly External Scale" output where a scale note is designated with a  1v/oct value of the note. This type of external scale is useful for  splitting the channels and sending each channel to a sequential switch, for example, and having the switch sequence through the 5 scale notes as desired.  My favorite sequential switches for this use case is the Count Modula SWITCH 8-1 or 16-1 and the ML Modules Sequential Switch 8 to 1.
+
+* Pentatonic Chromatic-12ch :
+With this option, the 7 diatonic scale notes are mapped to a chromatic 12 channels in the "Poly External Scale" output where a scale note is designated with a value of 8.0, the root note with a value of 10.0 and non-scale notes with a value of 0.0.   This type of external scale is most useful for sending the Meander scale notes to a quantizer that understands the "Poly External Scale" format. My favorite quantizer for this use-case is the Grande Quant.  Send the Meander Poly Out Scale to the Grande Quant "Scale" input. Do not send the Meander root note output to the Grande Quant "Root" input.
+
+Note: Pentatonic scales are formed from Meander diatonic scales according to the following common practices:
+
+For major scales, remove the 4th and 7th interval scale notes.  In Meander these are the Locrian, Ionian and Mixolydian modes.
+For minor scales, remove the 2nd and 6th interval scale notes.  In Meander these are the Dorian, Aeolian, Phrygian and Locrian modes.
+
+
+##  Root note output is in 1v/oct format and is useful for drones and other purposes you might dream up.
+	
 
 ## General Remarks
 
