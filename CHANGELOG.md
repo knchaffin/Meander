@@ -2,7 +2,7 @@
 ## Significant Version Changes (Changelog)
 
 ### V2.0.18 (May 2022)
-- Changed a font based on possible license issue.
+- Deleted one font from the repository and changed Meander to use a different font.
 - Fixed problem with pentatonic scale output option.
 
 ### V2.0.17 (April/May 2022)
