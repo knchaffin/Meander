@@ -1,6 +1,9 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.19 (May 2022)
+- Font changes only.
+
 ### V2.0.18 (May 2022)
 - Deleted one font from the repository and changed Meander to use a different font.
 - Fixed problem with pentatonic scale output option.
