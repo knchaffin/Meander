@@ -4160,9 +4160,9 @@ struct RootKeySelectLineDisplay : LightWidget {
 
 		if (!module)
 			return; 
-	
-		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-				
+		
+		std::shared_ptr<Font> font = APP->window->loadFont(asset::system("res/fonts/Nunito-Bold.ttf"));  // load a Rack font: an sans serif bold
+							
 		Vec textpos = Vec(19,11); 
 		
 		// Background
@@ -4176,7 +4176,7 @@ struct RootKeySelectLineDisplay : LightWidget {
 		nvgStrokeColor(args.vg, borderColor);
 		nvgStroke(args.vg);
 	
-		nvgFontSize(args.vg,18 );
+		nvgFontSize(args.vg,20 );
 		if (font)
 			nvgFontFaceId(args.vg, font->handle);
 		nvgTextLetterSpacing(args.vg, -1);
@@ -4203,12 +4203,12 @@ struct ScaleSelectLineDisplay : LightWidget {
 
 	}
 
-	void draw(const DrawArgs &args) override {
+	void draw(const DrawArgs &args) override { 
 
 		if (!module)
 			return;
 
-		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
+		std::shared_ptr<Font> font = APP->window->loadFont(asset::system("res/fonts/Nunito-Bold.ttf"));  // load a Rack font: a sans-serif bold
 		
 		Vec textpos = Vec(65,12); 
 		
@@ -4225,7 +4225,7 @@ struct ScaleSelectLineDisplay : LightWidget {
 		nvgStroke(args.vg);
 	 
 	
-		nvgFontSize(args.vg, 16);
+		nvgFontSize(args.vg, 20);
 		if (font)
 		nvgFontFaceId(args.vg, font->handle);
 		nvgTextLetterSpacing(args.vg, -1);
@@ -4240,8 +4240,7 @@ struct ScaleSelectLineDisplay : LightWidget {
 			nvgText(args.vg, textpos.x, textpos.y, text, NULL);
 
 			// add on the scale notes display out of this box
-		//	nvgFontSize(args.vg, 14);
-			nvgFontSize(args.vg, 20);
+			nvgFontSize(args.vg, 18);
 			nvgFillColor(args.vg, panelTextColor);
 			strcpy(text,"");
 			for (int i=0;i<mode_step_intervals[*val][0];++i)
@@ -4274,10 +4273,8 @@ struct BpmDisplayWidget : LightWidget {
 	if (!module)
 		return;
 
-	std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));  
-	
-	  
-	// draw the display background even if there is no module
+	std::shared_ptr<Font> font = APP->window->loadFont(asset::system("res/fonts/DSEG7ClassicMini-Bold.ttf"));  // load a Rack font, 7-segment display mini bold
+		
 	// Background
 	NVGcolor backgroundColor = nvgRGB(0x20, 0x10, 0x10);
 	NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
@@ -4289,37 +4286,39 @@ struct BpmDisplayWidget : LightWidget {
 	nvgStrokeColor(args.vg, borderColor);
 	nvgStroke(args.vg);
 
-	// if val is null (Module null)
+	// if val is null (Module null)  // should never get here
 	if (!val) { 
-      return;
+      return; 
     }
 
-	nvgFontSize(args.vg, 36);
+	nvgFontSize(args.vg, 27);
 	if (font)
 	nvgFontFaceId(args.vg, font->handle);
-	nvgTextLetterSpacing(args.vg, 2.5);
-
-	std::string to_display = std::to_string((int)(*val));
-	while(to_display.length()<3) to_display = ' ' + to_display;
+	nvgTextLetterSpacing(args.vg, 1.6);
 
 	Vec textPos = Vec(0.0f, 32.0f);
 
     NVGcolor textColor = nvgRGB(0xdf, 0xd2, 0x2c);
-	nvgFillColor(args.vg, nvgTransRGBA(textColor, 16));
-	nvgText(args.vg, textPos.x, textPos.y, "~~~", NULL);
+ 	nvgFillColor(args.vg, nvgTransRGBA(textColor, 24));
+	nvgText(args.vg, textPos.x, textPos.y, "888", NULL);
 
-	textColor = nvgRGB(0xda, 0xe9, 0x29);
-
-	nvgFillColor(args.vg, nvgTransRGBA(textColor, 16));
-	nvgText(args.vg, textPos.x, textPos.y, "\\\\\\", NULL);
-
+	std::stringstream to_display;  
+   	to_display << std::setw(3) << *val;
+	
+	textPos = Vec(40.0f, 32.0f);   // this is a relative offset within the box.    1  digit BPM, disallowed
+	if (*val > 99)   // 3  digit BPM
+		textPos = Vec(0.0f, 32.0f);   // this is a relative offset within the box
+	else
+	if (*val > 9)    // 2  digit BPM
+		textPos = Vec(16.75f, 32.0f);   // this is a relative offset within the box
+	  
 	textColor = paramTextColor;
-	nvgFillColor(args.vg, textColor);
-	nvgText(args.vg, textPos.x, textPos.y, to_display.c_str(), NULL);
+    nvgFillColor(args.vg, textColor);
+    nvgText(args.vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
 	
   }
 };
-////////////////////////////////////
+//////////////////////////////////// 
 struct SigDisplayWidget : LightWidget {
 
   int *value = NULL;
@@ -4329,8 +4328,8 @@ struct SigDisplayWidget : LightWidget {
   };
 
   void draw(const DrawArgs &args) override {
-		
-	std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
+
+	std::shared_ptr<Font> font = APP->window->loadFont(asset::system("res/fonts/DSEG7ClassicMini-Bold.ttf"));  // load a Rack font: , 7-segment display mini bold
 
 	// Display Background is now drawn on the svg panel, even if Module is null (value=null)
     NVGcolor backgroundColor = nvgRGB(0x20, 0x10, 0x10);
@@ -4346,70 +4345,31 @@ struct SigDisplayWidget : LightWidget {
 	 if (!value) {
       return;
     }
-         
-    // text 
- 	nvgFontSize(args.vg, 20);  
+       
+	nvgFontSize(args.vg, 15);  
 	if (font)
     nvgFontFaceId(args.vg, font->handle);
     nvgTextLetterSpacing(args.vg, 2.2);
 
-    std::stringstream to_display;   
-    to_display << std::setw(2) << *value;
-
-	Vec textPos = Vec(-2.0f, 17.0f);   // this is a relative offset within the box
+	Vec textPos = Vec(-1.0f, 18.0f);   // this is a relative offset within the box
 	 
     NVGcolor textColor = nvgRGB(0xdf, 0xd2, 0x2c);
-    nvgFillColor(args.vg, nvgTransRGBA(textColor, 16));
-    nvgText(args.vg, textPos.x, textPos.y, "~~", NULL);
 
-    textColor = nvgRGB(0xda, 0xe9, 0x29);
-    nvgFillColor(args.vg, nvgTransRGBA(textColor, 16));
-    nvgText(args.vg, textPos.x, textPos.y, "\\\\", NULL);
-    
-   
- 	textColor = paramTextColor;
+	nvgFillColor(args.vg, nvgTransRGBA(textColor, 24));
+    nvgText(args.vg, textPos.x, textPos.y, "88", NULL);
+
+    std::stringstream to_display;  
+   	to_display << std::setw(2) << *value;
+
+	textPos = Vec(8.0f, 18.0f);   // this is a relative offset within the box
+	if (*value > 9) 
+		textPos = Vec(-1.5f, 18.0f);   // this is a relative offset within the box
+	  
+	textColor = paramTextColor;
     nvgFillColor(args.vg, textColor);
     nvgText(args.vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
   }
 };
-//////////////////////////////////
-
-struct RSLabelCentered : LedDisplay {
-	int fontSize;
-	std::string text;
-	NVGcolor color;
-
-	RSLabelCentered(int x, int y, const char* str = "", int fontSize = 10, const NVGcolor& colour = nvgRGB(0x00, 0x00, 0x00)) {
-		this->fontSize = fontSize;
-		box.pos = Vec(x, y);
-		text = str;
-		color = colour;
-	}
-
-	void draw(const DrawArgs &args) override {
-
-		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/DejaVuSansMono.ttf"));  // load a not textfont
-		
-		if (font)
-		{	
-			if(font->handle >= 0) {
-				bndSetFont(font->handle);
-
-				nvgFontSize(args.vg, fontSize);
-				nvgFontFaceId(args.vg, font->handle);
-				nvgTextLetterSpacing(args.vg, 0);
-				nvgTextAlign(args.vg, NVG_ALIGN_CENTER);
-
-				nvgBeginPath(args.vg);
-				nvgFillColor(args.vg, color);
-				nvgText(args.vg, 0, 0, text.c_str(), NULL);
-				bndSetFont(APP->window->uiFont->handle);
-			}
-		}
-	}
-};
-
-///////////////////////////////
  
  
 struct MeanderWidget : ModuleWidget  
@@ -4446,7 +4406,7 @@ struct MeanderWidget : ModuleWidget
 				return;
 
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-					
+							
 			for (int i=0; i<MAX_CIRCLE_STATIONS; ++i)
 			{
 					// draw root_key annulus sector
@@ -4501,7 +4461,7 @@ struct MeanderWidget : ModuleWidget
 				return;
 
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-						
+								
 			int chord_type=0;
 
 			for (int i=0; i<MAX_HARMONIC_DEGREES; ++i)
@@ -4714,7 +4674,7 @@ struct MeanderWidget : ModuleWidget
 		void drawLabelAbove(const DrawArgs &args, Rect rect, const char* label, float fontSize)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-						    	
+								    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, panelTextColor);
 			nvgFontSize(args.vg, fontSize);
@@ -4728,7 +4688,7 @@ struct MeanderWidget : ModuleWidget
 		void drawLabelRight(const DrawArgs &args, Rect rect, const char* label)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-						    	
+								    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, panelTextColor);
 			nvgFontSize(args.vg, 14);
@@ -4742,7 +4702,7 @@ struct MeanderWidget : ModuleWidget
 		void drawLabelLeft(const DrawArgs &args, Rect rect, const char* label, float xoffset)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-						    	
+								    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, panelTextColor);
 			nvgFontSize(args.vg, 14);
@@ -4756,7 +4716,7 @@ struct MeanderWidget : ModuleWidget
 		void drawLabelOffset(const DrawArgs &args, Rect rect, const char* label, float xoffset, float yoffset)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-						    	
+								    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, panelTextColor);
 			nvgFontSize(args.vg, 14);
@@ -4770,7 +4730,7 @@ struct MeanderWidget : ModuleWidget
 		void drawOutport(const DrawArgs &args, Vec OutportPos, const char* label, float value, int valueDecimalPoints, float scale=1.0)  // scale is vertical only
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-						
+								
 			Vec displayRectPos= OutportPos.plus(Vec(-3, -scale*15));  // specific for 30x43 size
 			nvgBeginPath(args.vg);
 		    nvgRoundedRect(args.vg, displayRectPos.x,displayRectPos.y, 30.f, scale*43.f, 3.f);
@@ -6736,7 +6696,7 @@ struct MeanderWidget : ModuleWidget
 				// draw Meander logo and chord legend
 				
 				std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
-				
+							
 				if (textfont)
 				{
 					nvgBeginPath(args.vg);
