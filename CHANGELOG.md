@@ -1,6 +1,14 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.20 (June 2022)
+- Added the ability to edit the "#4: custom" harmonic progression preset and have the edited data saved into the patch via JSON data at the Meander module instance level.  Note: Each patch can only have 1 user created custom progression, but multiple Meander instances in the same patch can each have their own user created custom progression.  Also note: Once the custom preset is edited, do not change the "Progression Presets" setting or the custom edit will be lost and if you return to the custom preset, it will have been reinitialized to a 16 bar "I" progression.  If you accidently do this, until you save the patch, you can reload it to restore the custom progression, assuming you have previously saved the patch with your custom progression.  Therefore, always sve a custom progression patch as soon as you have the progression as you want it.  You can always edit this custom progression later and save the patch to preserve the edit.
+- The custom progression edit code was redone to behave much more intuitively and as WYSIWYG.
+- As you edit the custom progression, the #4: custom progression steps description will be updated dynamically.
+- As Meander plays a progression, the progression step circle of 5ths "degree" Roman numeral for the current step will be displayed inside the circle of 5ths inner circle, just above the mode key signature staves.  Likewise, as you edit the custom progression, the selected step degree Roman numeral will also be displayed in this inner circle.
+-As you edit the custom progression, the step chord will be played momentatarily, assuming you have Meander wired up to sound generators, etc.
+-To begin editing, switch to the "#4: Custom" progression preset and set the Harmony "Steps" knob from 1 to 16, as desired.  Then, click on Meander "RUN" to stop the auto playback engine.  Click on a "Set Step" step button and then click on a valid (colored) circle of 5ths annular ring step button to play that chord and set the step to that degree. This action also disables the "Harmony Chords Enable" setting  Once all edits are complete, click on "RUN" and "Harmony Chords Enable" to resume play.   If the custom progresssion is as you want it, save the patch, which will save the custom progression.  If the progression is not exactly as you want it, continue these editing steps until it is and then save it.  Remember, once edited, never turn the "Progression Presets" knob in this patch or the custom progression will be reininitialized. if you accidently do this, reload the patch immediately to reload the custom progression data.  But, the custom data will not be in the patch until you save it.
+
 ### V2.0.19 (May 2022)
 - Font changes only.
 
