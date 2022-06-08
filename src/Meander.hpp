@@ -95,7 +95,7 @@ static const char circle_of_fifths_degrees[][MAXSHORTSTRLEN]= {
 };
 
 static const char circle_of_fifths_arabic_degrees[][MAXSHORTSTRLEN]= {
-	"", "I", "II", "III", "IV", "V", "IV", "VII"
+	"", "I", "II", "III", "IV", "V", "VI", "VII"
 };
 
 static const char circle_of_fifths_degrees_UC[][MAXSHORTSTRLEN]= {

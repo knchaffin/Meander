@@ -79,7 +79,8 @@ struct CircleOf5ths
 } theCircleOf5ths;
 
 
-bool circleChanged=true;
+//bool circleChanged=true;
+bool circleChanged=false;
 int harmonyPresetChanged=0; 
 int savedHarmonySteps = 0;
 
@@ -312,6 +313,8 @@ int  circle_of_fifths[MAX_CIRCLE_STATIONS];
 int    home_circle_position;
 int    current_circle_position;
 int    last_circle_position;
+
+int    current_circle_degree=1;
 
 int  step_chord_notes[MAX_STEPS][MAX_NOTES_CANDIDATES];
 int  num_step_chord_notes[MAX_STEPS]={};
@@ -601,18 +604,30 @@ void init_notes()
 	}
 }
 
+void init_custom_harmony()
+{
+	   	// (harmony_type==4)             /* custom                 */
+	    strcpy(theHarmonyTypes[4].harmony_type_desc, "custom" );
+		strcpy(theHarmonyTypes[4].harmony_degrees_desc, "I-I-I-I-I-I-I-I-I-I-I-I-I-I-I-I" );
+	    theHarmonyTypes[4].num_harmony_steps=16;
+		theHarmonyTypes[4].min_steps=1;
+	    theHarmonyTypes[4].max_steps=16;
+	    for (int i=0;i<theHarmonyTypes[4].num_harmony_steps;++i)
+		   theHarmonyTypes[4].harmony_steps[i] = 1; // must not be 0
+}
 
+ 
 void init_harmony()
 {
-	// int i,j;
-  
-    
-	  for (int j=0;j<MAX_HARMONY_TYPES;++j)
+      for (int j=0;j<MAX_HARMONY_TYPES;++j)  // In general, this info will be overridden below by specific harmony type.  Custom type is the exception.
       {
 		theHarmonyTypes[j].num_harmony_steps=1;  // just so it is initialized
 		theHarmonyTypes[j].min_steps=1;
-	    theHarmonyTypes[j].max_steps=theHarmonyTypes[j].num_harmony_steps;
-		strcpy(theHarmonyTypes[j].harmony_type_desc, "");
+	    theHarmonyTypes[j].max_steps=16;
+		if (j==4) // custom
+			strcpy(theHarmonyTypes[j].harmony_type_desc, "custom");
+		else
+			strcpy(theHarmonyTypes[j].harmony_type_desc, "");
 		strcpy(theHarmonyTypes[j].harmony_degrees_desc, "");
         for (int i=0;i<MAX_STEPS;++i)
           {
@@ -659,15 +674,16 @@ void init_harmony()
         theHarmonyTypes[3].harmony_steps[5]=2;
         theHarmonyTypes[3].harmony_steps[6]=3;
         theHarmonyTypes[3].harmony_steps[7]=6;
-	
-    // (harmony_type==4)             /* custom                 */
+/*	
+    // (harmony_type==4)             // custom                
         strcpy(theHarmonyTypes[4].harmony_type_desc, "custom" );
+		strcpy(theHarmonyTypes[4].harmony_degrees_desc, "I-I-I-I-I-I-I-I-I-I-I-I-I-I-I-I" );
 	    theHarmonyTypes[4].num_harmony_steps=16;
 		theHarmonyTypes[4].min_steps=1;
 	    theHarmonyTypes[4].max_steps=theHarmonyTypes[4].num_harmony_steps;
-        for (int i=0;i<theHarmonyTypes[4].num_harmony_steps;++i)
+		for (int i=0;i<theHarmonyTypes[4].num_harmony_steps;++i)
            theHarmonyTypes[4].harmony_steps[i] = 1; // must not be 0
-		
+*/	
     // (harmony_type==5)             /* elementary classical 2 */
 		strcpy(theHarmonyTypes[5].harmony_type_desc, "the classic  I - IV - V" );
 		strcpy(theHarmonyTypes[5].harmony_degrees_desc, "I - IV - V - I" );
@@ -1433,7 +1449,7 @@ void copyHarmonyTypeToActiveHarmonyType(int harmType)
 	theActiveHarmonyType.harmony_type=harmType;  // the parent harmony_type
 	theActiveHarmonyType.num_harmony_steps=theHarmonyTypes[harmType].num_harmony_steps;
 	theActiveHarmonyType.min_steps=theHarmonyTypes[harmType].min_steps;
-	theActiveHarmonyType.max_steps=theHarmonyTypes[harmType].max_steps;
+	theActiveHarmonyType.max_steps=theHarmonyTypes[harmType].max_steps;  // this is 1 for some reason after prog edit
 	strcpy(theActiveHarmonyType.harmony_type_desc, theHarmonyTypes[harmType].harmony_type_desc);
 	strcpy(theActiveHarmonyType.harmony_degrees_desc, theHarmonyTypes[harmType].harmony_degrees_desc);
 	for (int i=0; i<MAX_STEPS; ++i)
@@ -1661,7 +1677,7 @@ void ConfigureModuleVars()
    ConstructCircle5ths(circle_root_key, mode);
    ConstructDegreesSemicircle(circle_root_key, mode); //int circleroot_key, int mode)
    init_module_vars();  // added in mirack impl
-   init_notes();  // depends on mode and root_key			
+   init_notes();  // depends on mode and root_key		
    init_harmony();  // sets up original progressions
    setup_harmony();  // calculate harmony notes
     

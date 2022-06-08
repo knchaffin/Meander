@@ -559,6 +559,9 @@ struct Meander : Module
 			if  (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].CircleIndex==circle_position)
 			{
 				int theDegree=theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree;
+				if ((theDegree<1)||(theDegree>7))
+			     	  theDegree=1;  // force to a valid degree to avoid a crash
+				current_circle_degree = theDegree;
 				for (int j=0;j<MAX_STEPS;++j)
 				{
 					if (theHarmonyTypes[harmony_type].harmony_steps[j]==theDegree)
@@ -763,7 +766,10 @@ struct Meander : Module
 		
     			
 
-		int degreeStep=(theActiveHarmonyType.harmony_steps[step])%8;  
+		int degreeStep=(theActiveHarmonyType.harmony_steps[step])%8; 
+		if ((degreeStep<1)||(degreeStep>7))
+		  degreeStep=1;  // force to a valid degree to avoid a crash
+		current_circle_degree = degreeStep;
 			
 		theMeanderState.theHarmonyParms.last_circle_step=step;  // used for Markov chain
 
@@ -1130,7 +1136,7 @@ struct Meander : Module
 			
 		}
 		
-		
+		 
 	
 		if (((theMeanderState.theMelodyParms.enabled)||(theMeanderState.theArpParms.enabled))&&theMeanderState.theArpParms.note_count<32)
 		{
@@ -1380,7 +1386,7 @@ struct Meander : Module
 		json_t *rootJ = json_object();
 
 		// running
-			// running
+		// running
 		json_object_set_new(rootJ, "running", json_boolean(running)); 
 
 		json_object_set_new(rootJ, "theHarmonyParmsenabled", json_boolean(theMeanderState.theHarmonyParms.enabled));
@@ -1409,12 +1415,39 @@ struct Meander : Module
 
 		json_object_set_new(rootJ, "paneltheme", json_integer(panelTheme));
 		json_object_set_new(rootJ, "panelcontrast", json_real(panelContrast));
+
+		// test code for custom progression save
+		if (harmony_type==4) // custom
+		{
+        	json_object_set_new(rootJ, "customPresetStep1", json_integer(theHarmonyTypes[4].harmony_steps[0]));
+			json_object_set_new(rootJ, "customPresetStep2", json_integer(theHarmonyTypes[4].harmony_steps[1]));
+			json_object_set_new(rootJ, "customPresetStep3", json_integer(theHarmonyTypes[4].harmony_steps[2]));
+			json_object_set_new(rootJ, "customPresetStep4", json_integer(theHarmonyTypes[4].harmony_steps[3]));
+		
+			json_object_set_new(rootJ, "customPresetStep5", json_integer(theHarmonyTypes[4].harmony_steps[4]));
+			json_object_set_new(rootJ, "customPresetStep6", json_integer(theHarmonyTypes[4].harmony_steps[5]));
+			json_object_set_new(rootJ, "customPresetStep7", json_integer(theHarmonyTypes[4].harmony_steps[6]));
+			json_object_set_new(rootJ, "customPresetStep8", json_integer(theHarmonyTypes[4].harmony_steps[7]));
+
+			json_object_set_new(rootJ, "customPresetStep9", json_integer(theHarmonyTypes[4].harmony_steps[8]));
+			json_object_set_new(rootJ, "customPresetStep10", json_integer(theHarmonyTypes[4].harmony_steps[9]));
+			json_object_set_new(rootJ, "customPresetStep11", json_integer(theHarmonyTypes[4].harmony_steps[10]));
+			json_object_set_new(rootJ, "customPresetStep12", json_integer(theHarmonyTypes[4].harmony_steps[11]));
+
+			json_object_set_new(rootJ, "customPresetStep13", json_integer(theHarmonyTypes[4].harmony_steps[12]));
+			json_object_set_new(rootJ, "customPresetStep14", json_integer(theHarmonyTypes[4].harmony_steps[13]));
+			json_object_set_new(rootJ, "customPresetStep15", json_integer(theHarmonyTypes[4].harmony_steps[14]));
+			json_object_set_new(rootJ, "customPresetStep16", json_integer(theHarmonyTypes[4].harmony_steps[15]));
+		}
+		//
 		
 		return rootJ;
 	}
 
 	void dataFromJson(json_t *rootJ) override {
+
 		// running
+		
 		json_t *runningJ = json_object_get(rootJ, "running");
 		if (runningJ)
 			running = json_is_true(runningJ);
@@ -1485,9 +1518,9 @@ struct Meander : Module
 
 		json_t *BassParmsshuffleJ = json_object_get(rootJ, "theBassParmsshuffle");
 		if (BassParmsshuffleJ)
-			theMeanderState.theBassParms.shuffle = json_is_true(BassParmsshuffleJ);
+			theMeanderState.theBassParms.shuffle = json_is_true(BassParmsshuffleJ); 
 
-		json_t *BassParmsoctave_enabledJ = json_object_get(rootJ, "theBassParmsoctave_enabled");
+		json_t *BassParmsoctave_enabledJ = json_object_get(rootJ, "theBassParmsoctave_enabled"); 
 		if (BassParmsoctave_enabledJ)
 			theMeanderState.theBassParms.octave_enabled = json_is_true(BassParmsoctave_enabledJ);
 		
@@ -1511,9 +1544,243 @@ struct Meander : Module
 		json_t *panelcontrastJ = json_object_get(rootJ, "panelcontrast");
         if (panelcontrastJ) panelContrast = json_real_value(panelcontrastJ);
 
-		// Make sure savedHarmonySteps is reset by always applying it after load
-		circleChanged = true;
-		savedHarmonySteps = params[CONTROL_HARMONY_STEPS_PARAM].getValue();
+		//  code for custom progression load
+		//
+	
+		bool isCustomPreset=false;
+		strcpy(theHarmonyTypes[4].harmony_degrees_desc,"");
+
+		int loadedNumSteps=params[CONTROL_HARMONY_STEPS_PARAM].getValue();  // at this point the patch should have been loaded so param can be read
+			
+		json_t *stepJ=nullptr;
+		if ((stepJ = json_object_get(rootJ, "customPresetStep1")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[0]=step;
+			if (loadedNumSteps>0)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (0<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep2")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[1]=step;
+			if (loadedNumSteps>1)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (1<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep3")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[2]=step;
+			if (loadedNumSteps>2)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (2<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep4")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[3]=step;
+			if (loadedNumSteps>3)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (3<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep5")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[4]=step;
+			if (loadedNumSteps>4)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (4<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep6")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[5]=step;
+			if (loadedNumSteps>5)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (5<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep7")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[6]=step;
+			if (loadedNumSteps>6)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (6<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep8")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[7]=step;
+			if (loadedNumSteps>7)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (7<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep9")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[8]=step;
+			if (loadedNumSteps>8)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (8<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep10")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[9]=step;
+			if (loadedNumSteps>9)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (9<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep11")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[10]=step;
+			if (loadedNumSteps>10)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (10<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep12")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[11]=step;
+			if (loadedNumSteps>11)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (11<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep13")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[12]=step;
+			if (loadedNumSteps>12)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (12<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep14")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[13]=step;
+			if (loadedNumSteps>13)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (13<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+
+		if ((stepJ = json_object_get(rootJ, "customPresetStep15")))
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			if (loadedNumSteps>14)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (14<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,"-");
+			}
+		}
+	
+		if ((stepJ = json_object_get(rootJ, "customPresetStep16"))) 
+		{
+			isCustomPreset=true;
+			int step=json_integer_value(stepJ);
+			theHarmonyTypes[4].harmony_steps[15]=step;
+			if (loadedNumSteps>15)
+			{
+				strcat(theHarmonyTypes[4].harmony_degrees_desc,circle_of_fifths_arabic_degrees[step]);  
+				if (15<(loadedNumSteps-1)) 
+				strcat(theHarmonyTypes[4].harmony_degrees_desc," ");
+			}
+		} 
+
+	
+		// Make sure savedHarmonySteps is reset by always applying it after load 
+		savedHarmonySteps=(int)(std::round(params[CONTROL_HARMONY_STEPS_PARAM].getValue()));
+			
+		if (isCustomPreset)
+		{
+			harmony_type=4;
+			params[CONTROL_HARMONYPRESETS_PARAM].setValue(4); // added for testing custom 
+			params[CONTROL_HARMONY_STEPS_PARAM].setValue(savedHarmonySteps);  // redundant
+			copyHarmonyTypeToActiveHarmonyType(harmony_type);
+			theActiveHarmonyType.num_harmony_steps=savedHarmonySteps;  
+			theHarmonyTypes[harmony_type].num_harmony_steps=savedHarmonySteps;  // add this to fix step edit problem
+			theActiveHarmonyType.min_steps=1;
+			theActiveHarmonyType.max_steps=16;
+			strcpy(theActiveHarmonyType.harmony_type_desc, "custom" );
+			setup_harmony();
+		}
+		else
+		{
+			circleChanged=true;  // in most cases, trigger off a circle build after load unless custom preset
+		}
 		
 	}
 
@@ -1666,6 +1933,9 @@ struct Meander : Module
 			theMeanderState.last_harmony_step=override_step;
 				
 			int degreeStep=(theActiveHarmonyType.harmony_steps[override_step])%8;  
+			if ((degreeStep<1)||(degreeStep>7))
+				  degreeStep=1;  // force to a valid degree to avoid a crash
+			current_circle_degree = degreeStep;
 			
 			//find this in semicircle
 			for (int j=0; j<7; ++j)
@@ -2248,7 +2518,9 @@ struct Meander : Module
 					}
 				}
 
-				CircleStepStates[current_circle_position] = !CircleStepStates[current_circle_position];
+				if (!CircleStepStates[current_circle_position])
+					CircleStepStates[current_circle_position] = true;
+			
 				lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+current_circle_position].setBrightness(CircleStepStates[current_circle_position] ? 1.0f : 0.0f);	
 			
 				userPlaysCirclePositionHarmony(current_circle_position, theMeanderState.theHarmonyParms.target_octave); 
@@ -2265,21 +2537,23 @@ struct Meander : Module
 					if  (theCircleOf5ths.theDegreeSemiCircle.degreeElements[j].CircleIndex==current_circle_position)
 					{
 						int theDegree=theCircleOf5ths.theDegreeSemiCircle.degreeElements[j].Degree;
+						if ((theDegree<1)||(theDegree>7))
+		  					theDegree=1;  // force to a valid degree to avoid a crash
 						if ((theDegree>=1)&&(theDegree<=7))
 						{
 							if (theMeanderState.theHarmonyParms.pending_step_edit)
 							{
 								theHarmonyTypes[harmony_type].harmony_steps[theMeanderState.theHarmonyParms.pending_step_edit-BUTTON_HARMONY_SETSTEP_1_PARAM]=theDegree;
-								//
+								
 								strcpy(theHarmonyTypes[harmony_type].harmony_degrees_desc,"");
 								for (int k=0;k<theHarmonyTypes[harmony_type].num_harmony_steps;++k)
 								{
 									strcat(theHarmonyTypes[harmony_type].harmony_degrees_desc,circle_of_fifths_arabic_degrees[theHarmonyTypes[harmony_type].harmony_steps[k]]);  
-									strcat(theHarmonyTypes[harmony_type].harmony_degrees_desc," ");
+									if (k<(theHarmonyTypes[harmony_type].num_harmony_steps-1)) 
+										strcat(theHarmonyTypes[harmony_type].harmony_degrees_desc,"-");
 								}
-								//
-								copyHarmonyTypeToActiveHarmonyType(harmony_type);
-								setup_harmony();
+								
+								copyHarmonyTypeToActiveHarmonyType(harmony_type);  
 							}
 						}
 						break;
@@ -2301,6 +2575,9 @@ struct Meander : Module
 					if (true)
 					{
 						int degreeStep=(theActiveHarmonyType.harmony_steps[selectedStep])%8;  
+						if ((degreeStep<1)||(degreeStep>7))
+					    	degreeStep=1;  // force to a valid degree to avoid a crash
+						current_circle_degree = degreeStep;
 						
 						//find this in semicircle
 						for (int j=0; j<7; ++j)
@@ -2322,7 +2599,8 @@ struct Meander : Module
 										
 					userPlaysCirclePositionHarmony(current_circle_position, theMeanderState.theHarmonyParms.target_octave);  
 				
-					CircleStepSetStates[i] = !CircleStepSetStates[i];
+					if (!CircleStepSetStates[i])
+						CircleStepSetStates[i] = true;
 					lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+i].setBrightness(CircleStepSetStates[i] ? 1.0f : 0.25f);
 					
 					for (int j=0; j<theActiveHarmonyType.num_harmony_steps; ++j) {
@@ -2706,8 +2984,35 @@ struct Meander : Module
 									{
 										if ((newValue>=theActiveHarmonyType.min_steps)&&(newValue<=theActiveHarmonyType.max_steps))
 										{
-											theActiveHarmonyType.num_harmony_steps=(int)newValue;
-											params[CONTROL_HARMONY_STEPS_PARAM].setValue(newValue);
+											if (((int)newValue>=theHarmonyTypes[harmony_type].min_steps)&&((int)newValue<=theHarmonyTypes[harmony_type].max_steps))
+											{
+												params[CONTROL_HARMONY_STEPS_PARAM].setValue(newValue);
+												theHarmonyTypes[harmony_type].num_harmony_steps=(int)newValue; 
+												theActiveHarmonyType.num_harmony_steps=(int)newValue;  
+											}
+														
+											strcpy(theHarmonyTypes[harmony_type].harmony_degrees_desc,"");
+											for (int k=0;k<theHarmonyTypes[harmony_type].num_harmony_steps;++k)
+											{
+												strcat(theHarmonyTypes[harmony_type].harmony_degrees_desc,circle_of_fifths_arabic_degrees[theHarmonyTypes[harmony_type].harmony_steps[k]]); 
+												if (k<(theHarmonyTypes[harmony_type].num_harmony_steps-1)) 
+													strcat(theHarmonyTypes[harmony_type].harmony_degrees_desc,"-");
+											}
+
+										//	if (((int)newValue>=theActiveHarmonyType.min_steps)&&((int)newValue<=theActiveHarmonyType.max_steps))
+										//		theActiveHarmonyType.num_harmony_steps=(int)newValue;  
+										
+											strcpy(theActiveHarmonyType.harmony_degrees_desc,"");
+											for (int k=0;k<theActiveHarmonyType.num_harmony_steps;++k)
+											{
+												strcat(theActiveHarmonyType.harmony_degrees_desc,circle_of_fifths_arabic_degrees[theActiveHarmonyType.harmony_steps[k]]); 
+												if (k<(theActiveHarmonyType.num_harmony_steps-1)) 
+													strcat(theActiveHarmonyType.harmony_degrees_desc,"-");
+											}
+
+											setup_harmony();  // seems to work
+											savedHarmonySteps = 0;  // no longer want to apply this elsewhere
+											//
 										}
 									}
 								}
@@ -2841,7 +3146,7 @@ struct Meander : Module
 								}
 								break;
 
-							case IN_HARMONYPRESETS_EXT_CV:
+							case IN_HARMONYPRESETS_EXT_CV: 
 								if (fvalue>=0.01)
 								{
 									float ratio=(fvalue/10.0);
@@ -2849,6 +3154,15 @@ struct Meander : Module
 									newValue=clamp(newValue, 1., (float)MAX_AVAILABLE_HARMONY_PRESETS);
 									if ((int)newValue!=harmony_type)
 									{
+										if (newValue==4)
+										{
+											harmony_type=(int)newValue;
+											init_custom_harmony();
+											copyHarmonyTypeToActiveHarmonyType(harmony_type);
+											harmonyPresetChanged=0;
+									    	circleChanged=false;  // don't trigger off reconstruction and setup
+										}
+										else
 										harmonyPresetChanged=(int)newValue;  // don't changed until between sequences.  The new harmony_type is in harmonyPresetChanged
 									}
 									else
@@ -3646,14 +3960,51 @@ struct Meander : Module
 
 			if ((fvalue=std::round(params[CONTROL_HARMONYPRESETS_PARAM].getValue()))!=harmony_type)
 			{
-				harmonyPresetChanged=(int)fvalue;  // don't changed until between sequences.  The new harmony_type is in harmonyPresetChanged
+				if (((int)fvalue)==4)
+				{
+					harmony_type=(int)fvalue;
+					init_custom_harmony();
+				    copyHarmonyTypeToActiveHarmonyType(harmony_type);
+					params[CONTROL_HARMONY_STEPS_PARAM].setValue(16);
+					harmonyPresetChanged=0;
+					circleChanged=false;  // don't trigger off reconstruction and setup
+				}
+				else
+					harmonyPresetChanged=(int)fvalue;  // don't changed until between sequences.  The new harmony_type is in harmonyPresetChanged
 			}
 
 			fvalue=std::round(params[CONTROL_HARMONY_STEPS_PARAM].getValue());
-			if ((fvalue!=theActiveHarmonyType.num_harmony_steps)&&(fvalue>=theActiveHarmonyType.min_steps)&&(fvalue<=theActiveHarmonyType.max_steps)&&(fvalue!=theActiveHarmonyType.num_harmony_steps))
+			if (fvalue!=theActiveHarmonyType.num_harmony_steps)
 			{
 				if ((fvalue>=theActiveHarmonyType.min_steps)&&(fvalue<=theActiveHarmonyType.max_steps))
-					theActiveHarmonyType.num_harmony_steps=(int)fvalue;  
+				{
+					if ((fvalue>=theActiveHarmonyType.min_steps)&&(fvalue<=theActiveHarmonyType.max_steps))
+					{
+						theActiveHarmonyType.num_harmony_steps=(int)fvalue; 
+						theHarmonyTypes[harmony_type].num_harmony_steps=(int)fvalue; 
+					}
+								
+					strcpy(theActiveHarmonyType.harmony_degrees_desc,"");
+					for (int k=0;k<theActiveHarmonyType.num_harmony_steps;++k)
+					{
+						strcat(theActiveHarmonyType.harmony_degrees_desc,circle_of_fifths_arabic_degrees[theActiveHarmonyType.harmony_steps[k]]); 
+						if (k<(theActiveHarmonyType.num_harmony_steps-1)) 
+							strcat(theActiveHarmonyType.harmony_degrees_desc,"-");
+					}
+														
+					strcpy(theHarmonyTypes[harmony_type].harmony_degrees_desc,"");
+					for (int k=0;k<theHarmonyTypes[harmony_type].num_harmony_steps;++k)
+					{
+						strcat(theHarmonyTypes[harmony_type].harmony_degrees_desc,circle_of_fifths_arabic_degrees[theHarmonyTypes[harmony_type].harmony_steps[k]]); 
+						if (k<(theHarmonyTypes[harmony_type].num_harmony_steps-1)) 
+							strcat(theHarmonyTypes[harmony_type].harmony_degrees_desc,"-");
+					}
+					
+					savedHarmonySteps = 0;  // no longer want to apply this elsewhere 
+
+					setup_harmony();  // seems to work
+				}
+				//
 			}
 
 			// Melody Params
@@ -3777,16 +4128,21 @@ struct Meander : Module
 
 			// **************************
 
-			if (harmonyPresetChanged)
+			if (harmonyPresetChanged) 
 			{
 				harmony_type=harmonyPresetChanged;
-				copyHarmonyTypeToActiveHarmonyType(harmony_type);
+			 // copyHarmonyTypeToActiveHarmonyType(harmony_type);
 				harmonyPresetChanged=0;
 				circleChanged=true;  // trigger off reconstruction and setup
-				init_harmony(); // reinitialize in case user has changed harmony parms
-				setup_harmony();  // calculate harmony notes
+				if (harmony_type!=4)  // not custom
+				{
+					copyHarmonyTypeToActiveHarmonyType(harmony_type);
+					init_harmony(); // reinitialize in case user has changed harmony parms  May be causing max_steps set to 1
+					setup_harmony();  // calculate harmony notes
+					params[CONTROL_HARMONY_STEPS_PARAM].setValue(theHarmonyTypes[harmony_type].num_harmony_steps);
+				}  
 				params[CONTROL_HARMONYPRESETS_PARAM].setValue(harmony_type);
-				params[CONTROL_HARMONY_STEPS_PARAM].setValue(theHarmonyTypes[harmony_type].num_harmony_steps);
+			//	params[CONTROL_HARMONY_STEPS_PARAM].setValue(theHarmonyTypes[harmony_type].num_harmony_steps);
 				time_sig_changed=true;  // forces a reset so things start over
 			}
 			
@@ -3794,7 +4150,7 @@ struct Meander : Module
 			if (circleChanged)  
 			{	
 				notate_mode_as_signature_root_key=((root_key-(mode_natural_roots[mode_root_key_signature_offset[mode]]))+12)%12;
-								
+							
 				if ((notate_mode_as_signature_root_key==1)   // Db
 				  ||(notate_mode_as_signature_root_key==3)   // Eb
 				  ||(notate_mode_as_signature_root_key==5)   // F
@@ -3808,24 +4164,30 @@ struct Meander : Module
 				{
 					for (int i=0; i<12; ++i)
 						strcpy(note_desig[i], note_desig_sharps[i]);
-				}
-
+				} 
+				
 				ConstructCircle5ths(circle_root_key, mode);
 				ConstructDegreesSemicircle(circle_root_key, mode); //int circleroot_key, int mode)
-				init_notes();  // depends on mode and root_key			
-				init_harmony();  // sets up original progressions
-				setup_harmony();  // calculate harmony notes
-				params[CONTROL_HARMONY_STEPS_PARAM].setValue(theHarmonyTypes[harmony_type].num_harmony_steps);
+			
+				init_notes();  // depends on mode and root_key		
+			// 	init_harmony();  // sets up original progressions
+				setup_harmony();  // calculate harmony notes 
+						
+				params[CONTROL_HARMONY_STEPS_PARAM].setValue(theActiveHarmonyType.num_harmony_steps); 
+			
 				circleChanged=false;
+			
 				onResetScale();
 				onResetQuantizer();
+			
 				if (savedHarmonySteps)
 				{
 					params[CONTROL_HARMONY_STEPS_PARAM].setValue(savedHarmonySteps);
-					savedHarmonySteps = 0;
+					savedHarmonySteps = 0;  // just do it once
 				}
 				else
-					params[CONTROL_HARMONY_STEPS_PARAM].setValue(theHarmonyTypes[harmony_type].num_harmony_steps);
+					params[CONTROL_HARMONY_STEPS_PARAM].setValue(theActiveHarmonyType.num_harmony_steps);
+			
 			}
 		
 		}	
@@ -4462,7 +4824,7 @@ struct MeanderWidget : ModuleWidget
 
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
 								
-			int chord_type=0;
+			int chord_type=0; 
 
 			for (int i=0; i<MAX_HARMONIC_DEGREES; ++i)
 			{
@@ -4495,6 +4857,7 @@ struct MeanderWidget : ModuleWidget
 					nvgFillColor(args.vg, nvgRGBA(0x00, 0x00, 0x00, 0xff));
 					char text[32];
 				
+					chord_type=module->theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].chordType;
 					
 					if (chord_type==0) // major
 						snprintf(text, sizeof(text), "%s", circle_of_fifths_degrees_UC[(i - module->theCircleOf5ths.theDegreeSemiCircle.RootKeyCircle5thsPosition+7)%7]);
@@ -6068,8 +6431,7 @@ struct MeanderWidget : ModuleWidget
 					for (int i=0; ((i<module->bar_note_count)&&(i<256)); ++i)
 					{
 						int display_note=module->played_notes_circular_buffer[i].note;
-					//	DEBUG("display_note=%d", display_note);
-											
+																
 						int scale_note=0;
 						if (strstr(module->note_desig[display_note%12],"C"))
 							scale_note=0;
@@ -6605,6 +6967,24 @@ struct MeanderWidget : ModuleWidget
 				snprintf(text, sizeof(text), "%s%s", module->note_desig[last_chord_root], chord_type_desc);
 
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+
+			// display chord circle degree in circle above staves
+
+			// draw text
+			nvgFontSize(args.vg, 15);
+			if (textfont)
+			nvgFontFaceId(args.vg, textfont->handle);	
+			nvgTextLetterSpacing(args.vg, -1); // as close as possible
+			nvgFillColor(args.vg, panelHarmonyPartColor); 
+			
+			snprintf(text, sizeof(text), "%s", circle_of_fifths_arabic_degrees[module->current_circle_degree]);
+			Vec TextPosition=module->theCircleOf5ths.CircleCenter.plus(Vec(0,-60));
+			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
+			nvgText(args.vg, TextPosition.x, TextPosition.y, text, NULL);
+			
+
+			//
 			
 		//	drawGrid(args);  // here after all updates are completed so grid is on top
 	
@@ -8014,7 +8394,7 @@ struct MeanderWidget : ModuleWidget
                    		continue;
 					if (cwOut->cable->id == cwIn->cable->id)
 					{
-						module->theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BAR_OUTPUT;  // still crashes with this commented out
+						module->theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BAR_OUTPUT;  
 					}
 										
 				}
@@ -8054,7 +8434,7 @@ struct MeanderWidget : ModuleWidget
                    		continue;
 					if (cwOut->cable->id == cwIn->cable->id)
 					{
-						module->theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BEATX8_OUTPUT;  // this does not create the crash if no cable is connected here
+						module->theMeanderState.theHarmonyParms.STEP_inport_connected_to_Meander_trigger_port=Meander::OUT_CLOCK_BEATX8_OUTPUT;  
 					}
 				}
 			}
