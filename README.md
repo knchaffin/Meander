@@ -201,7 +201,7 @@ Note: for any of the following, you can select V7ths in Meander and it will almo
 - Progression #3: Description=  "romantic - alt root_keys" in Cmaj this is a major I-IV-V-I with relative minor vi-ii-iii-vi
 - Progression #3: Degree steps= "I - IV - V - I - VI - II - III - VI" 
 *	       
-- Progression #4: Description=  "custom" you can use this as a place to create your own progression, but it is hard and no way to save
+- Progression #4: Description=  "custom" you can use this as a place to create your own progression and save it in the patch.
 *	      
 - Progression #5: Description=  "the classic  I - IV - V" the most commonly used progression in Western music. Tonic, subdominant and dominant.
 - Progression #5: Degree steps= "I - IV - V - I" 
