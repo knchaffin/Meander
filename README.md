@@ -82,16 +82,16 @@ You can also control the harmony circle of 5ths position by using the "Degree" a
 
 ![Meander](./res/Progression-Edit-Panel-Help.png) 
 
-  - 1) Set the harmonic progression "Progression Presets" preset knob to "#4 custom".
-  - 2) Set the Harmony Chords number of steps as desired, from 1 to 16.
-  - 3) Click on RUN to pause Meander playing and enter the edit mode. 
-  - 4) Click on a green "Set Step" button.  
-  - 5) Click on circle degree buttons in the circle red, blue or green annular ring segments until you find one you like as Meander plays your click selections. 
+  - "1)" Set the harmonic progression "Progression Presets" preset knob to "#4 custom".
+  - "2)" Set the Harmony Chords number of steps as desired, from 1 to 16.
+  - "3)" Click on RUN to pause Meander playing and enter the edit mode. 
+  - "4)" Click on a green "Set Step" button.  
+  - "5)" Click on circle degree buttons in the circle red, blue or green annular ring segments until you find one you like as Meander plays your click                    selections. 
   -    Click on another Set Step button and repeat the prcess.  
   -    While editing, you can step through the modified progression by clicking on the lit Set Step buttons sequentially.  At any point you can click on the            circle     degree buttons     to change that step if you do not like it.  
-  - 6) Click on "Harmony Chords Enable" button if it is not enabled.  Note, clicking buttons inside of the circle of 5th automatically disables the Harmony            Chords Enable button.
-  - 7) Click on RUN again and Meander will resume playing and use the edited values for the progression.
-  - 8) Save your patch and the custom harmonic progression will be saved into the patch file via JSON data.
+  - "6)" Click on "Harmony Chords Enable" button if it is not enabled.  Note, clicking buttons inside of the circle of 5th automatically disables the Harmony            Chords Enable button.
+  - "7)" Click on RUN again and Meander will resume playing and use the edited values for the progression.
+  - "8)" Save your patch and the custom harmonic progression will be saved into the patch file via JSON data.
   - Do not change the "Progression Presets" knob after creating a custom progression as the custom data will be lost.  If you inadvertently change the               progression setting, immediately do a reload of your patch to reload the saved custom data.
 
 A best practics is to set up a new patch or save an existing patch as a new name and then do your custom editing and use in that patch and never touch the Progression Presets knob in that instance of Meander in the patch.  Note, you can have multiple instances of Meander in a patch and each instance can have its own custom harmonic progression.
