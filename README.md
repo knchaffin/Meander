@@ -80,7 +80,7 @@ You can also control the harmony circle of 5ths position by using the "Degree" a
   
 ### #4 Custom progression preset editing (New in V2.0.20)
 
-![Meander](./res/Progression Edit Panel Help.png) 
+![Meander](./res/Progression-Edit-Panel-Help.png) 
 
   - Set the harmonic progression "Progression Presets" preset knob to "#4 custom".
   - Set the Harmony Chords number of steps as desired, from 1 to 16.
