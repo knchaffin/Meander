@@ -79,6 +79,9 @@ You can also control the harmony circle of 5ths position by using the "Degree" a
   - New for V1.0.3 is a button inside of the circle of 5ths labelled "STEP".  When you cick on this, Harmony progression is disabled and Meander plays the current circle degree chord until you press STEP again, at which time the harmony will advance to next progression step chord for the currently selected harmony preset.  This button also has a CV input jack, you can supply a momentary voltage pulse on this input and the harmony will step, just like by clicking on STEP.  In order to return to automatic harmony/chord progression stepping, click again on "Harmony Enable" to enable the harmony part automatic progression.  
   
 ### #4 Custom progression preset editing (New in V2.0.20)
+
+![Meander](./res/Progression Edit Panel Help.png) 
+
   - Set the harmonic progression "Progression Presets" preset knob to "#4 custom".
   - Set the Harmony Chords number of steps as desired, from 1 to 16.
   - Click on RUN to pause Meander playing and enter the edit mode. 
