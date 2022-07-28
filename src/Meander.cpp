@@ -27,7 +27,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <windows.h>
 #endif
 
-struct Meander : Module 
+struct Meander : Module  
 {
 	// poly quant vars and functions
 	
@@ -571,7 +571,7 @@ struct Meander : Module
 					}
 				}
 				break;
-			}
+			} 
 		} 
 
 		theMeanderState.theMelodyParms.last_step=theMeanderState.last_harmony_step;
@@ -605,7 +605,6 @@ struct Meander : Module
 			{
 				theMeanderState.theHarmonyParms.last[j].note=note_to_play;
 				theMeanderState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
-			//	theMeanderState.theHarmonyParms.last[j].length=1;  // whole  note for now
 				theMeanderState.theHarmonyParms.last[j].length=theMeanderState.theHarmonyParms.note_length_divisor;  
 				theMeanderState.theHarmonyParms.last[j].time32s=barts_count;
 				theMeanderState.theHarmonyParms.last[j].countInBar=bar_note_count;
@@ -1293,6 +1292,7 @@ struct Meander : Module
 	float stepLight = 0.0f;
 
 	bool running = true;
+	double run_start_cpu_time_double= (double)(clock()) / (double)CLOCKS_PER_SEC;
 	
 	int bar_count = 0;  // number of bars running count
 	
@@ -1313,8 +1313,10 @@ struct Meander : Module
 	int i2ts_count_limit =16;  // 32s notes per half note
 	int barts_count_limit = 32;     // 32s notes per bar
 	
-	float min_bpm = 10.0f;
-	float max_bpm = 300.0f;
+	float min_bpm = 3.75f;  // corresponds to CV=-5
+//	float max_bpm = 300.0f;
+//	float max_bpm = 480.0f; // corresponds to CV=2.0
+	float max_bpm = 960.0f; // corresponds to CV=3.0
 
 	float extHarmonyIn=-99;
   
@@ -1763,6 +1765,11 @@ struct Meander : Module
 	
 		// Make sure savedHarmonySteps is reset by always applying it after load 
 		savedHarmonySteps=(int)(std::round(params[CONTROL_HARMONY_STEPS_PARAM].getValue()));
+		if ((savedHarmonySteps<theHarmonyTypes[harmony_type].min_steps)||(savedHarmonySteps>theHarmonyTypes[harmony_type].max_steps))
+		{
+			savedHarmonySteps=theHarmonyTypes[harmony_type].max_steps;
+			params[CONTROL_HARMONY_STEPS_PARAM].setValue(savedHarmonySteps);
+		}
 			
 		if (isCustomPreset)
 		{
@@ -1815,6 +1822,7 @@ struct Meander : Module
 
 			if(!running)
 			{
+				run_start_cpu_time_double= (double)(clock()) / (double)CLOCKS_PER_SEC;
 				i16ts_count = 0;  
 				i8ts_count = 0;  
 				i4ts_count = 0; 
@@ -1846,10 +1854,12 @@ struct Meander : Module
 		{
 			float fvalue=inputs[IN_TEMPO_EXT_CV].getVoltage();
 			tempo=std::round(std::pow(2.0, fvalue)*120);
-			if (tempo<10)
-				tempo=10;
-			if (tempo>300)
-				tempo=300;
+		
+			if (tempo<min_bpm)
+				tempo=min_bpm;
+	
+			if (tempo>max_bpm)
+				tempo=max_bpm;
 
 			if (true)  // adjust the tempo knob and param
 			{
@@ -1870,6 +1880,7 @@ struct Meander : Module
 			
 		if (reset_btn_trig.process(params[BUTTON_RESET_PARAM].getValue() || inputs[IN_RESET_EXT_CV].getVoltage() || time_sig_changed || reset_enqueued)) 
 		{
+			run_start_cpu_time_double= (double)(clock()) / (double)CLOCKS_PER_SEC;
 			time_sig_changed=false;
 			reset_enqueued=false;
 	    	LFOclock.setReset(1.0f);
@@ -4671,7 +4682,8 @@ struct BpmDisplayWidget : LightWidget {
 	if (*val > 99)   // 3  digit BPM
 		textPos = Vec(0.0f, 32.0f);   // this is a relative offset within the box
 	else
-	if (*val > 9)    // 2  digit BPM
+//	if (*val > 9)    // 2  digit BPM
+	if (*val > 0)    // 2  digit BPM
 		textPos = Vec(16.75f, 32.0f);   // this is a relative offset within the box
 	  
 	textColor = paramTextColor;
@@ -5620,8 +5632,7 @@ struct MeanderWidget : ModuleWidget
 
 				// draw division line
 				pos = ParameterRectLocal[Meander::BUTTON_ENABLE_ARP_PARAM].pos.plus(Vec(-20,-2));
-				nvgMoveTo(args.vg, 
-				pos.x, pos.y);
+				nvgMoveTo(args.vg, 	pos.x, pos.y);
 				pos=pos.plus(Vec(190,0));
 				nvgLineTo(args.vg, pos.x, pos.y);  
 								  
@@ -5651,46 +5662,45 @@ struct MeanderWidget : ModuleWidget
 				snprintf(labeltext, sizeof(labeltext), "%s", "Scaler");
 				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_ENABLE_ARP_SCALER_PARAM].pos, labeltext, 0, -1, panelTextColor);
 
-				snprintf(labeltext, sizeof(labeltext), "%s", "Pattern (-3-+3");
+				snprintf(labeltext, sizeof(labeltext), "%s", "Pattern(-3-+3)");
 				drawMelodyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_ARP_PATTERN_PARAM].pos, labeltext, module->theMeanderState.theArpParms.pattern, -1, panelTextColor);
 
 				pos =ParameterRectLocal[Meander::CONTROL_ARP_PATTERN_PARAM].pos.plus(Vec(102,0));
 							
 				nvgBeginPath(args.vg);
-			
-				nvgFillColor(args.vg, nvgRGBA( 0x2f,  0x27, 0x0a, 0xff));
-				nvgRoundedRect(args.vg, pos.x,pos.y, 60.f, 20.f, 4.f);
+
 				nvgStrokeColor(args.vg,nvgRGBA( 0x80,  0x80 , 0x80, 0x80));
+				nvgFillColor(args.vg, nvgRGBA( 0x2f,  0x27, 0x0a, 0xff));
+				nvgRoundedRect(args.vg, pos.x-18.0,pos.y, 76.f, 20.f, 4.f);
 				nvgStrokeWidth(args.vg, 2.0);
 				nvgFill(args.vg);
-				nvgStroke(args.vg);
-
-				nvgFontSize(args.vg, 17);
+			
+				nvgFontSize(args.vg, 15);
 				nvgFillColor(args.vg, paramTextColor);
 				if (module->theMeanderState.theArpParms.pattern==0)
 					snprintf(text, sizeof(text), "%d: 0-echo", module->theMeanderState.theArpParms.pattern);
 				else
 				if (module->theMeanderState.theArpParms.pattern==1)
-					snprintf(text, sizeof(text), "%d: +1", module->theMeanderState.theArpParms.pattern);
+					snprintf(text, sizeof(text), "%d: UPx1", module->theMeanderState.theArpParms.pattern);
 				else
 				if (module->theMeanderState.theArpParms.pattern==2)
-					snprintf(text, sizeof(text), "%d: +1,-1", module->theMeanderState.theArpParms.pattern);
+					snprintf(text, sizeof(text), "%d: UPx1,DNx1", module->theMeanderState.theArpParms.pattern);
 				else
 				if (module->theMeanderState.theArpParms.pattern==3)
-					snprintf(text, sizeof(text), "%d: +2", module->theMeanderState.theArpParms.pattern);
+					snprintf(text, sizeof(text), "%d: UPx2", module->theMeanderState.theArpParms.pattern);
 				else
 				if (module->theMeanderState.theArpParms.pattern==-1)
-					snprintf(text, sizeof(text), "%d: -1", module->theMeanderState.theArpParms.pattern);
+					snprintf(text, sizeof(text), "%d: DNx1", module->theMeanderState.theArpParms.pattern);
 				else
 				if (module->theMeanderState.theArpParms.pattern==-2)
-					snprintf(text, sizeof(text), "%d: -1,+1", module->theMeanderState.theArpParms.pattern);
+					snprintf(text, sizeof(text), "%d: DNx1,UPx1", module->theMeanderState.theArpParms.pattern);
 				else
 				if (module->theMeanderState.theArpParms.pattern==-3)
-					snprintf(text, sizeof(text), "%d: -2", module->theMeanderState.theArpParms.pattern);
+					snprintf(text, sizeof(text), "%d: DNx2", module->theMeanderState.theArpParms.pattern);
 				else
 					snprintf(text, sizeof(text), "%s", "      ");  // since text is used above, needs to be cleared in fallthrough case
 				
-				nvgText(args.vg, pos.x+10, pos.y+10, text, NULL);
+				nvgText(args.vg, pos.x-10, pos.y+10, text, NULL);
 
 				
 
@@ -5928,7 +5938,7 @@ struct MeanderWidget : ModuleWidget
 			
 				snprintf(labeltext, sizeof(labeltext), "%s", "These can trigger STEP above or external");
 				rect=OutportRectLocal[Meander::OUT_CLOCK_BEATX8_OUTPUT];
-				rect.pos=rect.pos.plus(Vec(5,0));
+				rect.pos=rect.pos.plus(Vec(5,5));
 				drawLabelRight(args, rect, labeltext);
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
@@ -7154,7 +7164,46 @@ struct MeanderWidget : ModuleWidget
 					pos=Vec(404, 50);  
 					nvgText(args.vg, pos.x, pos.y, text, NULL);
 					nvgClosePath(args.vg);
-				}
+
+					// Time display on panel
+					if (module)  
+					{
+						if (module->running)
+						{
+							pos=Vec(485, 315); 
+							NVGcolor backgroundColor = nvgRGB(0x20, 0x10, 0x10);
+														
+							nvgBeginPath(args.vg);
+							nvgRoundedRect(args.vg, pos.x,pos.y,195,20, 4.0);
+							nvgFillColor(args.vg, backgroundColor);
+							nvgFill(args.vg);
+							nvgStrokeWidth(args.vg, 2.5);
+							nvgStrokeColor(args.vg,nvgRGBA( 0x80,  0x80 , 0x80, 0x80));
+							nvgStroke(args.vg);
+
+							nvgFontSize(args.vg, 17);
+							pos=Vec(486, 325); 
+							nvgFillColor(args.vg, paramTextColor);
+						
+							double current_cpu_time_double= (double)(clock()) / (double)CLOCKS_PER_SEC;
+							double elapsed_cpu_time= current_cpu_time_double- module->run_start_cpu_time_double;
+
+							if (module->time_sig_bottom==2)
+								snprintf(text, sizeof(text), "Bars:: %05d:%02d  Minutes:: %04d:%02d", module->bar_count+1, (module->barts_count/module->i2ts_count_limit)+1, (int)((float)elapsed_cpu_time/60.0), (int)(fmod((float)elapsed_cpu_time,60.0)));
+							else 
+							if (module->time_sig_bottom==4)
+								snprintf(text, sizeof(text), "Bars:: %05d:%02d  Minutes:: %04d:%02d", module->bar_count+1, (module->barts_count/module->i4ts_count_limit)+1, (int)((float)elapsed_cpu_time/60.0), (int)(fmod((float)elapsed_cpu_time,60.0))); 
+							else 
+							if (module->time_sig_bottom==8)
+								snprintf(text, sizeof(text), "Bars:: %05d:%02d  Minutes:: %04d:%02d", module->bar_count+1, (module->barts_count/module->i8ts_count_limit)+1, (int)((float)elapsed_cpu_time/60.0), (int)(fmod((float)elapsed_cpu_time,60.0)));
+							else  
+							if (module->time_sig_bottom==16)
+								snprintf(text, sizeof(text), "Bars:: %05d:%02d  Minutes:: %04d:%02d", module->bar_count+1, (module->barts_count/module->i16ts_count_limit)+1, (int)((float)elapsed_cpu_time/60.0), (int)(fmod((float)elapsed_cpu_time,60.0))); 
+						
+							nvgText(args.vg, pos.x, pos.y, text, NULL);
+						}
+					}
+				} 
 				
 												
 

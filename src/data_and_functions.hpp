@@ -12,8 +12,9 @@ You should have received a copy of the GNU General Public License along with thi
 //*********************************************************Module Vars************************************************
 
 bool moduleVarsInitialized=false;  //  initialized only during Module()
+bool patchDataLoaded=false;  // set true in dataFromJson()
 
-struct inPortState
+struct inPortState 
 {
 	bool inTransition=false;
 	float lastValue=-999.;
@@ -641,9 +642,9 @@ void init_harmony()
     // (harmony_type==1)             /* typical classical */  // I + n and descend by 4ths
 		strcpy(theHarmonyTypes[1].harmony_type_desc, "50's Classic R&R do-wop and jazz" );
 		strcpy(theHarmonyTypes[1].harmony_degrees_desc, "I - VI - II - V" );
-	    theHarmonyTypes[1].num_harmony_steps=4;  // 1-7
-		theHarmonyTypes[1].min_steps=1;
-	    theHarmonyTypes[1].max_steps=theHarmonyTypes[1].num_harmony_steps;
+	    theHarmonyTypes[1].num_harmony_steps=4;  // steps fixed at 4
+		theHarmonyTypes[1].min_steps=4;
+	    theHarmonyTypes[1].max_steps=4;
 		theHarmonyTypes[1].harmony_steps[0]=1;
 		for (int i=1; i<theHarmonyTypes[1].num_harmony_steps; ++i)
 		   theHarmonyTypes[1].harmony_steps[i]=(semiCircleDegrees[theHarmonyTypes[1].num_harmony_steps-i])%7;
@@ -652,9 +653,9 @@ void init_harmony()
     // (harmony_type==2)             /* typical elementary classical */
 		strcpy(theHarmonyTypes[2].harmony_type_desc, "elem.. classical 1" );
 		strcpy(theHarmonyTypes[2].harmony_degrees_desc, "I - IV - I - V" );
-	    theHarmonyTypes[2].num_harmony_steps=4;
-		theHarmonyTypes[2].min_steps=1;
-	    theHarmonyTypes[2].max_steps=theHarmonyTypes[2].num_harmony_steps;
+	    theHarmonyTypes[2].num_harmony_steps=4; // steps fixed at 4
+		theHarmonyTypes[2].min_steps=4;
+	    theHarmonyTypes[2].max_steps=4;
         theHarmonyTypes[2].harmony_steps[0]=1;
         theHarmonyTypes[2].harmony_steps[1]=4;
 	    theHarmonyTypes[2].harmony_steps[2]=1;
@@ -663,8 +664,8 @@ void init_harmony()
 	// (harmony_type==3)             /* typical romantic */   // basically alternating between two root_keys, one major and one minor
 		strcpy(theHarmonyTypes[3].harmony_type_desc, "romantic - alt root_keys" );
 		strcpy(theHarmonyTypes[3].harmony_degrees_desc, "I - IV - V - I - VI - II - III - VI" );
-	    theHarmonyTypes[3].num_harmony_steps=8;
-		theHarmonyTypes[3].min_steps=1;
+	    theHarmonyTypes[3].num_harmony_steps=8;  // steps fixed at 8
+		theHarmonyTypes[3].min_steps=8;
 	    theHarmonyTypes[3].max_steps=theHarmonyTypes[3].num_harmony_steps;
         theHarmonyTypes[3].harmony_steps[0]=1;
         theHarmonyTypes[3].harmony_steps[1]=4;
@@ -687,8 +688,8 @@ void init_harmony()
     // (harmony_type==5)             /* elementary classical 2 */
 		strcpy(theHarmonyTypes[5].harmony_type_desc, "the classic  I - IV - V" );
 		strcpy(theHarmonyTypes[5].harmony_degrees_desc, "I - IV - V - I" );
-	    theHarmonyTypes[5].num_harmony_steps=4;
-		theHarmonyTypes[5].min_steps=1;
+	    theHarmonyTypes[5].num_harmony_steps=4; // steps fixed at 4
+		theHarmonyTypes[5].min_steps=4;
 	    theHarmonyTypes[5].max_steps=theHarmonyTypes[5].num_harmony_steps;
         theHarmonyTypes[5].harmony_steps[0]=1;
         theHarmonyTypes[5].harmony_steps[1]=4;
@@ -698,8 +699,8 @@ void init_harmony()
     // (harmony_type==6)             /* elementary classical 3 */
 		strcpy(theHarmonyTypes[6].harmony_type_desc, "elem. classical 3" );
 		strcpy(theHarmonyTypes[6].harmony_degrees_desc, "I - IV - V - IV" );
-	    theHarmonyTypes[6].num_harmony_steps=4;
-		theHarmonyTypes[6].min_steps=1;
+	    theHarmonyTypes[6].num_harmony_steps=4; // steps fixed at 4
+		theHarmonyTypes[6].min_steps=4;
 	    theHarmonyTypes[6].max_steps=theHarmonyTypes[6].num_harmony_steps;
         theHarmonyTypes[6].harmony_steps[0]=1;
         theHarmonyTypes[6].harmony_steps[1]=4;
@@ -709,20 +710,19 @@ void init_harmony()
     // (harmony_type==7)             /* strong 1 */  
 		strcpy(theHarmonyTypes[7].harmony_type_desc, "strong return by 4ths" );
 		strcpy(theHarmonyTypes[7].harmony_degrees_desc, "I - III - VI - IV - V" );
-		theHarmonyTypes[7].num_harmony_steps=5;
-		theHarmonyTypes[7].min_steps=1;
+		theHarmonyTypes[7].num_harmony_steps=5; // steps fixed at 5
+		theHarmonyTypes[7].min_steps=5;
 	    theHarmonyTypes[7].max_steps=theHarmonyTypes[7].num_harmony_steps;
         theHarmonyTypes[7].harmony_steps[0]=1;
         theHarmonyTypes[7].harmony_steps[1]=3;
-        theHarmonyTypes[7].harmony_steps[2]=6
-		;
+        theHarmonyTypes[7].harmony_steps[2]=6;
         theHarmonyTypes[7].harmony_steps[3]=4;
 		theHarmonyTypes[7].harmony_steps[4]=5;
        
      // (harmony_type==8)  // strong random  the harmony chord stays fixed and only the melody varies.  Good for checking harmony meander
 	 	strcpy(theHarmonyTypes[8].harmony_type_desc, "stay on I" );
 		strcpy(theHarmonyTypes[8].harmony_degrees_desc, "I" );
-	    theHarmonyTypes[8].num_harmony_steps=1;
+	    theHarmonyTypes[8].num_harmony_steps=1; // steps fixed at 1
 		theHarmonyTypes[8].min_steps=1;
 	    theHarmonyTypes[8].max_steps=theHarmonyTypes[8].num_harmony_steps;
         theHarmonyTypes[8].harmony_steps[0]=1;
@@ -732,21 +732,22 @@ void init_harmony()
      // (harmony_type==9)  // harmonic+   C, G, D,...  CW by 5ths
 	     strcpy(theHarmonyTypes[9].harmony_type_desc, "harmonic+ CW 5ths" );
 		 strcpy(theHarmonyTypes[9].harmony_degrees_desc, "I - V - II - VI - III - VII - IV" );
-	     theHarmonyTypes[9].num_harmony_steps=7;  // 1-7
-		 theHarmonyTypes[9].min_steps=1;
+	     theHarmonyTypes[9].num_harmony_steps=7;  // 7-7
+	     theHarmonyTypes[9].min_steps=7;  // fixed at 7 steps
 	     theHarmonyTypes[9].max_steps=theHarmonyTypes[9].num_harmony_steps;
          for (int i=0;i<theHarmonyTypes[9].num_harmony_steps;++i)
-           theHarmonyTypes[9].harmony_steps[i] = 1+semiCircleDegrees[i]%7;
+       	   theHarmonyTypes[9].harmony_steps[i] = semiCircleDegrees[i]%8;
 
      // (harmony_type==10)  // harmonic-  C, F#, B,...  CCW by 4ths
 	    strcpy(theHarmonyTypes[10].harmony_type_desc, "circle- CCW up by 4ths" );
 		strcpy(theHarmonyTypes[10].harmony_degrees_desc, "I - IV - VII - III - VI - II - V" );
-	    theHarmonyTypes[10].num_harmony_steps=7;  // 1-7
-		theHarmonyTypes[10].min_steps=1;
-	    theHarmonyTypes[10].max_steps=theHarmonyTypes[10].num_harmony_steps;
-        for (int i=0;i<theHarmonyTypes[10].num_harmony_steps;++i)
-           theHarmonyTypes[10].harmony_steps[i] = 1+(semiCircleDegrees[7-i])%7;
-
+	    theHarmonyTypes[10].num_harmony_steps=7;  // 7-7
+		theHarmonyTypes[10].min_steps=7;  // fixed at 7 steps
+	    theHarmonyTypes[10].max_steps=7;
+	 
+		for (int i=0;i<theHarmonyTypes[10].num_harmony_steps;++i) 
+		   theHarmonyTypes[10].harmony_steps[i] = (semiCircleDegrees[theHarmonyTypes[10].num_harmony_steps-i])%8; 
+				   
      // (harmony_type==11)  // tonal+  // C, D, E, F, ...
 	    strcpy(theHarmonyTypes[11].harmony_type_desc, "tonal+" );
 		strcpy(theHarmonyTypes[11].harmony_degrees_desc, "I - II - III - IV - V - VI - VII" );
@@ -754,13 +755,14 @@ void init_harmony()
 		theHarmonyTypes[11].min_steps=1;
 	    theHarmonyTypes[11].max_steps=theHarmonyTypes[11].num_harmony_steps;
         for (int i=0;i<theHarmonyTypes[11].num_harmony_steps;++i)
+
 		    theHarmonyTypes[11].harmony_steps[i] = 1+ i%7;
 
      // (harmony_type==12)  // tonal-  // C, B, A, ...
 	     strcpy(theHarmonyTypes[12].harmony_type_desc, "tonal-" );
 		 strcpy(theHarmonyTypes[12].harmony_degrees_desc, "I - VII - VI - V - IV - III - II" );
-	     theHarmonyTypes[12].num_harmony_steps=7;  // 1-7
-		 theHarmonyTypes[12].min_steps=1;
+	     theHarmonyTypes[12].num_harmony_steps=7;  // 7
+		 theHarmonyTypes[12].min_steps=7;  // fixed at 7 steps
 	     theHarmonyTypes[12].max_steps=theHarmonyTypes[12].num_harmony_steps;
          for (int i=0;i<theHarmonyTypes[12].num_harmony_steps;++i)
 		     theHarmonyTypes[12].harmony_steps[i] = 1+ (7-i)%7;
@@ -923,8 +925,8 @@ void init_harmony()
 		// (harmony_type==22)             /* random coming home by 4ths */  // I + n and descend by 4ths
 		strcpy(theHarmonyTypes[22].harmony_type_desc, "random coming home by 4ths" );
 		strcpy(theHarmonyTypes[22].harmony_degrees_desc, "I - VI - II - V" );
-	    theHarmonyTypes[22].num_harmony_steps=5;  // 1-5
-		theHarmonyTypes[22].min_steps=1;
+	    theHarmonyTypes[22].num_harmony_steps=5;  // 5-5
+		theHarmonyTypes[22].min_steps=5;  // steps fixed at 5
 	    theHarmonyTypes[22].max_steps=theHarmonyTypes[22].num_harmony_steps;
 		theHarmonyTypes[22].harmony_steps[0]=1;
 		for (int i=1; i<theHarmonyTypes[22].num_harmony_steps; ++i)
@@ -1441,7 +1443,7 @@ void init_harmony()
        
        
 
-		// End of preset harmony types
+		// End of preset harmony types 
 }
 
 void copyHarmonyTypeToActiveHarmonyType(int harmType)
