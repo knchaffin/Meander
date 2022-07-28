@@ -1,6 +1,12 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.21 (July/Aug 2022)
+- Meander internal clock now has range of 3.75-960 BPM.  Settable via parameter knob or CV in BPM V/Oct format.
+- Elapsed time is displayed on panel in harmony preset area in format of Bars.Beats and Minutes.Seconds. Reset or RUN toggle resets elapsed time.
+- Arp patterns description texts were redone to be more intuitive.  + and - were replaced with UP and DN.  No functional change.
+- Several harmonic progression presets were corrected since they previously did not work correctly.  There is a slight chance that existing patches might behave differently, if you have changed the preset number of steps param.  No changes should sound bad.
+
 ### V2.0.20 (June 2022)
 - Added the ability to edit the "#4: custom" harmonic progression preset and have the edited data saved into the patch via JSON data at the Meander module instance level.  Note: Each patch can only have 1 user created custom progression, but multiple Meander instances in the same patch can each have their own user created custom progression.  Also note: Once the custom preset is edited, do not change the "Progression Presets" setting or the custom edit will be lost and if you return to the custom preset, it will have been reinitialized to a 16 bar "I" progression.  If you accidently do this, until you save the patch, you can reload it to restore the custom progression, assuming you have previously saved the patch with your custom progression.  Therefore, always sve a custom progression patch as soon as you have the progression as you want it.  You can always edit this custom progression later and save the patch to preserve the edit.
 - The custom progression edit code was redone to behave much more intuitively and as WYSIWYG.
