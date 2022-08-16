@@ -1,6 +1,9 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.22 (Aug 2022)
+- Slight change to harmony circle degree keyboard playing and sequencing to retrigger a degree playing, even if the degree is the same as the previous degree.
+
 ### V2.0.21 (July/Aug 2022)
 - Meander internal clock now has range of 3.75-960 BPM.  Settable via parameter knob or CV in BPM V/Oct format.
 - Elapsed time is displayed on panel in harmony preset area in format of Bars.Beats and Minutes.Seconds. Reset or RUN toggle resets elapsed time.
