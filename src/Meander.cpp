@@ -1898,6 +1898,9 @@ struct Meander : Module
 			theMeanderState.theBassParms.bar_bass_counted_note=0;
 
 			theMeanderState.theHarmonyParms.last_circle_step=-1; // for Markov chain
+			inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=-999;
+			harmonyGatePulse.reset();  // kill the pulse in case it is active
+			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 			
 			resetLight = 1.0;
 			resetPulse.trigger(0.01f);  // necessary to pass on reset below vis resetPuls.process()
@@ -2662,10 +2665,14 @@ struct Meander : Module
 						circleDegree=(float)((int)circleDegree);
 						theMeanderState.circleDegree=(int)circleDegree;
 						degreeChanged=true;
+						harmonyGatePulse.reset();  // kill the pulse in case it is active
+		            	outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 					}
 					else
 					if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
 					{
+						harmonyGatePulse.reset();  // kill the pulse in case it is active
+		            	outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
 					}
 				}
@@ -2673,6 +2680,8 @@ struct Meander : Module
 				{
 					if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
 					{
+						harmonyGatePulse.reset();  // kill the pulse in case it is active
+			            outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition=true;
 						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
 					}
@@ -2697,6 +2706,8 @@ struct Meander : Module
 					{
 						if (fgvalue==inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue)
 						{
+							harmonyGatePulse.reset();  // kill the pulse in case it is active
+		                	outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 							// was in transition but now is not
 							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].inTransition=false;
 							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue=fgvalue;
@@ -2709,6 +2720,8 @@ struct Meander : Module
 						else
 						if (fgvalue!=inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue)
 						{
+							harmonyGatePulse.reset();  // kill the pulse in case it is active
+			                outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue=fgvalue;
 						}
 					}
@@ -2716,6 +2729,8 @@ struct Meander : Module
 					{
 						if (fgvalue!=inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue)
 						{
+							harmonyGatePulse.reset();  // kill the pulse in case it is active
+			                outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].inTransition=true;
 							inportStates[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].lastValue=fgvalue;
 						}
@@ -2723,6 +2738,8 @@ struct Meander : Module
 
 					if ( (degreeChanged) || (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue))
 					{
+						harmonyGatePulse.reset();  // kill the pulse in case it is active
+			            outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
 						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
 						if (circleDegree>=0)
 							circleDegree=(float)std::fmod(std::fabs(circleDegree), 1.0f);
