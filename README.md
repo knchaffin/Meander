@@ -373,4 +373,66 @@ Note: for any of the following, you can select V7ths in Meander and it will almo
 *	    
 - Progression #59: Description=  "II - V - I cadential" a short strong cadence ascending by 4ths
 - Progression #59: Degree steps= "II - V - I" 
-	   
+*	    
+- Progression #60: Description=  "5ths cycle 1-loop" a 5ths cycle progression
+- Progression #60: Degree steps= "I - V - II - VI - III - VII - IV" 	   
+*	    
+- Progression #61: Description=  "2nds cycle 2-loop" a 2nds cycle progression
+- Progression #61: Degree steps= "I - II - III - IV - V - VI - VII" 	 
+*	    
+- Progression #62: Description=  "6ths cycle 3-loop" a 6ths cycle progression
+- Progression #62: Degree steps= "I - VI - IV - II - VII - V - III" 	 
+*	    
+- Progression #63: Description=  "3rds cycle 4-loop" a 3rds cycle progression
+- Progression #63: Degree steps= "I - III- V - VII - II - IV - VI" 	 
+*	    
+- Progression #64: Description=  "7ths cycle 5-loop" a 7ths cycle progression
+- Progression #64: Degree steps= "I - VII - VI - V - IV - III - II" 	 
+*	    
+- Progression #65: Description=  "4ths cycle 6-loop" a 4ths cycle progression
+- Progression #65: Degree steps= "I - IV - VI - III - VI - II - V" 	 
+*	    
+- Progression #66: Description=  12 bar ratchet 1" a 12 bar ratchet progression
+- Progression #66: Degree steps= "I-V-I-II-I-VI-I-III-I-VII-I-IV" 	 
+*	    
+- Progression #67: Description=  "12 bar ratchet 2" 12 bar ratchet progression
+- Progression #67: Degree steps= "I-IV-I-VII-I-III-I-VI-I-II-I-V" 	 
+*	    
+- Progression #68: Description=  "stay on I" a stay on single degree progression
+- Progression #68: Degree steps= "I" 	 
+*	    
+- Progression #69: Description=  "stay on II" a stay on single degree progression
+- Progression #69: Degree steps= "II" 	 
+*	    
+- Progression #70: Description=  "stay on III" a stay on single degree progression
+- Progression #70: Degree steps= "III" 	 
+*	    
+- Progression #71: Description=  "stay on IV" a stay on single degree progression
+- Progression #71: Degree steps= "IV" 	 
+*	    
+- Progression #72: Description=  "stay on V" a stay on single degree progression
+- Progression #72: Degree steps= "V" 	 
+*	    
+- Progression #73: Description=  "stay on VI" a stay on single degree progression
+- Progression #73: Degree steps= "VI" 	 
+*	    
+- Progression #74: Description=  "stay on VII" a stay on single degree progression
+- Progression #74: Degree steps= "VII" 	 
+*	    
+- Progression #75: Description=  "by 4ths avoid V" 
+- Progression #75: Degree steps= "I - IV - VII - III - VI - II" 
+*	    
+- Progression #76: Description=  "by 5ths avoid IV" 
+- Progression #76: Degree steps= "I - V - II - VI - III - VII" 
+*	    
+- Progression #77: Description=  ""by 4ths avoid I" 
+- Progression #77: Degree steps= "IV - VII - III - VI - II - V" 
+*	    
+- Progression #78: Description=  "by 5ths avoid I" 
+- Progression #78: Degree steps= "V - II - VI - III - VII - IV" 
+*	    
+- Progression #79: Description=  "14 bar I-VI by 4ths" 
+- Progression #79: Degree steps= "I-VI-IV-II-VII-V-III-I-VI-IV-II-VII-V-III" 
+*	    
+- Progression #80: Description=  "14 bar I-VI by 5ths" 
+- Progression #80: Degree steps= "I-VI-V-III-II-VII-VI-IV-III-I-VII-V-IV-II" 
