@@ -4376,7 +4376,7 @@ struct Meander : Module
 		configParam(CONTROL_HARMONY_VOLUME_PARAM, 0.f, 10.f, 8.0f, "Volume (0-10)");
 		configParam(CONTROL_HARMONY_STEPS_PARAM, 1.f, 16.f, 16.f, "Steps");
 		configParam(CONTROL_HARMONY_TARGETOCTAVE_PARAM, 1.f, 7.f, 3.f, "Target Octave");
-		configParam(CONTROL_HARMONY_ALPHA_PARAM, 0.f, 1.f, .9f, "Variability");
+		configParam(CONTROL_HARMONY_ALPHA_PARAM, 0.f, 1.f, .9f, "Variability"); 
 		configParam(CONTROL_HARMONY_RANGE_PARAM, 0.f, 3.f, 1.f, "Octave Range");
 		configParam(CONTROL_HARMONY_DIVISOR_PARAM, 0.f, 3.f, 0.f, "Notes Length");
 		configButton(BUTTON_ENABLE_HARMONY_ALL7THS_PARAM,  "7ths Enable/Disable");
@@ -7358,62 +7358,62 @@ struct MeanderWidget : ModuleWidget
 			//*************   Note: Each LEDButton needs its light and that light needs a unique ID, needs to be added to an array and then needs to be repositioned along with the button.  Also needs to be enumed with other lights so lights[] picks it up.
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_C_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(116.227, 37.257)), module, Meander::BUTTON_CIRCLESTEP_C_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_C_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_1]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(116.227, 37.257)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_1);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_1]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(116.227, 37.257)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_1);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_1]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_G_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(132.479, 41.32)), module, Meander::BUTTON_CIRCLESTEP_G_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_G_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_2]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(132.479, 41.32)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_2);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_2]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(132.479, 41.32)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_2);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_2]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_D_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(143.163, 52.155)), module, Meander::BUTTON_CIRCLESTEP_D_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_D_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_3]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(143.163, 52.155)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_3);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_3]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(143.163, 52.155)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_3);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_3]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_A_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(147.527, 67.353)), module, Meander::BUTTON_CIRCLESTEP_A_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_A_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_4]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(147.527, 67.353)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_4);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_4]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(147.527, 67.353)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_4);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_4]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_E_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(141.96, 83.906)), module, Meander::BUTTON_CIRCLESTEP_E_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_E_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_5]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(141.96, 83.906)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_5);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_5]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(141.96, 83.906)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_5);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_5]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_B_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(132.931, 94.44)), module, Meander::BUTTON_CIRCLESTEP_B_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_B_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_6]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(132.931, 94.44)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_6);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_6]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(132.931, 94.44)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_6);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_6]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_GBFS_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(116.378, 98.804)), module, Meander::BUTTON_CIRCLESTEP_GBFS_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_GBFS_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_7]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(116.378, 98.804)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_7);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_7]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(116.378, 98.804)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_7);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_7]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_DB_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(101.029, 93.988)), module, Meander::BUTTON_CIRCLESTEP_DB_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_DB_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_8]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(101.029, 93.988)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_8);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_8]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(101.029, 93.988)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_8);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_8]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_AB_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(91.097, 83.906)), module, Meander::BUTTON_CIRCLESTEP_AB_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_AB_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_9]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(91.097, 83.906)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_9);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_9]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(91.097, 83.906)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_9);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_9]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_EB_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(86.282, 68.106)), module, Meander::BUTTON_CIRCLESTEP_EB_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_EB_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_10]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(86.282, 68.106)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_10);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_10]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(86.282, 68.106)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_10);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_10]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_BB_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(89.743, 52.004)), module, Meander::BUTTON_CIRCLESTEP_BB_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_BB_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_11]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(189.743, 52.004)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_11);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_11]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(189.743, 52.004)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_11);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_11]);
 		
 			paramWidgets[Meander::BUTTON_CIRCLESTEP_F_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(101.781, 40.568)), module, Meander::BUTTON_CIRCLESTEP_F_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_CIRCLESTEP_F_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_12]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(101.781, 40.568)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_12);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_12]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(101.781, 40.568)), module, Meander::LIGHT_LEDBUTTON_CIRCLESTEP_12);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESTEP_12]);
 		
 	//*************
@@ -7459,109 +7459,109 @@ struct MeanderWidget : ModuleWidget
 					
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(65.197, 106.483)), module, Meander::BUTTON_HARMONY_SETSTEP_1_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_1]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(65.197, 106.483)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_1);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_1]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(65.197, 106.483)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_1);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_1]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_2_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.918, 98.02)), module, Meander::BUTTON_HARMONY_SETSTEP_2_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_2_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_2]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.918, 98.02)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_2);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_2]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.918, 98.02)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_2);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_2]);
 
 		
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_3_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(65.193, 89.271)), module, Meander::BUTTON_HARMONY_SETSTEP_3_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_3_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_3]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(65.193, 89.271)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_3);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_3]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(65.193, 89.271)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_3);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_3]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_4_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.918, 81.9233)), module, Meander::BUTTON_HARMONY_SETSTEP_4_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_4_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_4]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.918, 81.923)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_4);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_4]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.918, 81.923)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_4);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_4]);
 
 		
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_5_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(65.193, 73.184)), module, Meander::BUTTON_HARMONY_SETSTEP_5_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_5_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_5]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(65.193, 73.184)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_5);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_5]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(65.193, 73.184)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_5);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_5]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_6_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.918, 66.129)), module, Meander::BUTTON_HARMONY_SETSTEP_6_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_6_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_6]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.918, 66.129)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_6);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_6]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.918, 66.129)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_6);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_6]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_7_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(65.193, 57.944)), module, Meander::BUTTON_HARMONY_SETSTEP_7_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_7_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_7]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(65.193, 57.944)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_7);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_7]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(65.193, 57.944)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_7);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_7]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_8_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.911, 49.474)), module, Meander::BUTTON_HARMONY_SETSTEP_8_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_8_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_8]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.911, 49.474)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_8);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_8]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.911, 49.474)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_8);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_8]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_9_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(4.629, 41.011)), module, Meander::BUTTON_HARMONY_SETSTEP_9_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_9_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_9]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(4.629, 41.011)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_9);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_9]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(4.629, 41.011)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_9);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_9]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_10_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.629, 32.827)), module, Meander::BUTTON_HARMONY_SETSTEP_10_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_10_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_10]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.629, 32.827)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_10);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_10]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.629, 32.827)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_10);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_10]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_11_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.629, 24.649)), module, Meander::BUTTON_HARMONY_SETSTEP_11_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_11_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_11]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.629, 24.649)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_11);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_11]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.629, 24.649)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_11);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_11]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_12_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.632, 16.176)), module, Meander::BUTTON_HARMONY_SETSTEP_12_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_12_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_12]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_12);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_12]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_12);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_12]);
 
 		
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_13_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.632, 16.176)), module, Meander::BUTTON_HARMONY_SETSTEP_13_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_13_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_13]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_13);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_13]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_13);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_13]);
 
 		
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_14_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.632, 16.176)), module, Meander::BUTTON_HARMONY_SETSTEP_14_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_14_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_14]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_14);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_14]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_14);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_14]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_15_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.632, 16.176)), module, Meander::BUTTON_HARMONY_SETSTEP_15_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_15_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_15]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_15);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_15]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_15);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_15]);
 
 			
 			paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_16_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(64.632, 16.176)), module, Meander::BUTTON_HARMONY_SETSTEP_16_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_HARMONY_SETSTEP_16_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_16]=createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_16);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_16]=createLightCentered<MediumSimpleLight<GreenLight>>(mm2px(Vec(64.632, 16.176)), module, Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_16);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_CIRCLESETSTEP_16]);
 
 			//**********General************************
 			
 			paramWidgets[Meander::BUTTON_RUN_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(19.7, 10.45)), module, Meander::BUTTON_RUN_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_RUN_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_RUN]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(19.7, 10.45)), module, Meander::LIGHT_LEDBUTTON_RUN);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_RUN]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(19.7, 10.45)), module, Meander::LIGHT_LEDBUTTON_RUN);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_RUN]);
         
 			paramWidgets[Meander::BUTTON_RESET_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(19.7, 22.55)), module, Meander::BUTTON_RESET_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_RESET_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_RESET]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(19.7, 22.55)), module, Meander::LIGHT_LEDBUTTON_RESET);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_RESET]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(19.7, 22.55)), module, Meander::LIGHT_LEDBUTTON_RESET);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_RESET]);
          
 			paramWidgets[Meander::CONTROL_TEMPOBPM_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(8.12, 35.4)), module, Meander::CONTROL_TEMPOBPM_PARAM);
@@ -7585,7 +7585,7 @@ struct MeanderWidget : ModuleWidget
 						
 			paramWidgets[Meander::BUTTON_ENABLE_HARMONY_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(173.849, 12.622)), module, Meander::BUTTON_ENABLE_HARMONY_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_HARMONY_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_HARMONY_ENABLE]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(173.849, 12.622)), module, Meander::LIGHT_LEDBUTTON_HARMONY_ENABLE);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_HARMONY_ENABLE]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(173.849, 12.622)), module, Meander::LIGHT_LEDBUTTON_HARMONY_ENABLE);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_HARMONY_ENABLE]);
 		
 			paramWidgets[Meander::CONTROL_HARMONY_VOLUME_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(173.849, 20.384)), module, Meander::CONTROL_HARMONY_VOLUME_PARAM);
@@ -7611,17 +7611,17 @@ struct MeanderWidget : ModuleWidget
 			
 			paramWidgets[Meander::BUTTON_ENABLE_HARMONY_ALL7THS_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(173.849, 69)), module, Meander::BUTTON_ENABLE_HARMONY_ALL7THS_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_HARMONY_ALL7THS_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_ALL7THS_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(173.849, 69)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_ALL7THS_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_ALL7THS_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(173.849, 69)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_ALL7THS_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_ALL7THS_PARAM]);
 			
 			paramWidgets[Meander::BUTTON_ENABLE_HARMONY_V7THS_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(203.849, 69)), module, Meander::BUTTON_ENABLE_HARMONY_V7THS_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_HARMONY_V7THS_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(203.849, 69)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(203.849, 69)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_V7THS_PARAM]);
 			
 			paramWidgets[Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(173.849, 75)), module, Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_HARMONY_STACCATO_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(173.849, 75)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(173.849, 75)), module, Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_STACCATO_PARAM]);
 			
 			paramWidgets[Meander::CONTROL_HARMONYPRESETS_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(174.027, 81.524)), module, Meander::CONTROL_HARMONYPRESETS_PARAM);
@@ -7632,22 +7632,22 @@ struct MeanderWidget : ModuleWidget
 						
 			paramWidgets[Meander::BUTTON_ENABLE_MELODY_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(240.353, 10.986)), module, Meander::BUTTON_ENABLE_MELODY_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_MELODY_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.353, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(240.353, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE]);
 			
 			paramWidgets[Meander::BUTTON_ENABLE_MELODY_CHORDAL_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(270.353, 10.986)), module, Meander::BUTTON_ENABLE_MELODY_CHORDAL_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_MELODY_CHORDAL_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_CHORDAL]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(270.353, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_CHORDAL);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_CHORDAL]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(270.353, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_CHORDAL);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_CHORDAL]);
 			
 			paramWidgets[Meander::BUTTON_ENABLE_MELODY_SCALER_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(287.274, 10.986)), module, Meander::BUTTON_ENABLE_MELODY_SCALER_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_MELODY_SCALER_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(287.274, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(287.274, 10.986)), module, Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_ENABLE_SCALER]);
 			
 			paramWidgets[Meander::BUTTON_MELODY_DESTUTTER_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(240.409, 25.524)), module, Meander::BUTTON_MELODY_DESTUTTER_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_MELODY_DESTUTTER_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_DESTUTTER]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.409, 25.524)), module, Meander::LIGHT_LEDBUTTON_MELODY_DESTUTTER);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_DESTUTTER]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(240.409, 25.524)), module, Meander::LIGHT_LEDBUTTON_MELODY_DESTUTTER);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_MELODY_DESTUTTER]);
 			
 			paramWidgets[Meander::CONTROL_MELODY_VOLUME_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(240.353, 19.217)), module, Meander::CONTROL_MELODY_VOLUME_PARAM);
@@ -7671,17 +7671,17 @@ struct MeanderWidget : ModuleWidget
 			
 			paramWidgets[Meander::BUTTON_ENABLE_ARP_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(240.274, 62.01)), module, Meander::BUTTON_ENABLE_ARP_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_ARP_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(240.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE]);
 
 			paramWidgets[Meander::BUTTON_ENABLE_ARP_CHORDAL_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(265.274, 62.01)), module, Meander::BUTTON_ENABLE_ARP_CHORDAL_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_ARP_CHORDAL_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE_CHORDAL]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(265.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE_CHORDAL);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE_CHORDAL]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(265.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE_CHORDAL);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE_CHORDAL]);
 
 			paramWidgets[Meander::BUTTON_ENABLE_ARP_SCALER_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(283.274, 62.01)), module, Meander::BUTTON_ENABLE_ARP_SCALER_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_ARP_SCALER_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE_SCALER]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(283.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE_SCALER);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE_SCALER]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(283.274, 62.01)), module, Meander::LIGHT_LEDBUTTON_ARP_ENABLE_SCALER);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ARP_ENABLE_SCALER]);
 
 			paramWidgets[Meander::CONTROL_ARP_COUNT_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(240.274, 68.014)), module, Meander::CONTROL_ARP_COUNT_PARAM);
@@ -7690,7 +7690,7 @@ struct MeanderWidget : ModuleWidget
 			
 			paramWidgets[Meander::BUTTON_ENABLE_MELODY_STACCATO_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(240.274, 75)), module, Meander::BUTTON_ENABLE_MELODY_STACCATO_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_MELODY_STACCATO_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(240.274, 75)), module, Meander::LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(240.274, 75)), module, Meander::LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_MELODY_STACCATO_PARAM]);
 
 			paramWidgets[Meander::CONTROL_ARP_INCREMENT_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(240.256, 82.807)), module, Meander::CONTROL_ARP_INCREMENT_PARAM);
@@ -7708,7 +7708,7 @@ struct MeanderWidget : ModuleWidget
 		
 			paramWidgets[Meander::BUTTON_ENABLE_BASS_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305, 10.378)), module, Meander::BUTTON_ENABLE_BASS_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_BASS_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ENABLE]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305, 10.378)), module, Meander::LIGHT_LEDBUTTON_BASS_ENABLE);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ENABLE]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(305, 10.378)), module, Meander::LIGHT_LEDBUTTON_BASS_ENABLE);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ENABLE]);
 			
 		    paramWidgets[Meander::CONTROL_BASS_VOLUME_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(305, 21.217)), module, Meander::CONTROL_BASS_VOLUME_PARAM);
@@ -7720,22 +7720,22 @@ struct MeanderWidget : ModuleWidget
 			
 			paramWidgets[Meander::BUTTON_BASS_ACCENT_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305,  37.217)), module, Meander::BUTTON_BASS_ACCENT_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_BASS_ACCENT_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ACCENT_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305,  37.217)), module, Meander::LIGHT_LEDBUTTON_BASS_ACCENT_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ACCENT_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(305,  37.217)), module, Meander::LIGHT_LEDBUTTON_BASS_ACCENT_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_ACCENT_PARAM]);
 			
 			paramWidgets[Meander::BUTTON_BASS_SYNCOPATE_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305,  45.217)), module, Meander::BUTTON_BASS_SYNCOPATE_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_BASS_SYNCOPATE_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_SYNCOPATE_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305,  45.217)), module, Meander::LIGHT_LEDBUTTON_BASS_SYNCOPATE_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_SYNCOPATE_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(305,  45.217)), module, Meander::LIGHT_LEDBUTTON_BASS_SYNCOPATE_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_SYNCOPATE_PARAM]);
 			
 			paramWidgets[Meander::BUTTON_BASS_SHUFFLE_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305,  53.217)), module, Meander::BUTTON_BASS_SHUFFLE_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_BASS_SHUFFLE_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_SHUFFLE_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305,  53.217)), module, Meander::LIGHT_LEDBUTTON_BASS_SHUFFLE_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_SHUFFLE_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(305,  53.217)), module, Meander::LIGHT_LEDBUTTON_BASS_SHUFFLE_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_SHUFFLE_PARAM]);
 			
 			paramWidgets[Meander::BUTTON_BASS_OCTAVES_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305,  53.217)), module, Meander::BUTTON_BASS_OCTAVES_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_BASS_OCTAVES_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305,  74.076)), module, Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(305,  74.076)), module, Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_BASS_OCTAVES_PARAM]);
 			
 			paramWidgets[Meander::CONTROL_BASS_DIVISOR_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(305, 61.217)), module, Meander::CONTROL_BASS_DIVISOR_PARAM);
@@ -7744,19 +7744,19 @@ struct MeanderWidget : ModuleWidget
 			
 			paramWidgets[Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(305, 88.859)), module, Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_BASS_STACCATO_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(305, 70)), module, Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(305, 70)), module, Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_BASS_STACCATO_PARAM]);
 
 	//************************		
 
 			paramWidgets[Meander::BUTTON_ENABLE_KEYBOARD_RENDER_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(880, 12)), module, Meander::BUTTON_ENABLE_KEYBOARD_RENDER_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_KEYBOARD_RENDER_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_KEYBOARD_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(1000, 10)), module, Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_KEYBOARD_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_KEYBOARD_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(1000, 10)), module, Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_KEYBOARD_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_KEYBOARD_PARAM]);
 
 			paramWidgets[Meander::BUTTON_ENABLE_SCORE_RENDER_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(880, 30)), module, Meander::BUTTON_ENABLE_SCORE_RENDER_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_ENABLE_SCORE_RENDER_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_SCORE_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(1000, 200)), module, Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_SCORE_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_SCORE_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(1000, 200)), module, Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_SCORE_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_RENDER_SCORE_PARAM]);
 
 			//**************fBm************************
@@ -7786,7 +7786,7 @@ struct MeanderWidget : ModuleWidget
 
 			paramWidgets[Meander::BUTTON_PROG_STEP_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(350, 250)), module, Meander::BUTTON_PROG_STEP_PARAM);
 			addParam(paramWidgets[Meander::BUTTON_PROG_STEP_PARAM]);
-			lightWidgets[Meander::LIGHT_LEDBUTTON_PROG_STEP_PARAM]=createLightCentered<MediumLight<RedLight>>(mm2px(Vec(350, 250)), module, Meander::LIGHT_LEDBUTTON_PROG_STEP_PARAM);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_PROG_STEP_PARAM]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(350, 250)), module, Meander::LIGHT_LEDBUTTON_PROG_STEP_PARAM);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_PROG_STEP_PARAM]);
 			
 					 

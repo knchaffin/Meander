@@ -18,7 +18,7 @@ using namespace rack;
 #define MAX_STEPS 16
 #define MAX_CIRCLE_STATIONS 12
 #define MAX_HARMONIC_DEGREES 7
-#define MAX_AVAILABLE_HARMONY_PRESETS 59  // change this as new harmony presets are created
+#define MAX_AVAILABLE_HARMONY_PRESETS 80  // change this as new harmony presets are created 
 
 #define MAX_PARAMS 200
 #define MAX_INPORTS 100

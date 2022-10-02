@@ -880,7 +880,7 @@ void init_harmony()
        
 
     // (harmony_type==19)             /* Rock1     */
-		strcpy(theHarmonyTypes[19].harmony_type_desc, "rock" );
+		strcpy(theHarmonyTypes[19].harmony_type_desc, "rock plagal cadence" );  // a plagal cadence
 		strcpy(theHarmonyTypes[19].harmony_degrees_desc, "I - IV" );
 	    meter_numerator=4;
         meter_denominator=4;
@@ -1440,8 +1440,285 @@ void init_harmony()
         theHarmonyTypes[59].harmony_steps[0]=2;
         theHarmonyTypes[59].harmony_steps[1]=5;
         theHarmonyTypes[59].harmony_steps[2]=1;
+
+		//********* Cycle Progressions of 7 steps where each step is a fixed degree and 7 steps returns to the starting point going around the circle n-cycle times
+
+		// (harmony_type==60)             /* 5ths cycle progression */
+	    strcpy(theHarmonyTypes[60].harmony_type_desc, "5ths cycle 1-loop" );
+		strcpy(theHarmonyTypes[60].harmony_degrees_desc, "I - V - II - VI - III - VII - IV" );
+	    theHarmonyTypes[60].num_harmony_steps=7;
+		theHarmonyTypes[60].min_steps=1;
+	    theHarmonyTypes[60].max_steps=theHarmonyTypes[60].num_harmony_steps; 
+        theHarmonyTypes[60].harmony_steps[0]=1;
+        theHarmonyTypes[60].harmony_steps[1]=5;
+        theHarmonyTypes[60].harmony_steps[2]=2;
+		theHarmonyTypes[60].harmony_steps[3]=6;
+        theHarmonyTypes[60].harmony_steps[4]=3;
+        theHarmonyTypes[60].harmony_steps[5]=7;
+		theHarmonyTypes[60].harmony_steps[6]=4;
+
+		// (harmony_type==61)             /* 2nds cycle progression */
+	    strcpy(theHarmonyTypes[61].harmony_type_desc, "2nds cycle 2-loop" );
+		strcpy(theHarmonyTypes[61].harmony_degrees_desc, "I - II - III - IV - V - VI - VII" );
+	    theHarmonyTypes[61].num_harmony_steps=7;
+		theHarmonyTypes[61].min_steps=1;
+	    theHarmonyTypes[61].max_steps=theHarmonyTypes[61].num_harmony_steps; 
+        theHarmonyTypes[61].harmony_steps[0]=1;
+        theHarmonyTypes[61].harmony_steps[1]=2;
+        theHarmonyTypes[61].harmony_steps[2]=3;
+		theHarmonyTypes[61].harmony_steps[3]=4;
+        theHarmonyTypes[61].harmony_steps[4]=5;
+        theHarmonyTypes[61].harmony_steps[5]=6;
+		theHarmonyTypes[61].harmony_steps[6]=7;
+
+		// (harmony_type==62)             /* 6ths cycle progression */
+	    strcpy(theHarmonyTypes[62].harmony_type_desc, "6ths cycle 3-loop" );
+		strcpy(theHarmonyTypes[62].harmony_degrees_desc, "I - VI - IV - II - VII - V - III" );
+	    theHarmonyTypes[62].num_harmony_steps=7;
+		theHarmonyTypes[62].min_steps=1;
+	    theHarmonyTypes[62].max_steps=theHarmonyTypes[62].num_harmony_steps; 
+        theHarmonyTypes[62].harmony_steps[0]=1;
+        theHarmonyTypes[62].harmony_steps[1]=6;
+        theHarmonyTypes[62].harmony_steps[2]=4;
+		theHarmonyTypes[62].harmony_steps[3]=2;
+        theHarmonyTypes[62].harmony_steps[4]=7;
+        theHarmonyTypes[62].harmony_steps[5]=5;
+		theHarmonyTypes[62].harmony_steps[6]=3;
        
-       
+        // (harmony_type==63)             /* 3rds cycle progression */
+	    strcpy(theHarmonyTypes[63].harmony_type_desc, "3rds cycle 4-loop" );
+		strcpy(theHarmonyTypes[63].harmony_degrees_desc, "I - III- V - VII - II - IV - VI" );
+	    theHarmonyTypes[63].num_harmony_steps=7;
+		theHarmonyTypes[63].min_steps=1;
+	    theHarmonyTypes[63].max_steps=theHarmonyTypes[63].num_harmony_steps; 
+        theHarmonyTypes[63].harmony_steps[0]=1;
+        theHarmonyTypes[63].harmony_steps[1]=3;
+        theHarmonyTypes[63].harmony_steps[2]=5;
+		theHarmonyTypes[63].harmony_steps[3]=7;
+        theHarmonyTypes[63].harmony_steps[4]=2;
+        theHarmonyTypes[63].harmony_steps[5]=4;
+		theHarmonyTypes[63].harmony_steps[6]=6;
+
+		// (harmony_type==64)             /* 7ths cycle progression */
+	    strcpy(theHarmonyTypes[64].harmony_type_desc, "7ths cycle 5-loop" );
+		strcpy(theHarmonyTypes[64].harmony_degrees_desc, "I - VII - VI - V - IV - III - II" );
+	    theHarmonyTypes[64].num_harmony_steps=7;
+		theHarmonyTypes[64].min_steps=1;
+	    theHarmonyTypes[64].max_steps=theHarmonyTypes[64].num_harmony_steps; 
+        theHarmonyTypes[64].harmony_steps[0]=1;
+        theHarmonyTypes[64].harmony_steps[1]=7;
+        theHarmonyTypes[64].harmony_steps[2]=6;
+		theHarmonyTypes[64].harmony_steps[3]=5;
+        theHarmonyTypes[64].harmony_steps[4]=4;
+        theHarmonyTypes[64].harmony_steps[5]=3;
+		theHarmonyTypes[64].harmony_steps[6]=2;
+
+		// (harmony_type==65)             /* 4ths cycle progression */
+	    strcpy(theHarmonyTypes[65].harmony_type_desc, "4ths cycle 6-loop" );
+		strcpy(theHarmonyTypes[65].harmony_degrees_desc, "I - IV - VI - III - VI - II - V" );
+	    theHarmonyTypes[65].num_harmony_steps=7;
+		theHarmonyTypes[65].min_steps=1;
+	    theHarmonyTypes[65].max_steps=theHarmonyTypes[65].num_harmony_steps; 
+        theHarmonyTypes[65].harmony_steps[0]=1;
+        theHarmonyTypes[65].harmony_steps[1]=4;
+        theHarmonyTypes[65].harmony_steps[2]=7;
+		theHarmonyTypes[65].harmony_steps[3]=3;
+        theHarmonyTypes[65].harmony_steps[4]=6;
+        theHarmonyTypes[65].harmony_steps[5]=2;
+		theHarmonyTypes[65].harmony_steps[6]=5;
+
+		//***************
+
+		// (harmony_type==66)             /* 12 bar ratchet progression*/
+	    strcpy(theHarmonyTypes[66].harmony_type_desc, "12 bar ratchet 1" );
+		strcpy(theHarmonyTypes[66].harmony_degrees_desc, "I-V-I-II-I-VI-I-III-I-VII-I-IV" );
+	    theHarmonyTypes[66].num_harmony_steps=12;
+		theHarmonyTypes[66].min_steps=1;
+	    theHarmonyTypes[66].max_steps=theHarmonyTypes[66].num_harmony_steps; 
+        theHarmonyTypes[66].harmony_steps[0]=1;
+        theHarmonyTypes[66].harmony_steps[1]=5;
+        theHarmonyTypes[66].harmony_steps[2]=1;
+        theHarmonyTypes[66].harmony_steps[3]=2;
+        theHarmonyTypes[66].harmony_steps[4]=1;
+        theHarmonyTypes[66].harmony_steps[5]=6;
+        theHarmonyTypes[66].harmony_steps[6]=1;
+        theHarmonyTypes[66].harmony_steps[7]=3;
+        theHarmonyTypes[66].harmony_steps[8]=1;
+        theHarmonyTypes[66].harmony_steps[9]=7;
+        theHarmonyTypes[66].harmony_steps[10]=1;
+	    theHarmonyTypes[66].harmony_steps[11]=4;
+
+		// (harmony_type==67)             /* 12 bar ratchet progression*/
+	    strcpy(theHarmonyTypes[67].harmony_type_desc, "12 bar ratchet 2" );
+		strcpy(theHarmonyTypes[67].harmony_degrees_desc, "I-IV-I-VII-I-III-I-VI-I-II-I-V" );
+	    theHarmonyTypes[67].num_harmony_steps=12;
+		theHarmonyTypes[67].min_steps=1;
+	    theHarmonyTypes[67].max_steps=theHarmonyTypes[67].num_harmony_steps; 
+        theHarmonyTypes[67].harmony_steps[0]=1;
+        theHarmonyTypes[67].harmony_steps[1]=4;
+        theHarmonyTypes[67].harmony_steps[2]=1;
+        theHarmonyTypes[67].harmony_steps[3]=7;
+        theHarmonyTypes[67].harmony_steps[4]=1;
+        theHarmonyTypes[67].harmony_steps[5]=3;
+        theHarmonyTypes[67].harmony_steps[6]=1;
+        theHarmonyTypes[67].harmony_steps[7]=6;
+        theHarmonyTypes[67].harmony_steps[8]=1;
+        theHarmonyTypes[67].harmony_steps[9]=2;
+        theHarmonyTypes[67].harmony_steps[10]=1;
+	    theHarmonyTypes[67].harmony_steps[11]=5;
+
+		// (harmony_type==68)             /* stay on I*/
+		strcpy(theHarmonyTypes[68].harmony_type_desc, "stay on I" );
+		strcpy(theHarmonyTypes[68].harmony_degrees_desc, "I" );
+	    theHarmonyTypes[68].num_harmony_steps=1; // steps fixed at 1
+		theHarmonyTypes[68].min_steps=1;
+	    theHarmonyTypes[68].max_steps=theHarmonyTypes[68].num_harmony_steps;
+        theHarmonyTypes[68].harmony_steps[0]=1;
+
+		// (harmony_type==69)             /* stay on II*/
+		strcpy(theHarmonyTypes[69].harmony_type_desc, "stay on II" );
+		strcpy(theHarmonyTypes[69].harmony_degrees_desc, "II" );
+	    theHarmonyTypes[69].num_harmony_steps=1; // steps fixed at 1
+		theHarmonyTypes[69].min_steps=1;
+	    theHarmonyTypes[69].max_steps=theHarmonyTypes[69].num_harmony_steps;
+        theHarmonyTypes[69].harmony_steps[0]=2;
+
+		// (harmony_type==70)             /* stay on III*/
+		strcpy(theHarmonyTypes[70].harmony_type_desc, "stay on III" );
+		strcpy(theHarmonyTypes[70].harmony_degrees_desc, "III" );
+	    theHarmonyTypes[70].num_harmony_steps=1; // steps fixed at 1
+		theHarmonyTypes[70].min_steps=1;
+	    theHarmonyTypes[70].max_steps=theHarmonyTypes[70].num_harmony_steps;
+        theHarmonyTypes[70].harmony_steps[0]=3;
+
+		// (harmony_type==71)             /* stay on IV*/
+		strcpy(theHarmonyTypes[71].harmony_type_desc, "stay on IV" );
+		strcpy(theHarmonyTypes[71].harmony_degrees_desc, "IV" );
+	    theHarmonyTypes[71].num_harmony_steps=1; // steps fixed at 1
+		theHarmonyTypes[71].min_steps=1;
+	    theHarmonyTypes[71].max_steps=theHarmonyTypes[71].num_harmony_steps;
+        theHarmonyTypes[71].harmony_steps[0]=4;
+
+		// (harmony_type==72)             /* stay on V*/
+		strcpy(theHarmonyTypes[72].harmony_type_desc, "stay on V" );
+		strcpy(theHarmonyTypes[72].harmony_degrees_desc, "V" );
+	    theHarmonyTypes[72].num_harmony_steps=1; // steps fixed at 1
+		theHarmonyTypes[72].min_steps=1;
+	    theHarmonyTypes[72].max_steps=theHarmonyTypes[72].num_harmony_steps;
+        theHarmonyTypes[72].harmony_steps[0]=5;
+
+		// (harmony_type==73)             /* stay on VI*/
+		strcpy(theHarmonyTypes[73].harmony_type_desc, "stay on VI" );
+		strcpy(theHarmonyTypes[73].harmony_degrees_desc, "VI" );
+	    theHarmonyTypes[73].num_harmony_steps=1; // steps fixed at 1
+		theHarmonyTypes[73].min_steps=1;
+	    theHarmonyTypes[73].max_steps=theHarmonyTypes[73].num_harmony_steps;
+        theHarmonyTypes[73].harmony_steps[0]=6;
+
+		// (harmony_type==74)             /* stay on VII*/
+		strcpy(theHarmonyTypes[74].harmony_type_desc, "stay on VII" );
+		strcpy(theHarmonyTypes[74].harmony_degrees_desc, "VII" );
+	    theHarmonyTypes[74].num_harmony_steps=1; // steps fixed at 1
+		theHarmonyTypes[74].min_steps=1;
+	    theHarmonyTypes[74].max_steps=theHarmonyTypes[74].num_harmony_steps;
+        theHarmonyTypes[74].harmony_steps[0]=7;
+
+		// Avoids
+
+		// (harmony_type==75)             /* by 4ths avoid V */
+	    strcpy(theHarmonyTypes[75].harmony_type_desc, "by 4ths avoid V" );
+		strcpy(theHarmonyTypes[75].harmony_degrees_desc, "I - IV - VII - III - VI - II" );
+	    theHarmonyTypes[75].num_harmony_steps=6;
+		theHarmonyTypes[75].min_steps=1;
+	    theHarmonyTypes[75].max_steps=theHarmonyTypes[75].num_harmony_steps; 
+        theHarmonyTypes[75].harmony_steps[0]=1;
+        theHarmonyTypes[75].harmony_steps[1]=4;
+        theHarmonyTypes[75].harmony_steps[2]=7;
+		theHarmonyTypes[75].harmony_steps[3]=3;
+        theHarmonyTypes[75].harmony_steps[4]=6;
+        theHarmonyTypes[75].harmony_steps[5]=2;
+
+		// (harmony_type==76)             /* by 5ths avoid IV */
+	    strcpy(theHarmonyTypes[76].harmony_type_desc, "by 5ths avoid IV" );
+		strcpy(theHarmonyTypes[76].harmony_degrees_desc, "I - V - II - VI - III - VII" );
+	    theHarmonyTypes[76].num_harmony_steps=6;
+		theHarmonyTypes[76].min_steps=1;
+	    theHarmonyTypes[76].max_steps=theHarmonyTypes[76].num_harmony_steps; 
+        theHarmonyTypes[76].harmony_steps[0]=1;
+        theHarmonyTypes[76].harmony_steps[1]=5;
+        theHarmonyTypes[76].harmony_steps[2]=2;
+		theHarmonyTypes[76].harmony_steps[3]=6;
+        theHarmonyTypes[76].harmony_steps[4]=3;
+        theHarmonyTypes[76].harmony_steps[5]=7;
+
+		// (harmony_type==77)             /* by 4ths avoid I */
+	    strcpy(theHarmonyTypes[77].harmony_type_desc, "by 4ths avoid I" );
+		strcpy(theHarmonyTypes[77].harmony_degrees_desc, "IV - VII - III - VI - II - V" );
+	    theHarmonyTypes[77].num_harmony_steps=6;
+		theHarmonyTypes[77].min_steps=1;
+	    theHarmonyTypes[77].max_steps=theHarmonyTypes[77].num_harmony_steps; 
+        theHarmonyTypes[77].harmony_steps[0]=4;
+        theHarmonyTypes[77].harmony_steps[1]=7;
+        theHarmonyTypes[77].harmony_steps[2]=3;
+		theHarmonyTypes[77].harmony_steps[3]=6;
+        theHarmonyTypes[77].harmony_steps[4]=2;
+        theHarmonyTypes[77].harmony_steps[5]=5;
+	
+		// (harmony_type==78)             /* by 5ths avoid I */  
+	    strcpy(theHarmonyTypes[78].harmony_type_desc, "by 5ths avoid I" );
+		strcpy(theHarmonyTypes[78].harmony_degrees_desc, "V - II - VI - III - VII - IV" );
+	    theHarmonyTypes[78].num_harmony_steps=6;
+		theHarmonyTypes[78].min_steps=1;
+	    theHarmonyTypes[78].max_steps=theHarmonyTypes[78].num_harmony_steps; 
+        theHarmonyTypes[78].harmony_steps[0]=5;
+        theHarmonyTypes[78].harmony_steps[1]=2;
+        theHarmonyTypes[78].harmony_steps[2]=6;
+		theHarmonyTypes[78].harmony_steps[3]=3;
+        theHarmonyTypes[78].harmony_steps[4]=7;
+        theHarmonyTypes[78].harmony_steps[5]=4;
+
+		// (harmony_type==79)             /* 14 bar I-VI by 4ths*/
+	    strcpy(theHarmonyTypes[79].harmony_type_desc, "14 bar I-VI by 4ths" );
+		strcpy(theHarmonyTypes[79].harmony_degrees_desc, "I-VI-IV-II-VII-V-III-I-VI-IV-II-VII-V-III" );
+	    theHarmonyTypes[79].num_harmony_steps=14;
+		theHarmonyTypes[79].min_steps=1;
+	    theHarmonyTypes[79].max_steps=theHarmonyTypes[79].num_harmony_steps; 
+        theHarmonyTypes[79].harmony_steps[0]=1;
+        theHarmonyTypes[79].harmony_steps[1]=6;
+        theHarmonyTypes[79].harmony_steps[2]=4;
+        theHarmonyTypes[79].harmony_steps[3]=2;
+        theHarmonyTypes[79].harmony_steps[4]=7;
+        theHarmonyTypes[79].harmony_steps[5]=5;
+        theHarmonyTypes[79].harmony_steps[6]=3;
+        theHarmonyTypes[79].harmony_steps[7]=1;
+        theHarmonyTypes[79].harmony_steps[8]=6;
+        theHarmonyTypes[79].harmony_steps[9]=4;
+        theHarmonyTypes[79].harmony_steps[10]=2;
+	    theHarmonyTypes[79].harmony_steps[11]=7;
+		theHarmonyTypes[79].harmony_steps[12]=5;
+	    theHarmonyTypes[79].harmony_steps[13]=3;
+
+		// (harmony_type==80)             /* 14 bar I-VI by 5ths*/
+	    strcpy(theHarmonyTypes[80].harmony_type_desc, "14 bar I-VI by 5ths" );
+		strcpy(theHarmonyTypes[80].harmony_degrees_desc, "I-VI-V-III-II-VII-VI-IV-III-I-VII-V-IV-II" );
+	    theHarmonyTypes[80].num_harmony_steps=14;
+		theHarmonyTypes[80].min_steps=1;
+	    theHarmonyTypes[80].max_steps=theHarmonyTypes[80].num_harmony_steps; 
+        theHarmonyTypes[80].harmony_steps[0]=1;
+        theHarmonyTypes[80].harmony_steps[1]=6;
+        theHarmonyTypes[80].harmony_steps[2]=5;
+        theHarmonyTypes[80].harmony_steps[3]=3;
+        theHarmonyTypes[80].harmony_steps[4]=2;
+        theHarmonyTypes[80].harmony_steps[5]=7;
+        theHarmonyTypes[80].harmony_steps[6]=6;
+        theHarmonyTypes[80].harmony_steps[7]=4;
+        theHarmonyTypes[80].harmony_steps[8]=3;
+        theHarmonyTypes[80].harmony_steps[9]=1;
+        theHarmonyTypes[80].harmony_steps[10]=7;
+	    theHarmonyTypes[80].harmony_steps[11]=5;
+		theHarmonyTypes[80].harmony_steps[12]=4;
+	    theHarmonyTypes[80].harmony_steps[13]=2;
+		
 
 		// End of preset harmony types 
 }
