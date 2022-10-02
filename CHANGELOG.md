@@ -1,6 +1,11 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.23 (Oct 2022)
+- Panel lit buttonw were changed from 3D to flat shading based on suggestion by David Grande.
+- 21 new harmonic progression presets were added, #60-#80 .  Many of these are targeted towards ambient music.  See the end of the manual for the updated preset list and descriptions.
+- Addition of the new presets breaks the preset CV input control due to a different scaling required for more parameter choices.  I'm not sure anyone is using this as it doesn't make a lot of sense to CV select the preset.  I've done that via sequencing, but the results were not too functional.
+
 ### V2.0.22 (Aug 2022)
 - Slight change to harmony circle degree keyboard playing and sequencing to retrigger a degree playing, even if the degree is the same as the previous degree.
 
