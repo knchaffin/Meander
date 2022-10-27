@@ -193,13 +193,16 @@ struct HarmonyParms
 	int last_chord_type=0;
 	bool last_chord_playing=false;
 	int bar_harmony_chords_counted_note=0;
-	bool enable_all_7ths=false;
+	bool enable_all_7ths=false;  // actually all "nice 7ths" based on common practice  
 	bool enable_V_7ths=false;
+	bool enable_4voice_octaves=false;  // octave chord is a triad with the root raised by an octave and addeed as 4th note
     bool enable_staccato=false;
 	int pending_step_edit=0;
 	struct note last[4];
 	float lastCircleDegreeIn=0;
 	int STEP_inport_connected_to_Meander_trigger_port=0;
+	bool send_tonic_on_first_channel=true; // else send bass on first channel. Default for histrorical reasons
+	bool send_bass_on_first_channel=false; // else send tonic on first channel
 };  
 
 struct MelodyParms  
@@ -273,11 +276,14 @@ struct MeanderState
 	ArpParms theArpParms;
 	bool userControllingHarmonyFromCircle=false;
 	int last_harmony_chord_root_note=0;
+	int last_harmony_chord_bass_note=0;
 	int last_harmony_step=0;
 	int circleDegree=1;
 	bool userControllingMelody=false;
 	bool renderKeyboardEnabled=true;
 	bool renderScoreEnabled=true;
+	bool RootInputSuppliedByRootOutput=false;
+	bool ModeInputSuppliedByModeOutput=false;
 }	theMeanderState;
 
  
