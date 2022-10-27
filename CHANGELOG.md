@@ -1,6 +1,16 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.24 (Oct/Nov 2022)
+- Added panel harmony 4-voice octave chords option.  These are the triad with the tonic being raised an octave and added as 4th note.  Clicking button toggles between Nice 7ths, V 7ths, 4-voice octave chords or triad chords (no button lit).
+- Added panel harmony toggle between "Tonic on ch1" and "Bass on ch1" of the 1v/oct chords output.  This is so the bass can always be reliably located on ch1 if desired, for extracting basslines, etc.
+- Added panel Mode output for chaining to other Meander instance Mode input. The Mode input handling was modified to detect input from another Meander instance and interpret correctly rather than default CV handling.
+- Modified panel Root input handling so Meander can chain Root to other Meander instances and interpret this correctly rather than default CV handling.
+- Added circle of 5ths inner circle 1V/Deg output in addition to the existing 1V/Deg input.  This can feed to another Meander instance 1V/Deg input.  The default 1V/Deg output range is 1-7V (1V= Degree I, 2V=Degree II .... 7V=Degree VII) for connection to another Meander instance 1V/Deg circle degree input.
+- Added an options menu "Harmonic Degree Output Range" toggle between 1-7V and 0-6V.  At the present time, only the Aaron Static DiatonicCV module can understand harmonic degree and requires a 0-6V range where (0V=Degree I, 1v= Degree II, .... 6v=Degree VII.
+- A few panel cosmetic changes were made for readability.
+- Relabeled the Melody part "Degree" input as "1V/DEG".  These scale degrees (such as 3rds. 5ths, etc.)
+
 ### V2.0.23 (Oct 2022)
 - Panel lit buttonw were changed from 3D to flat shading based on suggestion by David Grande.
 - 21 new harmonic progression presets were added, #60-#80 .  Many of these are targeted towards ambient music.  See the end of the manual for the updated preset list and descriptions.
