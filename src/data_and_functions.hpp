@@ -14,6 +14,8 @@ You should have received a copy of the GNU General Public License along with thi
 bool moduleVarsInitialized=false;  //  initialized only during Module()
 bool patchDataLoaded=false;  // set true in dataFromJson()
 
+bool randEnqueued=false;
+
 struct inPortState 
 {
 	bool inTransition=false;

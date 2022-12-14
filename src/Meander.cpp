@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2022 Ken Chaffin
+/*  Copyright (C) 2019-2022 Ken ChaffintheArpParms
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -36,7 +36,7 @@ struct Meander : Module
 	bool polyQuant_outputNotes[24];
 
 	int MeanderScale[7]; // heptatonic scale
-
+	
 	void onResetScale()
 	{
 		    // send ROOT output here to make sure it is initalized and updated
@@ -304,6 +304,8 @@ struct Meander : Module
 
 		BUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM,
 		BUTTON_ENABLE_HARMONY_BASS_ON_CH1_PARAM,
+
+		BUTTON_RAND_PARAM,
 		
 		NUM_PARAMS
 	};
@@ -389,6 +391,8 @@ struct Meander : Module
 
 		IN_ENABLE_HARMONY_TONIC_ON_CH1_EXT_CV,
 		IN_ENABLE_HARMONY_BASS_ON_CH1_EXT_CV,
+
+		IN_RAND_EXT_CV,
 		
 		NUM_INPUTS
 		
@@ -507,6 +511,8 @@ struct Meander : Module
 
 		LIGHT_LEDBUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM,
 		LIGHT_LEDBUTTON_ENABLE_HARMONY_BASS_ON_CH1_PARAM,
+
+		LIGHT_LEDBUTTON_RAND,
 		
 		NUM_LIGHTS
 	};
@@ -1339,11 +1345,16 @@ struct Meander : Module
 	dsp::SchmittTrigger ext_run_trig;
 	dsp::SchmittTrigger reset_btn_trig;
 	dsp::SchmittTrigger reset_ext_trig;
+	dsp::SchmittTrigger rand_btn_trig;
+	dsp::SchmittTrigger rand_ext_trig;
 	dsp::SchmittTrigger bpm_mode_trig;
 	dsp::SchmittTrigger step_button_trig;
 
 	dsp::PulseGenerator resetPulse;
 	bool reset_pulse = false;
+
+	dsp::PulseGenerator randPulse;
+	bool rand_pulse = false;
 
 	dsp::PulseGenerator runPulse;
 	bool run_pulse = false;
@@ -1369,6 +1380,7 @@ struct Meander : Module
 
 	const float lightLambda = 0.075f;
 	float resetLight = 0.0f;
+	float randLight = 0.0f;
 	float stepLight = 0.0f;
 
 	bool running = true;
@@ -1461,8 +1473,50 @@ struct Meander : Module
 
 	bool time_sig_changed=false;
 	bool reset_enqueued=false;
+//	bool rand_enqueued=false;
 
 	int override_step=1;
+	
+	void onRandomize(const RandomizeEvent& e) override {
+		for (int i=0; i<NUM_PARAMS; ++i) 
+		{
+			if (getParamQuantity(i)->randomizeEnabled)
+			{
+				if  (i==CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM)
+				{
+					getParamQuantity(i)->randomize(); // this should do a setValue() for knob param
+					float fvalue=params[CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM].getValue();
+					int ivalue=(int)fvalue;
+					ivalue=pow(2,ivalue);
+				    theMeanderState.theMelodyParms.note_length_divisor=ivalue;  
+				}
+				else
+				if (i==CONTROL_ARP_COUNT_PARAM) 
+				{
+					// need to do CONTROL_ARP_INCREMENT_PARAM first
+					theMeanderState.theArpParms.note_length_divisor = (theMeanderState.theMelodyParms.note_length_divisor*4);
+					theMeanderState.theArpParms.note_length_divisor = clamp(theMeanderState.theArpParms.note_length_divisor, 1, 32);
+					int exp=(int)log2((float)theMeanderState.theArpParms.note_length_divisor);
+					int newValue=(int)exp;
+					params[CONTROL_ARP_INCREMENT_PARAM].setValue(newValue);
+			
+					//*********  now we cam do CONTROL_ARP_COUNT_PARAM
+
+				    theMeanderState.theArpParms.count = (theMeanderState.theArpParms.note_length_divisor/theMeanderState.theMelodyParms.note_length_divisor)-1;
+					params[CONTROL_ARP_COUNT_PARAM].setValue((float)theMeanderState.theArpParms.count);
+				}
+				else
+				if (i==CONTROL_ARP_INCREMENT_PARAM)
+				{
+				  // actually done in i==CONTROL_ARP_COUNT_PARAM
+				}
+				else
+					getParamQuantity(i)->randomize();
+			}
+		}
+		// Call super method if you wish to include default behavior
+	    // Module::onRandomize(e);
+	}
 
     // save button states
 	json_t *dataToJson() override {
@@ -2033,6 +2087,17 @@ struct Meander : Module
 		reset_pulse = resetPulse.process(1.0 / args.sampleRate);
   		outputs[OUT_RESET_OUT].setVoltage((reset_pulse ? 10.0f : 0.0f));
         
+	    if (rand_btn_trig.process(params[BUTTON_RAND_PARAM].getValue() || inputs[IN_RAND_EXT_CV].getVoltage() )) 
+		{
+			randEnqueued=true;
+			inportStates[IN_RAND_EXT_CV].lastValue=-999;
+			randLight = 1.0;
+			randPulse.trigger(0.01f);  
+		}
+
+		randLight -= randLight / lightLambda / args.sampleRate;
+		lights[LIGHT_LEDBUTTON_RAND].setBrightness(randLight); 
+		rand_pulse = randPulse.process(1.0 / args.sampleRate);
 	
 		if ((step_button_trig.process(params[BUTTON_PROG_STEP_PARAM].getValue() || (  inputs[IN_PROG_STEP_EXT_CV].isConnected()  &&  (inputs[IN_PROG_STEP_EXT_CV].getVoltage() > 0.))))) 
 		{
@@ -2519,19 +2584,30 @@ struct Meander : Module
 
 		if (HarmonyEnableTonicOnCh1Toggle.process(params[BUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM ].getValue())) 
 		{
-			theMeanderState.theHarmonyParms.send_tonic_on_first_channel = !theMeanderState.theHarmonyParms.send_tonic_on_first_channel;
 			if (theMeanderState.theHarmonyParms.send_tonic_on_first_channel)
 			{
+				theMeanderState.theHarmonyParms.send_tonic_on_first_channel=false;
+				theMeanderState.theHarmonyParms.send_bass_on_first_channel=true;
+			}
+			else
+			{
+				theMeanderState.theHarmonyParms.send_tonic_on_first_channel=true;
 				theMeanderState.theHarmonyParms.send_bass_on_first_channel=false;
 			}
+
 		}
 		lights[LIGHT_LEDBUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM].setBrightness(theMeanderState.theHarmonyParms.send_tonic_on_first_channel ? 1.0f : 0.0f); 
 
 		if (HarmonyEnableBassOnCh1Toggle.process(params[BUTTON_ENABLE_HARMONY_BASS_ON_CH1_PARAM ].getValue())) 
 		{
-			theMeanderState.theHarmonyParms.send_bass_on_first_channel = !theMeanderState.theHarmonyParms.send_bass_on_first_channel;
 			if (theMeanderState.theHarmonyParms.send_bass_on_first_channel)
 			{
+				theMeanderState.theHarmonyParms.send_bass_on_first_channel=false;
+				theMeanderState.theHarmonyParms.send_tonic_on_first_channel=true;
+			}
+			else
+			{
+				theMeanderState.theHarmonyParms.send_bass_on_first_channel=true;
 				theMeanderState.theHarmonyParms.send_tonic_on_first_channel=false;
 			}
 		}
@@ -2890,7 +2966,7 @@ struct Meander : Module
 						}
 					}
 
-					if ( (degreeChanged) || (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue))
+					if ( (degreeChanged) || (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)) 
 					{
 						harmonyGatePulse.reset();  // kill the pulse in case it is active
 			            outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
@@ -3037,6 +3113,7 @@ struct Meander : Module
 
 				theMeanderState.theArpParms.note_length_divisor=(int)std::pow(2,melody_note_length_divisor+1);
 				params[CONTROL_ARP_INCREMENT_PARAM].setValue(melody_note_length_divisor+1);
+				
 				time_sig_changed=true;
 			}
 			  
@@ -3625,6 +3702,18 @@ struct Meander : Module
 									{
 										theMeanderState.theMelodyParms.note_length_divisor=newValue;  
 										params[CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM].setValue((float)exp);
+
+										// need to do CONTROL_ARP_INCREMENT_PARAM first
+										theMeanderState.theArpParms.note_length_divisor = (theMeanderState.theMelodyParms.note_length_divisor*4);
+										theMeanderState.theArpParms.note_length_divisor = clamp(theMeanderState.theArpParms.note_length_divisor, 1, 32);
+										int exp=(int)log2((float)theMeanderState.theArpParms.note_length_divisor);
+										int newValue=(int)exp;
+										params[CONTROL_ARP_INCREMENT_PARAM].setValue(newValue);
+								
+										//*********  now we cam do CONTROL_ARP_COUNT_PARAM
+
+										theMeanderState.theArpParms.count = (theMeanderState.theArpParms.note_length_divisor/theMeanderState.theMelodyParms.note_length_divisor)-1;
+										params[CONTROL_ARP_COUNT_PARAM].setValue((float)theMeanderState.theArpParms.count);
 									}
 								}
 								break;
@@ -4364,6 +4453,18 @@ struct Meander : Module
 			if ((ivalue)!=theMeanderState.theMelodyParms.note_length_divisor)
 			{
 				theMeanderState.theMelodyParms.note_length_divisor=ivalue;  
+
+				// need to do CONTROL_ARP_INCREMENT_PARAM first
+				theMeanderState.theArpParms.note_length_divisor = (theMeanderState.theMelodyParms.note_length_divisor*4);
+				theMeanderState.theArpParms.note_length_divisor = clamp(theMeanderState.theArpParms.note_length_divisor, 1, 32);
+				int exp=(int)log2((float)theMeanderState.theArpParms.note_length_divisor);
+				int newValue=(int)exp;
+				params[CONTROL_ARP_INCREMENT_PARAM].setValue(newValue);
+		
+				//*********  now we cam do CONTROL_ARP_COUNT_PARAM
+
+				theMeanderState.theArpParms.count = (theMeanderState.theArpParms.note_length_divisor/theMeanderState.theMelodyParms.note_length_divisor)-1;
+				params[CONTROL_ARP_COUNT_PARAM].setValue((float)theMeanderState.theArpParms.count);
 			}
 
 			fvalue=params[CONTROL_MELODY_FBM_OCTAVES_PARAM].getValue();
@@ -4548,9 +4649,10 @@ struct Meander : Module
 		CircleStepSetStates[0]=1.0f;
 		lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1].setBrightness(1.0f);
 
-//****************** 58 in ports
+//****************** 59 in ports
 		configInput(IN_RUN_EXT_CV, "Mono CV Ext. Run Toggle: >0v :");
 		configInput(IN_RESET_EXT_CV, "Mono CV Ext. Reset: >0v :");
+		configInput(IN_RAND_EXT_CV, "Mono CV Ext. Rand: >0v :");
 		configInput(IN_TEMPO_EXT_CV, "Mono CV Ext. Tempo Set: +-v/oct  0v=120 BPM :");
 		configInput(IN_TIMESIGNATURETOP_EXT_CV, "Mono CV Ext. Time Signature Top Set: 0.1v-10v=2-15 :");
 		configInput(IN_TIMESIGNATUREBOTTOM_EXT_CV, "Mono CV Ext. Time Signature Bottom Set: 0.1v-10v=2-16 :");
@@ -4643,34 +4745,47 @@ struct Meander : Module
 		configOutput(OUT_EXT_ROOT_OUTPUT, "Mono Scale Root Note Out: v/oct :");
 	    configOutput(OUT_EXT_HARMONIC_DEGREE_OUTPUT, "Mono Circle Degree Out: CV 1-7 V");
 
-//****************
+//**************** 
 								
 		configButton(BUTTON_RUN_PARAM,  "Run");
 		configButton(BUTTON_RESET_PARAM,  "Reset");
+		configButton(BUTTON_RAND_PARAM,  "Rand");
 
 		configParam(CONTROL_TEMPOBPM_PARAM, min_bpm, max_bpm, 120.0f, "Tempo", " BPM");
+		getParamQuantity(CONTROL_TEMPOBPM_PARAM)->randomizeEnabled=false;
 	    configParam(CONTROL_TIMESIGNATURETOP_PARAM,2.0f, 15.0f, 4.0f, "Time Signature Top");
+		getParamQuantity(CONTROL_TIMESIGNATURETOP_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_TIMESIGNATUREBOTTOM_PARAM,0.0f, 3.0f, 1.0f, "Time Signature Bottom");
+		getParamQuantity(CONTROL_TIMESIGNATUREBOTTOM_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_ROOT_KEY_PARAM, 0, 11, 0.f, "Root/Key");
+		getParamQuantity(CONTROL_ROOT_KEY_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_SCALE_PARAM, 0.f, num_modes-1, 1.f, "Mode");
+		getParamQuantity(CONTROL_SCALE_PARAM)->randomizeEnabled=false;
 	
 		configButton(BUTTON_ENABLE_MELODY_PARAM, "Melody Enable/Disable");
 		configParam(CONTROL_MELODY_VOLUME_PARAM, 0.f, 10.f, 8.0f, "Volume");
+		getParamQuantity(CONTROL_MELODY_VOLUME_PARAM)->randomizeEnabled=false;
 		configButton(BUTTON_MELODY_DESTUTTER_PARAM,  "Hold Tied Notes Enable/Disable");
 		configParam(CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM, 0.f, 5.f, 2.f, "Notes on 1/N");
 		configParam(CONTROL_MELODY_TARGETOCTAVE_PARAM, 1.f, 7.f, 3.f, "Target Octave");
+		getParamQuantity(CONTROL_MELODY_TARGETOCTAVE_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_MELODY_ALPHA_PARAM, 0.f, 1.f, .9f, "Variablility");
 		configParam(CONTROL_MELODY_RANGE_PARAM, 0.f, 3.f, 1.f, "Octave Range");
+		getParamQuantity(CONTROL_MELODY_RANGE_PARAM)->randomizeEnabled=false;
 		configButton(BUTTON_ENABLE_MELODY_STACCATO_PARAM,  "Staccato Enable/Disable");
 
 		configButton(BUTTON_ENABLE_HARMONY_PARAM,  "Harmony (chords) Enable/Disable");
 		configButton(BUTTON_ENABLE_MELODY_CHORDAL_PARAM,  "Chordal Notes Enable/Disable");
 		configButton(BUTTON_ENABLE_MELODY_SCALER_PARAM,  "Scaler Notes Enable/Disable");
 		configParam(CONTROL_HARMONY_VOLUME_PARAM, 0.f, 10.f, 8.0f, "Volume (0-10)");
+		getParamQuantity(CONTROL_HARMONY_VOLUME_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_HARMONY_STEPS_PARAM, 1.f, 16.f, 16.f, "Steps");
+		getParamQuantity(CONTROL_HARMONY_STEPS_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_HARMONY_TARGETOCTAVE_PARAM, 1.f, 7.f, 3.f, "Target Octave");
+		getParamQuantity(CONTROL_HARMONY_TARGETOCTAVE_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_HARMONY_ALPHA_PARAM, 0.f, 1.f, .9f, "Variability"); 
 		configParam(CONTROL_HARMONY_RANGE_PARAM, 0.f, 3.f, 1.f, "Octave Range");
+		getParamQuantity(CONTROL_HARMONY_RANGE_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_HARMONY_DIVISOR_PARAM, 0.f, 3.f, 0.f, "Notes Length");
 		configButton(BUTTON_ENABLE_HARMONY_ALL7THS_PARAM,  "7ths Enable/Disable");
 		configButton(BUTTON_ENABLE_HARMONY_V7THS_PARAM,  "V 7ths Enable/Disable");
@@ -4679,19 +4794,24 @@ struct Meander : Module
 		configButton(BUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM,  "Tonic on Ch1 Enable/Disable");
 		configButton(BUTTON_ENABLE_HARMONY_BASS_ON_CH1_PARAM,  "Bass on Ch1 Enable/Disable");
 		configParam(CONTROL_HARMONYPRESETS_PARAM, 1.0f, (float)MAX_AVAILABLE_HARMONY_PRESETS, 1.0f, "Progression Preset");
+		getParamQuantity(CONTROL_HARMONYPRESETS_PARAM)->randomizeEnabled=false;
 
 		configButton(BUTTON_ENABLE_ARP_PARAM,  "Arp Enable/Disable");
 		configButton(BUTTON_ENABLE_ARP_CHORDAL_PARAM,  "Chordal Notes Enable/Disable");
 		configButton(BUTTON_ENABLE_ARP_SCALER_PARAM,  "Scaler Notes Enable/Disable");
-		configParam(CONTROL_ARP_COUNT_PARAM, 0.f, 31.f, 0.f, "Arp Notes Played");
+		configParam(CONTROL_ARP_COUNT_PARAM, 0.f, 31.f, 3.f, "Arp Notes Played");
 		configParam(CONTROL_ARP_INCREMENT_PARAM, 2.f, 5.f, 4.f, "Arp Notes Length");
+
 		configParam(CONTROL_ARP_DECAY_PARAM, 0.f, 1.f, 0.f, "Volume Decay");
+		getParamQuantity(CONTROL_ARP_DECAY_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_ARP_PATTERN_PARAM, -3.f, 3.f, 1.f, "Pattern Preset");
 
 		configButton(BUTTON_ENABLE_BASS_PARAM,  "Bass Enable/Disable");
 		configParam(CONTROL_BASS_VOLUME_PARAM, 0.f, 10.f, 8.0f, "Volume");
+		getParamQuantity(CONTROL_BASS_VOLUME_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_BASS_DIVISOR_PARAM, 0.f, 3.f, 0.f, "Notes Length");
 		configParam(CONTROL_BASS_TARGETOCTAVE_PARAM, 1.f, 7.f, 2.f, "Target Octave"); 
+		getParamQuantity(CONTROL_BASS_TARGETOCTAVE_PARAM)->randomizeEnabled=false;
 		configButton(BUTTON_BASS_ACCENT_PARAM,  "Accent Enable/Disable");
 		configButton(BUTTON_BASS_SYNCOPATE_PARAM,  "Syncopate Enable/Disable");
 		configButton(BUTTON_BASS_SHUFFLE_PARAM,  "Shuffle Enable/Disable");
@@ -4702,12 +4822,18 @@ struct Meander : Module
 		configButton(BUTTON_ENABLE_SCORE_RENDER_PARAM,  "Render Score Enable/Disable");
 							
 		configParam(CONTROL_HARMONY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "Harmony fBm 1/f meandering noise. Number of noise octaves.");
+		getParamQuantity(CONTROL_HARMONY_FBM_OCTAVES_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_MELODY_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "Melody fBm 1/f meandering noise. Number of noise octaves.");
+		getParamQuantity(CONTROL_MELODY_FBM_OCTAVES_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_ARP_FBM_OCTAVES_PARAM, 1.f, 6.f, 3.f, "Arp/32nds fBm 1/f meandering noise. Number of noise octaves.");
+		getParamQuantity(CONTROL_ARP_FBM_OCTAVES_PARAM)->randomizeEnabled=false;
 
 		configParam(CONTROL_HARMONY_FBM_PERIOD_PARAM, 1.f, 100.f, 60.f, "Harmony fBm 1/f meandering noise. Noise 'period' seconds.");
+		getParamQuantity(CONTROL_HARMONY_FBM_PERIOD_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_MELODY_FBM_PERIOD_PARAM, 1.f, 100.f, 10.f, "Melody fBm 1/f meandering noise. Noise 'period' seconds.");
+		getParamQuantity(CONTROL_MELODY_FBM_PERIOD_PARAM)->randomizeEnabled=false;
 		configParam(CONTROL_ARP_FBM_PERIOD_PARAM, 1.f, 100.f, 1.f, "Arp/32nds fBm 1/f meandering noise. Noise 'period' seconds.");
+		getParamQuantity(CONTROL_ARP_FBM_PERIOD_PARAM)->randomizeEnabled=false;
        	
 
 		configButton(BUTTON_HARMONY_SETSTEP_1_PARAM,  "Step 1");
@@ -5772,6 +5898,12 @@ struct MeanderWidget : ModuleWidget
 			if (!module)
 				return;
 
+			if(module->randEnqueued)
+			{
+				APP->engine->randomizeModule(module);
+				module->randEnqueued=false;
+			}
+
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
 			std::shared_ptr<Font> musicfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Bravura.otf"));
 
@@ -6176,6 +6308,9 @@ struct MeanderWidget : ModuleWidget
 			
 				snprintf(labeltext, sizeof(labeltext), "%s", "RESET");
 				drawLabelAbove(args,ParameterRectLocal[Meander::BUTTON_RESET_PARAM], labeltext, 12.);
+
+				snprintf(labeltext, sizeof(labeltext), "%s", "RAND");
+				drawLabelAbove(args,ParameterRectLocal[Meander::BUTTON_RAND_PARAM], labeltext, 12.);
 				
 				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
 				drawOutport(args, OutportRectLocal[Meander::OUT_RESET_OUT].pos, labeltext, 0, 1);
@@ -7905,6 +8040,11 @@ struct MeanderWidget : ModuleWidget
 			addParam(paramWidgets[Meander::BUTTON_RESET_PARAM]);
 			lightWidgets[Meander::LIGHT_LEDBUTTON_RESET]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(19.7, 22.55)), module, Meander::LIGHT_LEDBUTTON_RESET);
 			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_RESET]);
+
+			paramWidgets[Meander::BUTTON_RAND_PARAM]=createParamCentered<LEDButton>(mm2px(Vec(29.7, 22.55)), module, Meander::BUTTON_RAND_PARAM);
+			addParam(paramWidgets[Meander::BUTTON_RAND_PARAM]);
+			lightWidgets[Meander::LIGHT_LEDBUTTON_RAND]=createLightCentered<MediumSimpleLight<RedLight>>(mm2px(Vec(29.7, 22.55)), module, Meander::LIGHT_LEDBUTTON_RAND);
+			addChild(lightWidgets[Meander::LIGHT_LEDBUTTON_RAND]);
          
 			paramWidgets[Meander::CONTROL_TEMPOBPM_PARAM]=createParamCentered<Trimpot>(mm2px(Vec(8.12, 35.4)), module, Meander::CONTROL_TEMPOBPM_PARAM);
 			addParam(paramWidgets[Meander::CONTROL_TEMPOBPM_PARAM]);
@@ -8316,6 +8456,10 @@ struct MeanderWidget : ModuleWidget
 			drawCenter=drawCenter.plus(Vec(37,0));
 			outPortWidgets[Meander::OUT_RESET_OUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_RESET_OUT]->box.size.div(2.));
 
+			drawCenter=Vec(137, 70.);
+			paramWidgets[Meander::BUTTON_RAND_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::BUTTON_RAND_PARAM]->box.size.div(2.));
+			lightWidgets[Meander::LIGHT_LEDBUTTON_RAND]->box.pos=drawCenter.minus(lightWidgets[Meander::LIGHT_LEDBUTTON_RAND]->box.size.div(2.));
+			
 			drawCenter=Vec(42., 110.);
 			
 			paramWidgets[Meander::CONTROL_TEMPOBPM_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::CONTROL_TEMPOBPM_PARAM]->box.size.div(2.));
@@ -8491,6 +8635,12 @@ struct MeanderWidget : ModuleWidget
 			// re-layout all input ports.  Work around parm and input enum value mismatch due to history
 			for (int i=0; i<Meander::NUM_INPUTS; ++i)
 			{
+				if (i==Meander::IN_RAND_EXT_CV)
+				{
+					Vec drawCenter=Vec(112., 70.);  
+					inPortWidgets[Meander::IN_RAND_EXT_CV]->box.pos=drawCenter.minus(inPortWidgets[Meander::IN_RAND_EXT_CV]->box.size.div(2.));
+				}
+				else
 				if (i<=Meander::IN_SCALE_EXT_CV)
 				{
 					if ((inPortWidgets[i]!=NULL)&&(paramWidgets[i]!=NULL))
