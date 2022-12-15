@@ -56,6 +56,12 @@ Note: Meander uses middle C as C4.  That is denoted on the staves of the score d
 
 Each of the three parts is discussed following in more detail:
 
+New in V2.0.25, "smart parameter control" has been added for the Melody Arp parameters "Count" and "Notes on 1/".  Basically, when you change the Melody "Notes on 1/N" parameter by any means, the Arp Count and Notes pn parameters will automatically change to values that are compatible with the melody.  For example, if you set Melody "Notes on" parameter to 4, which represents 1/4 notes, the Arp will be set to "Count"=3 and "Notes on 1/" to 16 since 3 1/16 arp notes can fit between each melody 1/4 note, and so forth.  You can manually override the Arp parameters to whatever you want and Meander will do its best to play what you select, but Meander will only sound as many arp notes can fit between two melody notes.  Ths change allows the Melody "Notes On 1/" parameter to be CV seueenced and the Arp notes will follow the melody lead.  It is best to send Melody "Notes on 1/" CVs on bar (measure) boundaries. 
+
+New in V2.0.25, in addition to randomizing parameters from the Meander right-click context menu, you can input a trigger voltage into the "RAND" input jack in the upper left panel area (by RESET or click the RAND button next to the input jack.  It works very well to send a slow clock via a power of 4 divided clock so that parameter randomization will occur on bar (measure) boundaries.  Meander will do its best to not introduce and unexpected glitches upon randmomization.  Note, randomisation will follow the above described amart parameter changes for Melody and Arp note parameters.
+
+Also new in V2.0.25, some parameters are marked internally in the Meander source code to not be "randomizable".  These are typically high level, song level parameters that it it too jarring to randomize while playing without changing the "theme" of the song.  Parameters that are not randomizable include: BPM (temo), key signature numerator and divisor, Root, Mode, Harmony (chord) Progression Presets along with progression Steps, Target Octaves, Octave Ranges, and fBm Noise parameters.
+
 ## Harmony
 
 Harmony is made up of chords made up of notes from the mode and root that is selected, as well as determined by the current circle of 5ths degree position chord type.  A harmonic progression is the movement on the circle in steps over time.  At the bottom of the Harmony sub-panel is the "Presets" control which allows you to select between 80 ready-made harmonic progressions.  Each progression is made up of from 1 to 16 steps, designated by the Roman numeral degrees I-VII, corresponding to to the degree positions on the circle for the current mode and root.  I.E., the same progression can be played in any of the 84 mode and root "scales".  As the pogression plays, you can watch the circle and see which chords are playing for each step.  Each preset has an initial number of "steps".  You can manually reduce the number of steps via the "Steps" knob, but you cannot increase it past the max value for that preset. The minimum number of steps is 1.  Sometimes some interesting music can be created by setting the steps to 1, in which case the harmony stays on the root position of the circle, but may still meander through inversions and the melody and bass will follow.
@@ -73,6 +79,7 @@ Harmony notes can be played staccato or legato (default).  Staccato notes have a
 New in V2.0.24, you can now select 4 note "octaves" chords.  In this option, to root or tonic of the chord is raised an octave and added to the triad chord notes.  Chords can be selected as "Nice 7ths", "V 7ths", or "Octaves" which each may output 4 note chords.  If none of these types are selected, 3 note triads are played.  Octave chords are useful for doing 4-voice harmony.
 
 New in V2.0.24, you can now select "Tonic Ch1" or "Bass Ch1".  In the first, the tonic or root of the chord will always be on channel 1.  In the second, the bass note will always be on channel 1.  This is needed in case you want to do something predicatable with the tonic or bass notes such as create a bass line.  This is needed since Meander uses chord inversions extensively which means that the lowest note may not always be the tonic.  Note, Meander will correctly handle this situation when it creates the Bass part, but you can do other things with this output if you desire.  Note, the chords will sound the same regardless of whether the tonic or the bass note is on Ch1.  If there is no inversion, the tonic is the bass note and is on Ch1.  If there is an inverseion such as C/E, E is the bass note and on Ch1, etc.
+
 
 ### Manual Control of the harmony Circle:
 
@@ -110,6 +117,14 @@ The 1.0v-7.0v option is the default and this can be sent to the circle 1V/DEG in
 
 The 0.0v-6.0v option can be selected to send the harmonic degree to any module that understands degrees and expects 0-6v.  Currently, only the Aaron Static DiatonicCV module understands harmonic degrees and expects them in the 0-6v range.  If you do this, you will need to use the Aaron Static ScaleCV module which you should manually set to the Meander root and mode.  The "Scale Out" fron ScaleCV should be sent to the DiatonicCV "Scale In".  Doing so will allow you to explore all of the Aaron Static chord types, inversions and voicings in musical scale sync with Meander.
 
+Here are some CV values that will change Harmony parameters to meaningful "eigenvalues".  I.E., these voltages can be put in a sequencer in order to sequence the Harmony note lengths on nice bar boundary clock ticks.
+
+	Notes on:	1/N  	CV
+			1/1	1.5v	
+			1/2	3.5v
+			1/4	7.5v
+			1/8	9.5v
+
 ## Melody
 
 Melody is driven by the harmony part chords.  The melody notes can either be chordal where they are members of the current playing or last played chord, or they can be scaler where they are members of the current scale (mode and root) but not necessarily of the chord.  Meander does not use "accidental" notes that are not members of the current scale.
@@ -129,6 +144,33 @@ See the harmony section for description of the Note Length, Target Oct. Variabil
 New for V1.0.5, you can also control the monophonic melody by using the "1V/DEG" and "GATE" inputs to the right of the melody enable button.  You can set up one of two types of scale degree control.
   - Attach a keyboard (such as TWELVE-KEY module or an external MIDI keyboard via MIDI-CC module and connect the  CV and Gate outs from that to the melody CV 1V /Deg and  Gate inputs.  Pressing any white music key will also disable the melody part and will set the melody note  to the following scale degrees. C=1st, D=2nd, E=3rd, F=4th, G=5th, A=6th and B=7th.  That scale degree note will be played at the octave of the key pressed in the currently selected mode and root scale. Thus you can play in the current scale using just the white notes of the keyboard. The C key will always begin the scale on the current root note. To resume automatic "melody" generation, disconnect the Degree and Gate inputs to melody and re-enable the melody.
   - Or, attach a single CV in the range 0.0V-7.7V to BOTH  the melody 1V/DEG and GATE inputs.  Connecting in this manner allows Meander to recognize that degree and octave will control the melody rather than a MIDI/Rack 1V/octave keyboard. Typically you will want to set up a sequencer such as SEQ-3 to sequence the Meander melody.  In this mode, the sequence values should be entered in an octal radix degree.octave format.  The degree can vary from 0 to 7 and the octave can vary from 0 to 7.  A value of 0.x is ignored as a sequencer slot skip step.  The voltage will then set the melody  to the corresponding scale degrees 1.x Volt=1st, 2.x Volt=2nd, ... 7.x Volt=7th .  In many cases you can just enter the values of 1.0 to 7.0 since the .x octave is added to the Meander melody "Target Octave" parameter value. The melody note will be played in the currently selected mode and root scale.  If you want to have two melody steps with the same degree, it recommended that you set up the second such step as an octave higher.  For example, if you want to sequence two "I" degree steps, set the first to 1.0V and the second to 1.1V .  Again, to resume automatic "melody" generation, disconnect the Degree and Gate inputs to melody and re-enable the melody.  It is not recommended to feed a continuously varying CV to the 1V/DEG and GATE inputs as that will just result in a mess of degrees and octaves.
+  
+Here are some CV values that will change Melody parameters to meaningful "eigenvalues".  I.E., these voltages can be put in a sequencer in order to sequence the Melody note lengths on nice bar boundary clock ticks.
+
+	Notes on:	1/N  	CV
+			1/1	1.5v	
+			1/2	3.0v
+			1/4	4.0v
+			1/8	6.0v
+			1/16 	8.0v
+			1/32	9.5v
+			
+Here are some CV values that will change Arp parameters to meaningful "eigenvalues".  I.E., these voltages can be put in a sequencer in order to sequence the Arp note lengths on nice bar boundary clock ticks.
+
+	Notes on:	1/N  	CV
+			1/4	1.0v
+			1/8	4.0v	
+			1/16	7.0v	
+			1/32	9.5v
+			
+	Count:		0	0.0v
+			1	0.5v
+			2	0.75v
+			3	1.25v
+			4	1.50v
+			5	1.75v
+			6	2.00v
+			7	2.50v
 
 
 ## Bass
@@ -138,6 +180,15 @@ Bass is driven by the harmony part and does not meander.  The root note of the c
 Bass notes can be played staccato (default) or legato.  Staccato notes have a duration of about half of the interval between the notes.  Legato notes may run into each other with no silence between sequential notes in some cases, but the desgined behavior is for staccato notes to play at a gate length 50% of the time betweem notes and legato notes to play at a gate length of 95% of the time between notes. .
 
 Bass"Accent" and "Syncopate" both require you to use the bass volume or volume over gate to modulate the bass volume per note.  Shuffle is a rhythmic syncopation only and does not requre volume modulation.
+
+Here are some CV values that will change Bass parameters to meaningful "eigenvalues".  I.E., these voltages can be put in a sequencer in order to sequence the Bass note lengths on nice bar boundary clock ticks.
+
+	Notes on:	1/N  	CV
+			1/1	1.5v	
+			1/2	3.5v
+			1/4	7.5v
+			1/8	9.5v
+			
 
 ## fBm 1/f Noise
 
