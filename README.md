@@ -60,7 +60,7 @@ New in V2.0.25, "smart parameter control" has been added for the Melody Arp para
 
 New in V2.0.25, in addition to randomizing parameters from the Meander right-click context menu, you can input a trigger voltage into the "RAND" input jack in the upper left panel area (by RESET or click the RAND button next to the input jack.  It works very well to send a slow clock via a power of 4 divided clock so that parameter randomization will occur on bar (measure) boundaries.  Meander will do its best to not introduce and unexpected glitches upon randmomization.  Note, randomisation will follow the above described amart parameter changes for Melody and Arp note parameters.
 
-Also new in V2.0.25, some parameters are marked internally in the Meander source code to not be "randomizable".  These are typically high level, song level parameters that it it too jarring to randomize while playing without changing the "theme" of the song.  Parameters that are not randomizable include: BPM (temo), key signature numerator and divisor, Root, Mode, Harmony (chord) Progression Presets along with progression Steps, Target Octaves, Octave Ranges, and fBm Noise parameters.
+Also new in V2.0.25, some parameters are marked internally in the Meander source code to not be "randomizable".  These are typically high level, song level parameters that it it too jarring to randomize while playing without changing the "theme" of the song.  Parameters that are not randomizable include: BPM (tempo), key signature numerator and divisor, Root, Mode, Harmony (chord) Progression Presets along with progression Steps, Target Octaves, Octave Ranges, and fBm Noise parameters.
 
 ## Harmony
 
@@ -119,11 +119,11 @@ The 0.0v-6.0v option can be selected to send the harmonic degree to any module t
 
 Here are some CV values that will change Harmony parameters to meaningful "eigenvalues".  I.E., these voltages can be put in a sequencer in order to sequence the Harmony note lengths on nice bar boundary clock ticks.
 
-	Notes on:	1/N  	CV
-			1/1	1.5v	
-			1/2	3.5v
-			1/4	7.5v
-			1/8	9.5v
+	Notes on:	1/N  		CV
+			1/1		1.5v	
+			1/2		3.5v
+			1/4		7.5v
+			1/8		9.5v
 
 ## Melody
 
@@ -147,30 +147,38 @@ New for V1.0.5, you can also control the monophonic melody by using the "1V/DEG"
   
 Here are some CV values that will change Melody parameters to meaningful "eigenvalues".  I.E., these voltages can be put in a sequencer in order to sequence the Melody note lengths on nice bar boundary clock ticks.
 
-	Notes on:	1/N  	CV
-			1/1	1.5v	
-			1/2	3.0v
-			1/4	4.0v
-			1/8	6.0v
-			1/16 	8.0v
-			1/32	9.5v
+	Notes on:	1/N  		CV
+			1/1		1.5v	
+			1/2		3.0v
+			1/4		4.0v
+			1/8		6.0v
+			1/16 		8.0v
+			1/32		9.5v
 			
 Here are some CV values that will change Arp parameters to meaningful "eigenvalues".  I.E., these voltages can be put in a sequencer in order to sequence the Arp note lengths on nice bar boundary clock ticks.
 
-	Notes on:	1/N  	CV
-			1/4	1.0v
-			1/8	4.0v	
-			1/16	7.0v	
-			1/32	9.5v
+	Notes on:	1/N  		CV
+			1/4		1.0v
+			1/8		4.0v	
+			1/16		7.0v	
+			1/32		9.5v
 			
-	Count:		0	0.0v
-			1	0.5v
-			2	0.75v
-			3	1.25v
-			4	1.50v
-			5	1.75v
-			6	2.00v
-			7	2.50v
+	Count:		0		0.0v
+			1		0.5v
+			2		0.75v
+			3		1.25v
+			4		1.50v
+			5		1.75v
+			6		2.00v
+			7		2.50v
+			
+	Pattern:	UPx1,DNx1	9.5v
+			UPx1		7.5v 	
+			Echo		5.0v
+			DNx1		2.5v
+			DNx1,UPx1	1.5v
+						
+			
 
 
 ## Bass
