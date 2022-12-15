@@ -1,6 +1,12 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.25 (Dec 2022)
+- Redid module parameter "randomization" scheme.  Some parameters are now designated as not-randomizable.  This allows Meander context menu randomization to just randomize things that make sense to vary within a song, but leave other high level parameters unchanged.
+- Made Arp count and notes-on parameter subject to "smart" randomization so that values are rationally based on the Melody notes-on note duration parameter.  
+- Applied smart Arp parameter changes based rationally on Melody notes-on changes.
+- Added a RAND input port and button to the upper left corner area of the panel.  Clicking the button or sending a momentary trigger into the input port calls the VCV Rack API module parameter randomization.  Only parameters that make sense to randomize are randomized.  You might want to send a slow clock signal to this port and say randomize for each measure or after every N measures.  Clicking on the RAND button during performance is designed to not cause any surprizing transitions.
+
 ### V2.0.24 (Oct/Nov 2022)
 - Added panel harmony 4-voice octave chords option.  These are the triad with the tonic being raised an octave and added as 4th note.  Clicking button toggles between Nice 7ths, V 7ths, 4-voice octave chords or triad chords (no button lit).
 - Added panel harmony toggle between "Tonic on ch1" and "Bass on ch1" of the 1v/oct chords output.  This is so the bass can always be reliably located on ch1 if desired, for extracting basslines, etc.
