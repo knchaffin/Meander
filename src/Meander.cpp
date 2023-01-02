@@ -7,7 +7,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <rack.hpp>      
    
 
-#include "plugin.hpp"  
+#include "plugin.hpp"   
 #include <sstream> 
 #include <iomanip>
 #include <time.h>
@@ -1139,31 +1139,55 @@ struct Meander : Module
 
 		int arp_note=0;
 
-		
-		if ((theMeanderState.theArpParms.pattern>=-1)&&(theMeanderState.theArpParms.pattern<=1))
-			arp_note=theMeanderState.theArpParms.note_count*theMeanderState.theArpParms.pattern;
-		else
-		if (theMeanderState.theArpParms.pattern==2)
+		if (theMeanderState.theArpParms.pattern==0)                                               //  0  echo
 		{
-			if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count)/2))
-			arp_note=theMeanderState.theArpParms.note_count;
-			else
-			arp_note=theMeanderState.theArpParms.count-theMeanderState.theArpParms.note_count-1;
+			arp_note=theMeanderState.theArpParms.note_count*theMeanderState.theArpParms.pattern;
 		}
 		else
-		if (theMeanderState.theArpParms.pattern==-2)
+		if (theMeanderState.theArpParms.pattern==1)                                               //  1 Upx1
 		{
-			if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count)/2))
-			arp_note-=theMeanderState.theArpParms.note_count;
-			else
-			arp_note=-theMeanderState.theArpParms.count+theMeanderState.theArpParms.note_count-1;
+			arp_note=theMeanderState.theArpParms.note_count*theMeanderState.theArpParms.pattern;
+			++arp_note; // above the melody note
 		}
 		else
+		if (theMeanderState.theArpParms.pattern==-1)                                              //  -1 Dnx1
+		{
 			arp_note=theMeanderState.theArpParms.note_count*theMeanderState.theArpParms.pattern;
+			--arp_note; // below the melody note
+		}
+		else
+		if (theMeanderState.theArpParms.pattern==2)                                               // +2 Upx1 + Dnx1
+		{
+			if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count)/2))
+				arp_note=theMeanderState.theArpParms.note_count;
+			else
+				arp_note=theMeanderState.theArpParms.count-theMeanderState.theArpParms.note_count-1;
+			++arp_note; // above the melody note
+		}
+		else
+		if (theMeanderState.theArpParms.pattern==-2)                                              // -2 Dnx1 + Upx1
+		{
+			if (theMeanderState.theArpParms.note_count<=((theMeanderState.theArpParms.count)/2))
+				arp_note=-theMeanderState.theArpParms.note_count;
+			else
+				arp_note=-theMeanderState.theArpParms.count+theMeanderState.theArpParms.note_count+1;
+			--arp_note; // below the melody note
 
-		if (theMeanderState.theArpParms.pattern!=0)
-		++arp_note; // above the melody note
+		}
+		else
+		if (theMeanderState.theArpParms.pattern==3)                                                // +3 Upx2
+		{
+			arp_note=theMeanderState.theArpParms.note_count*theMeanderState.theArpParms.pattern;
+			++arp_note; // above the melody note
+		}
+		else
+		if (theMeanderState.theArpParms.pattern==-3)                                                // -3 Dnx2
+		{
+			arp_note=theMeanderState.theArpParms.note_count*theMeanderState.theArpParms.pattern;
+			--arp_note; // below the melody note
+		}
 
+	
 		++theMeanderState.theArpParms.note_count;
 
 		float volume=theMeanderState.theMelodyParms.volume;
@@ -3125,20 +3149,22 @@ struct Meander : Module
 			{
 				circle_root_key=(int)fvalue;
 				root_key=circle_of_fifths[circle_root_key];
-				outputs[OUT_EXT_ROOT_OUTPUT].setVoltage(root_key/12.0);
+			//	outputs[OUT_EXT_ROOT_OUTPUT].setVoltage(root_key/12.0);
 				for (int i=0; i<12; ++i)
 					lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+i].setBrightness(0.0f);
 				lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+circle_root_key].setBrightness(1.0f);
 				circleChanged=true;
 			}
+			outputs[OUT_EXT_ROOT_OUTPUT].setVoltage(root_key/12.0); // do it always so it is sent after load. But, this is in if (lowFreqClock.process()){}
 
 			
 			if ((fvalue=std::round(params[CONTROL_SCALE_PARAM].getValue()))!=mode)
 			{
 				mode = fvalue;
-				outputs[OUT_EXT_SCALE_OUTPUT].setVoltage(mode);
+			//	outputs[OUT_EXT_SCALE_OUTPUT].setVoltage(mode);
 				circleChanged=true;
 			}
+			outputs[OUT_EXT_SCALE_OUTPUT].setVoltage(mode);  // do it always so it is sent after load  But, this is in if (lowFreqClock.process()){}
 			
 
 			// check input ports for change
@@ -3688,7 +3714,7 @@ struct Meander : Module
 									params[CONTROL_MELODY_VOLUME_PARAM].setValue(fvalue);
 									outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);
 								}
-								break;
+								break; 
 
 							case IN_MELODY_NOTE_LENGTH_DIVISOR_EXT_CV:
 								if (fvalue>=.01)
