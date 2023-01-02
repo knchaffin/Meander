@@ -1,6 +1,10 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.26 (Jan 2023) 
+- Bug-fix for Meander to Meander Mode and Root CV values for chaining instances.
+- Bug-fix melody arp several problems fixed that krept in at some point over the past few months.  No users have reported these.  Existing patches with arp enabled may sound slightly different but should definitely sound better.
+
 ### V2.0.25 (Dec 2022)
 - Redid module parameter "randomization" scheme.  Some parameters are now designated as not-randomizable.  This allows Meander context menu randomization to just randomize things that make sense to vary within a song, but leave other high level parameters unchanged.
 - Made Arp count and notes-on parameter subject to "smart" randomization so that values are rationally based on the Melody notes-on note duration parameter.  
