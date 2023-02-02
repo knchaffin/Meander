@@ -808,7 +808,7 @@ struct Meander : Module
 			}
 			
 		}
-		
+		 
     			
 
 		int degreeStep=(theActiveHarmonyType.harmony_steps[step])%8; 
@@ -996,16 +996,15 @@ struct Meander : Module
 
 	}
 
-	void userPlaysScaleDegreeMelody(int degree, float octaveOffset)  // C=0   play immediate
+	void userPlaysScaleDegreeMelody(int degree, int octaveOffset)  // C=0   play immediate
 	{
+		errno=0;
 		if (degree<1)
 			degree=1;
 		if (degree>7)
 			degree=7;
-
-		
-
-		int	note_to_play=root_key_notes[root_key][degree-1]+(octaveOffset*12); 
+    	
+		int	note_to_play=root_key_notes[root_key][degree-1]+(octaveOffset*12);  
 		note_to_play=clamp(note_to_play, root_key, 108+root_key); // clamp to MIDI range root0 to (C8+root)
 		outputs[OUT_MELODY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,0);  // (note, channel)  shift down 1 ocatve/v
 					
@@ -3541,14 +3540,17 @@ struct Meander : Module
 													
 								if (inputs[IN_MELODY_SCALE_DEGREE_EXT_CV].isConnected() && inputs[IN_MELODY_SCALE_GATE_EXT_CV].isConnected())
 								{
+									errno=0;
+		
 									scaleDegree=inputs[IN_MELODY_SCALE_DEGREE_EXT_CV].getVoltage();
 									gateValue=inputs[IN_MELODY_SCALE_GATE_EXT_CV].getVoltage();
-
-									float octave=(float)((int)(scaleDegree));  // from the keyboard
+								
+									float octave=truncf(scaleDegree);  // assume from the keyboard, but may be determined otherwise below
 									if (octave>3)
 										octave=3;
 									if (octave<-3)
 										octave=-3;
+																								
 									bool degreeChanged=false; // assume false unless determined true below
 									bool skipStep=false;
 
@@ -3563,10 +3565,10 @@ struct Meander : Module
 												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition=false;
 												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=fvalue;
 												theMeanderState.theMelodyParms.lastMelodyDegreeIn=fvalue;
-												octave = (int)(10.0*std::fmod(scaleDegree, 1.0f));
+												octave = (10.0f*fmodf(scaleDegree, 1.0f));
 												if (octave>7)
 													octave=7;
-												scaleDegree=(float)((int)scaleDegree);
+												scaleDegree=truncf(scaleDegree);
 												degreeChanged=true;  // not really, but replay the note below
 											}
 											else
@@ -3622,7 +3624,7 @@ struct Meander : Module
 												inportStates[IN_MELODY_SCALE_GATE_EXT_CV].lastValue=fgvalue;
 											}
 										}
-
+										
 										if ( (degreeChanged) || (scaleDegree!=inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue))
 										{
 											inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue= scaleDegree;
@@ -3631,10 +3633,17 @@ struct Meander : Module
 												octave=3;
 											if (octave<-3)
 												octave=-3;
-											if (scaleDegree>=0)
+																					
+											if (scaleDegree>=1)
+											{
 												scaleDegree=(float)std::fmod(std::fabs(scaleDegree), 1.0f);
+											}
 											else
+											if (scaleDegree<0)
+											{
 												scaleDegree=-(float)std::fmod(std::fabs(scaleDegree), 1.0f);
+											}
+										
 											degreeChanged=true; 
 											if (scaleDegree>=0)
 											{
@@ -3687,7 +3696,9 @@ struct Meander : Module
 																											
 										if (scaleDegree>0)
 										{
-											userPlaysScaleDegreeMelody(scaleDegree, octave+theMeanderState.theMelodyParms.target_octave); 
+											int playOctave=(int)round(octave)+int(std::round(theMeanderState.theMelodyParms.target_octave));  // target_octave is a double and result is incorrect for some calls
+											outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);  // need to set volume as used in arp
+											userPlaysScaleDegreeMelody((int)scaleDegree, playOctave); 
 											theMeanderState.theArpParms.note_count=0; 
 										}
 										
