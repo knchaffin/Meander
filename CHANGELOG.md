@@ -1,6 +1,9 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.27 (Feb 2023)
+- Slight improvement in external Harmony octal radix CV control.
+
 ### V2.0.26 (Jan 2023) 
 - Bug-fix for Meander to Meander Mode and Root CV values for chaining instances.
 - Bug-fix melody arp several problems fixed that krept in at some point over the past few months.  No users have reported these.  Existing patches with arp enabled may sound slightly different but should definitely sound better.
