@@ -1,6 +1,9 @@
 ## Meander Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.28 (Feb 2023)
+- Redo of Octal Radix EXT DEGREE control of Harmony and Melody to allow more subtle note repeats.
+
 ### V2.0.27 (Feb 2023)
 - Slight improvement in external Harmony octal radix CV control.
 
