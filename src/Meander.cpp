@@ -542,7 +542,6 @@ struct Meander : Module
 	};
 
 	HarmonicDegreeOutCvRangeMode harmonic_degree_out_mode = RANGE_1to7;
-//	HarmonicDegreeOutCvRangeMode harmonic_degree_out_mode = RANGE_0to6;
 
 	// Clock code adapted from Strum and AS
 
@@ -1314,8 +1313,7 @@ struct Meander : Module
 				theMeanderState.theBassParms.last[1].isPlaying=true;
 				if (bar_note_count<256)
 				played_notes_circular_buffer[bar_note_count++]=theMeanderState.theBassParms.last[1];
-
-			 //	outputs[OUT_BASS_CV_OUTPUT].setVoltage((theMeanderState.last_harmony_chord_root_note/12.0)-3.0 +theMeanderState.theBassParms.target_octave ,1);
+			 
 				outputs[OUT_BASS_CV_OUTPUT].setVoltage(((theMeanderState.theBassParms.last[0].note%12)/12.0) +(theMeanderState.theBassParms.last[0].note/12) -3.0 ,1);  //(note, channel)
 			}
 
@@ -1434,6 +1432,7 @@ struct Meander : Module
 	float max_bpm = 960.0f; // corresponds to CV=3.0
 
 	float extHarmonyIn=-99;
+	float extMelodyIn=-99;
   
 
 	// end of clock **************************
@@ -1499,6 +1498,13 @@ struct Meander : Module
 //	bool rand_enqueued=false;
 
 	int override_step=1;
+
+	int lastPlayedCircleDegree=1;
+	int lastPlayedCircleOctave=0;
+	int lastPlayedCirclePosition=1;
+
+	int lastPlayedScaleDegree=1;
+	int lastPlayedScaleOctave=0;
 	
 	void onRandomize(const RandomizeEvent& e) override {
 		for (int i=0; i<NUM_PARAMS; ++i) 
@@ -2085,6 +2091,10 @@ struct Meander : Module
 			inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=-999;
 			harmonyGatePulse.reset();  // kill the pulse in case it is active
 			outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
+
+			inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=-999;
+			melodyGatePulse.reset();  // kill the pulse in case it is active
+			outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
 			
 			resetLight = 1.0;
 			resetPulse.trigger(0.01f);  // necessary to pass on reset below vis resetPuls.process()
@@ -2884,11 +2894,15 @@ struct Meander : Module
 		float fvalue=0;
         float circleDegree=0;  // for harmony
 		float scaleDegree=0;   // for melody
+		float circleDegreeValue=0;
+		float scaleDegreeValue=0;
 		float gateValue=0;
 
+	
 		if (  (inputs[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].isConnected()) && (inputs[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].isConnected()) )
 		{
-			circleDegree=inputs[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].getVoltage();
+			circleDegreeValue=inputs[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].getVoltage();
+			circleDegree=circleDegreeValue;
 			gateValue=inputs[IN_HARMONY_CIRCLE_DEGREE_GATE_EXT_CV].getVoltage(); 
 
 			theMeanderState.theHarmonyParms.lastCircleDegreeIn=circleDegree;
@@ -2902,55 +2916,78 @@ struct Meander : Module
 
 			bool degreeChanged=false; // assume false unless determined true below
 			bool skipStep=false;
+			bool repeatStep=false;
 
-			if ((gateValue==circleDegree)&&(circleDegree>=1)&&(circleDegree<=7.7))  // MarkovSeq or other 1-7V degree  degree.octave 0.0-7.7V
-			{
-				if (inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition)
-				{
-					if (circleDegree==inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
+            if (gateValue==circleDegree)
+			{ 
+				if ((circleDegreeValue>0)&&(circleDegreeValue<=7.7))  // MarkovSeq or other 1-7V degree  degree.octave 0.0-7.7V
+				{   
+					if (inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition)
 					{
-						// was in transition but now is not
-						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition=false;
-						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
-						octave = (int)(10.0*std::fmod(circleDegree, 1.0f));
-						if (octave>7)
-							octave=7;
-						circleDegree=(float)((int)circleDegree);
-						theMeanderState.circleDegree=(int)circleDegree;
-						degreeChanged=true;
-						harmonyGatePulse.reset();  // kill the pulse in case it is active
-		            	outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
+						if (circleDegree==inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
+						{
+							// was in transition but now is not
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition=false;
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegreeValue;
+							octave = (int)(10.0*std::fmod(circleDegree, 1.0f));
+							if (octave>7)
+								octave=7;
+							if (circleDegree>=1.0)
+								circleDegree=(float)((int)circleDegree);
+						   	theMeanderState.circleDegree=(int)circleDegree;
+						    degreeChanged=true;
+							harmonyGatePulse.reset();  // kill the pulse in case it is active
+							outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
+							
+						}
+						else
+						if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
+						{
+							harmonyGatePulse.reset();  // kill the pulse in case it is active
+							outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegreeValue;
+						}
 					}
 					else
-					if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
 					{
-						harmonyGatePulse.reset();  // kill the pulse in case it is active
-		            	outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
-						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
+						if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
+						{   
+							harmonyGatePulse.reset();  // kill the pulse in case it is active
+							outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition=true;
+							inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegreeValue;
+						}
 					}
-				}
-				else
-				{
-					if (circleDegree!=inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue)
+
+					if (circleDegree==0)
 					{
-						harmonyGatePulse.reset();  // kill the pulse in case it is active
-			            outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
-						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition=true;
-						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegree;
+						degreeChanged=false;
+					}
+				
+					if ((circleDegreeValue>0)&&(circleDegreeValue<1.0))
+					{
+					//	degreeChanged=false;
 					}
 				}
 
-				if (circleDegree==0)
+				if ((degreeChanged) && (!inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].inTransition))
 				{
-					degreeChanged=false;
+					if ((circleDegreeValue>0)&&(circleDegreeValue<1.0))  // MarkovSeq or other 1-7V degree  degree.octave 0.0-7.7V   0.5 means repeat last note played
+					{
+						repeatStep=true;
+						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegreeValue;
+						circleDegree=lastPlayedCircleDegree ;
+						octave=lastPlayedCircleOctave;
+						harmonyGatePulse.reset();  // kill the pulse in case it is active
+						outputs[OUT_HARMONY_GATE_OUTPUT].setVoltage(0);
+					}
+					else
+					if ((circleDegree==0)||(circleDegree>=8.0))  // MarkovSeq or other 1-7V degree  degree.octave 1.0-7.7V  <1 or >=8V means skip step  
+					{
+						inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=circleDegreeValue;
+						skipStep=true;
+					}
 				}
-			}
-			else
-			if ((gateValue==circleDegree)&&((circleDegree<1.0)||(circleDegree>=8.0)))  // MarkovSeq or other 1-7V degree  degree.octave 1.0-7.7V  <1 or >=8V means skip step
-			{
-				inportStates[IN_HARMONY_CIRCLE_DEGREE_EXT_CV].lastValue=fvalue;
-				degreeChanged=true;
-				skipStep=true;
 			}
 			else  // keyboard  C-B
 			{
@@ -3043,35 +3080,47 @@ struct Meander : Module
 			
         	if ((degreeChanged)&&(!skipStep))
 			{
-				if (theMeanderState.circleDegree<1)
-					theMeanderState.circleDegree=1;
-				if (theMeanderState.circleDegree>7)
-					theMeanderState.circleDegree=7;
-								
-				int step=1;  // default if not found below
-				for (int i=0; i<MAX_STEPS; ++i)
-				{
-					if (theActiveHarmonyType.harmony_steps[i]==theMeanderState.circleDegree)
-					{
-						step=i;
-						break;
-					}
-				}
-
-				theMeanderState.last_harmony_step=step;
-
 				int theCirclePosition=0;
-				for (int i=0; i<7; ++i)
+
+				if (repeatStep)
 				{
-					if (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree==theMeanderState.circleDegree)
+					theCirclePosition=lastPlayedCirclePosition; 
+				}
+				else
+				{
+					if (theMeanderState.circleDegree<1)
+						theMeanderState.circleDegree=1;
+					if (theMeanderState.circleDegree>7)
+						theMeanderState.circleDegree=7;
+													
+					int step=1;  // default if not found below
+					for (int i=0; i<MAX_STEPS; ++i)
 					{
-						theCirclePosition=theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].CircleIndex;
-						break;
+						if (theActiveHarmonyType.harmony_steps[i]==theMeanderState.circleDegree)
+						{
+							step=i;
+							break;
+						}
+					}
+
+					theMeanderState.last_harmony_step=step;
+				
+					for (int i=0; i<7; ++i)
+					{
+						if (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree==theMeanderState.circleDegree)
+						{
+							theCirclePosition=theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].CircleIndex;
+							break;
+						}
 					}
 				}
 
 				last_circle_position=theCirclePosition;
-			
+				lastPlayedCirclePosition = theCirclePosition;  
+				lastPlayedCircleOctave = octave;
+				lastPlayedCircleDegree=theMeanderState.circleDegree;  
+
+				
 				userPlaysCirclePositionHarmony(theCirclePosition, octave+theMeanderState.theHarmonyParms.target_octave);  // play immediate
 				if (theMeanderState.theBassParms.enabled)
 			    	doBass();
@@ -3091,7 +3140,7 @@ struct Meander : Module
 				lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+theCirclePosition].setBrightness(1.0f);
 			}
 			
-		}
+		} 
 		
 
 		//**************************
@@ -3148,7 +3197,6 @@ struct Meander : Module
 			{
 				circle_root_key=(int)fvalue;
 				root_key=circle_of_fifths[circle_root_key];
-			//	outputs[OUT_EXT_ROOT_OUTPUT].setVoltage(root_key/12.0);
 				for (int i=0; i<12; ++i)
 					lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+i].setBrightness(0.0f);
 				lights[LIGHT_CIRCLE_ROOT_KEY_POSITION_1_LIGHT+circle_root_key].setBrightness(1.0f);
@@ -3160,7 +3208,6 @@ struct Meander : Module
 			if ((fvalue=std::round(params[CONTROL_SCALE_PARAM].getValue()))!=mode)
 			{
 				mode = fvalue;
-			//	outputs[OUT_EXT_SCALE_OUTPUT].setVoltage(mode);
 				circleChanged=true;
 			}
 			outputs[OUT_EXT_SCALE_OUTPUT].setVoltage(mode);  // do it always so it is sent after load  But, this is in if (lowFreqClock.process()){}
@@ -3173,7 +3220,7 @@ struct Meander : Module
 				if (inputs[i].isConnected())
 				{
 					float fvalue=inputs[i].getVoltage();
-					//IN_SCALE_EXT_CV			
+					
 					if ((i==IN_MELODY_SCALE_DEGREE_EXT_CV)||(i==IN_ROOT_KEY_EXT_CV)||(i==IN_SCALE_EXT_CV)||(fvalue!=inportStates[i].lastValue))  // don't do anything unless input changed or certain inputs
 					{
 						if ((i!=IN_MELODY_SCALE_DEGREE_EXT_CV)&&(i!=IN_ROOT_KEY_EXT_CV)&&(i!=IN_SCALE_EXT_CV))
@@ -3283,10 +3330,7 @@ struct Meander : Module
 												if (k<(theHarmonyTypes[harmony_type].num_harmony_steps-1)) 
 													strcat(theHarmonyTypes[harmony_type].harmony_degrees_desc,"-");
 											}
-
-										//	if (((int)newValue>=theActiveHarmonyType.min_steps)&&((int)newValue<=theActiveHarmonyType.max_steps))
-										//		theActiveHarmonyType.num_harmony_steps=(int)newValue;  
-										
+									
 											strcpy(theActiveHarmonyType.harmony_degrees_desc,"");
 											for (int k=0;k<theActiveHarmonyType.num_harmony_steps;++k)
 											{
@@ -3295,7 +3339,7 @@ struct Meander : Module
 													strcat(theActiveHarmonyType.harmony_degrees_desc,"-");
 											}
 
-											setup_harmony();  // seems to work
+											setup_harmony();  
 											savedHarmonySteps = 0;  // no longer want to apply this elsewhere
 											//
 										}
@@ -3540,79 +3584,115 @@ struct Meander : Module
 													
 								if (inputs[IN_MELODY_SCALE_DEGREE_EXT_CV].isConnected() && inputs[IN_MELODY_SCALE_GATE_EXT_CV].isConnected())
 								{
-									errno=0;
-		
-									scaleDegree=inputs[IN_MELODY_SCALE_DEGREE_EXT_CV].getVoltage();
-									gateValue=inputs[IN_MELODY_SCALE_GATE_EXT_CV].getVoltage();
+									scaleDegreeValue=inputs[IN_MELODY_SCALE_DEGREE_EXT_CV].getVoltage();
+									scaleDegree=scaleDegreeValue;
+									gateValue=inputs[IN_MELODY_SCALE_GATE_EXT_CV].getVoltage(); 
+
+									theMeanderState.theMelodyParms.lastMelodyDegreeIn=scaleDegree;
+									extMelodyIn=scaleDegree;
 								
-									float octave=truncf(scaleDegree);  // assume from the keyboard, but may be determined otherwise below
+									float octave=(float)((int)(scaleDegree));  // from the keyboard
 									if (octave>3)
 										octave=3;
 									if (octave<-3)
 										octave=-3;
-																								
-									bool degreeChanged=false; // assume false unless determined true below
-									bool skipStep=false;
 
-								
-									if ((gateValue==scaleDegree)&&(scaleDegree>=1)&&(scaleDegree<=7.7))  // MarkovSeq or other 1-7V degree  degree.octave 1.0-7.7V
+									bool scaleDegreeChanged=false; // assume false unless determined true below
+									bool skipStep=false;
+									bool repeatStep=false;
+
+									if (gateValue==scaleDegree)
 									{
-										if (inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition)
+									    if ((scaleDegreeValue>0)&&(scaleDegreeValue<=7.7))  // MarkovSeq or other 1-7V degree  degree.octave 0.0-7.7V
 										{
-											if (fvalue==inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue)
+											if (inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition)
 											{
-												// was in transition but now is not
-												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition=false;
-												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=fvalue;
-												theMeanderState.theMelodyParms.lastMelodyDegreeIn=fvalue;
-												octave = (10.0f*fmodf(scaleDegree, 1.0f));
-												if (octave>7)
-													octave=7;
-												scaleDegree=truncf(scaleDegree);
-												degreeChanged=true;  // not really, but replay the note below
+												if (scaleDegree==inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue)
+												{
+													// was in transition but now is not
+													inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition=false;
+													inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=scaleDegree;
+													octave = (int)(10.0*std::fmod(scaleDegree, 1.0f));
+													if (octave>7)
+														octave=7;
+													if (scaleDegree>=1.0)
+														scaleDegree=(float)((int)scaleDegree);
+													theMeanderState.scaleDegree=(int)scaleDegree;
+													scaleDegreeChanged=true;
+													melodyGatePulse.reset();  // kill the pulse in case it is active
+													outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
+												}
+												else
+												if (scaleDegree!=inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue)
+												{
+													melodyGatePulse.reset();  // kill the pulse in case it is active
+													outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
+													inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=scaleDegreeValue;
+												}
 											}
 											else
-											if (fvalue!=inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue)
 											{
-												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=fvalue;
+												if (scaleDegree!=inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue)
+												{
+													melodyGatePulse.reset();  // kill the pulse in case it is active
+													outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
+													inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition=true;
+													inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=scaleDegreeValue;
+												}
+											}
+
+											if (scaleDegree==0)
+											{
+												scaleDegreeChanged=false;
+											}
+											if ((scaleDegreeValue>0)&&(scaleDegreeValue<1.0)) 
+											{
 											}
 										}
-										else
+
+										if ((scaleDegreeChanged) && (!inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition))
 										{
-											if (fvalue!=inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue)
+											if ((scaleDegreeValue>0)&&(scaleDegreeValue<1.0)) 
 											{
-												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].inTransition=true;
-												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=fvalue;
+												repeatStep=true;
+												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=scaleDegreeValue;
+												scaleDegree=lastPlayedScaleDegree ;
+												octave=lastPlayedScaleOctave;
+												melodyGatePulse.reset();  // kill the pulse in case it is active
+												outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
+											}
+											else
+											if ((scaleDegree==0)||(scaleDegree>=8.0))  // MarkovSeq or other 1-7V degree  degree.octave 1.0-7.7V  <1 or >=8V means skip step
+											{
+												inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=scaleDegreeValue;
+												skipStep=true;
 											}
 										}
-									}
-									else
-									if ((gateValue==scaleDegree)&&((scaleDegree<1.0)||(scaleDegree>=8.0)))  // MarkovSeq or other 1-7V degree  degree.octave 1.0-7.7V  <1 or >=8V means skip step
-									{
-										inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue=fvalue;
-										degreeChanged=true;
-										skipStep=true;
 									}
 									else  // keyboard  C-B
-									if (!(gateValue==scaleDegree))
 									{
 										float fgvalue=inputs[IN_MELODY_SCALE_GATE_EXT_CV].getVoltage();
 										if (inportStates[IN_MELODY_SCALE_GATE_EXT_CV].inTransition)
 										{
 											if (fgvalue==inportStates[IN_MELODY_SCALE_GATE_EXT_CV].lastValue)
 											{
+												melodyGatePulse.reset();
+												outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
 												// was in transition but now is not
 												inportStates[IN_MELODY_SCALE_GATE_EXT_CV].inTransition=false;
 												inportStates[IN_MELODY_SCALE_GATE_EXT_CV].lastValue=fgvalue;
 												if (fgvalue)  // gate has gone high
 												{
 													if ( scaleDegree==inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue) // the gate has changed but the degree has not
-														degreeChanged=true;   // not really, but play like it has so it will be replayed below
+														scaleDegreeChanged=true;   // not really, but play like it has so it will be replayed below
 												}
 											}
 											else
 											if (fgvalue!=inportStates[IN_MELODY_SCALE_GATE_EXT_CV].lastValue)
 											{
+												melodyGatePulse.reset();
+												outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
+												// was in transition but now is not
 												inportStates[IN_MELODY_SCALE_GATE_EXT_CV].lastValue=fgvalue;
 											}
 										}
@@ -3620,13 +3700,17 @@ struct Meander : Module
 										{
 											if (fgvalue!=inportStates[IN_MELODY_SCALE_GATE_EXT_CV].lastValue)
 											{
+												melodyGatePulse.reset();
+												outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
 												inportStates[IN_MELODY_SCALE_GATE_EXT_CV].inTransition=true;
 												inportStates[IN_MELODY_SCALE_GATE_EXT_CV].lastValue=fgvalue;
 											}
 										}
 										
-										if ( (degreeChanged) || (scaleDegree!=inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue))
+										if ( (scaleDegreeChanged) || (scaleDegree!=inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue))
 										{
+											melodyGatePulse.reset();
+											outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
 											inportStates[IN_MELODY_SCALE_DEGREE_EXT_CV].lastValue= scaleDegree;
 											octave=(float)((int)(scaleDegree));  // from the keyboard
 											if (octave>3)
@@ -3644,7 +3728,7 @@ struct Meander : Module
 												scaleDegree=-(float)std::fmod(std::fabs(scaleDegree), 1.0f);
 											}
 										
-											degreeChanged=true; 
+											scaleDegreeChanged=true; 
 											if (scaleDegree>=0)
 											{
 												if ((std::abs(scaleDegree)<.005f))   scaleDegree=1;
@@ -3661,7 +3745,7 @@ struct Meander : Module
 												else
 												if ((std::abs(scaleDegree-.917f)<.005f))  scaleDegree=7;
 												else
-													degreeChanged=false;
+													scaleDegreeChanged=false;
 											}
 											else
 											{
@@ -3680,15 +3764,20 @@ struct Meander : Module
 												else
 											    if (std::abs(std::abs(scaleDegree)-.833)<.005f)  scaleDegree=2;
 												else
-													degreeChanged=false;
+													scaleDegreeChanged=false;
 											}
 											
 										}	
 									}
 
 																
-									if ((degreeChanged)&&(!skipStep))  
+									if ((scaleDegreeChanged)&&(!skipStep))   
 									{
+										if (repeatStep)
+										{
+											scaleDegree=lastPlayedScaleDegree; 
+										}
+																				
 										if (scaleDegree<1)
 											scaleDegree=1;
 										if (scaleDegree>7)
@@ -3698,7 +3787,17 @@ struct Meander : Module
 										{
 											int playOctave=(int)round(octave)+int(std::round(theMeanderState.theMelodyParms.target_octave));  // target_octave is a double and result is incorrect for some calls
 											outputs[OUT_MELODY_VOLUME_OUTPUT].setVoltage(theMeanderState.theMelodyParms.volume);  // need to set volume as used in arp
+											lastPlayedScaleDegree = scaleDegree;
+
+											melodyGatePulse.reset();
+												outputs[OUT_MELODY_GATE_OUTPUT].setVoltage(0);
+												inportStates[IN_MELODY_SCALE_GATE_EXT_CV].inTransition=true;
+
+											lastPlayedScaleOctave = octave;
+                                            lastPlayedScaleDegree=theMeanderState.scaleDegree;  
+
 											userPlaysScaleDegreeMelody((int)scaleDegree, playOctave); 
+											                               
 											theMeanderState.theArpParms.note_count=0; 
 										}
 										
@@ -3708,11 +3807,8 @@ struct Meander : Module
 												theMeanderState.theMelodyParms.enabled = false;
 											theMeanderState.userControllingMelody=true;
 										}
-										
 									}
 								}
-
-								
 
 								break;
 
@@ -3739,16 +3835,11 @@ struct Meander : Module
 									{
 										theMeanderState.theMelodyParms.note_length_divisor=newValue;  
 										params[CONTROL_MELODY_NOTE_LENGTH_DIVISOR_PARAM].setValue((float)exp);
-
-										// need to do CONTROL_ARP_INCREMENT_PARAM first
 										theMeanderState.theArpParms.note_length_divisor = (theMeanderState.theMelodyParms.note_length_divisor*4);
 										theMeanderState.theArpParms.note_length_divisor = clamp(theMeanderState.theArpParms.note_length_divisor, 1, 32);
 										int exp=(int)log2((float)theMeanderState.theArpParms.note_length_divisor);
 										int newValue=(int)exp;
 										params[CONTROL_ARP_INCREMENT_PARAM].setValue(newValue);
-								
-										//*********  now we cam do CONTROL_ARP_COUNT_PARAM
-
 										theMeanderState.theArpParms.count = (theMeanderState.theArpParms.note_length_divisor/theMeanderState.theMelodyParms.note_length_divisor)-1;
 										params[CONTROL_ARP_COUNT_PARAM].setValue((float)theMeanderState.theArpParms.count);
 									}
@@ -4309,7 +4400,6 @@ struct Meander : Module
 							case IN_SCALE_EXT_CV:
 								if (!theMeanderState.ModeInputSuppliedByModeOutput)  // Meander mode scale input is NOT fed by Meander mode scale  key output
 								{
-								//	if (fvalue>=.01)
 										{
 											float ratio=(fvalue/10.0);
 											int newValue=(int)(ratio*6);
@@ -4585,7 +4675,6 @@ struct Meander : Module
 			if (harmonyPresetChanged) 
 			{
 				harmony_type=harmonyPresetChanged;
-			 // copyHarmonyTypeToActiveHarmonyType(harmony_type);
 				harmonyPresetChanged=0;
 				circleChanged=true;  // trigger off reconstruction and setup
 				if (harmony_type!=4)  // not custom
@@ -4596,7 +4685,6 @@ struct Meander : Module
 					params[CONTROL_HARMONY_STEPS_PARAM].setValue(theHarmonyTypes[harmony_type].num_harmony_steps);
 				}  
 				params[CONTROL_HARMONYPRESETS_PARAM].setValue(harmony_type);
-			//	params[CONTROL_HARMONY_STEPS_PARAM].setValue(theHarmonyTypes[harmony_type].num_harmony_steps);
 				time_sig_changed=true;  // forces a reset so things start over
 			}
 			
@@ -4624,7 +4712,6 @@ struct Meander : Module
 				ConstructDegreesSemicircle(circle_root_key, mode); //int circleroot_key, int mode)
 			
 				init_notes();  // depends on mode and root_key		
-			// 	init_harmony();  // sets up original progressions
 				setup_harmony();  // calculate harmony notes 
 						
 				params[CONTROL_HARMONY_STEPS_PARAM].setValue(theActiveHarmonyType.num_harmony_steps); 
@@ -5150,8 +5237,7 @@ struct BpmDisplayWidget : LightWidget {
 	nvgStrokeWidth(args.vg, 1.0);
 	nvgStrokeColor(args.vg, borderColor);
 	nvgStroke(args.vg);
-
-	// if val is null (Module null)  // should never get here
+	
 	if (!val) { 
       return; 
     }
@@ -5262,8 +5348,7 @@ struct MeanderWidget : ModuleWidget
 			
 		CircleOf5thsDisplay(Meander* module)  
 		{
-		//	setModule(module);  // most plugins do this
-	    	this->module = module;  //  most plugins do not do this.  It was introduced in singleton implementation
+		   	this->module = module;  //  most plugins do not do this.  It was introduced in singleton implementation
 		}
  
 		void DrawCircle5ths(const DrawArgs &args, int root_key) 
@@ -7092,8 +7177,7 @@ struct MeanderWidget : ModuleWidget
 								pos.x-=1.0;  // move down stem notes a bit to left to avoid collisions with up stem notes
 							}
 						}   
-					//	nvgText(args.vg, pos.x, pos.y, noteText, NULL);  // defer note draw to after ledger lines draw
-
+					
 						// do ledger lines
 						int onLineNumberAboveStaves=0;  // value= 1,2,3
 						int onLineNumberBetweenStaves=0;// valid=1
@@ -7101,9 +7185,7 @@ struct MeanderWidget : ModuleWidget
 						int onSpaceNumberAboveStaves=0;  // value= 1,2,3
 						int onSpaceNumberBetweenStaves=0;// valid=1
 						int onSpaceNumberBelowStaves=0;  // value= 1,2,3
-
-						// ((scale_note==0)&&(octave==2))  //C4, middle C as drawn
-
+					
 						// detect notes on lines
 						if ((scale_note==3)&&(octave==5))                       //F7
 							onLineNumberAboveStaves=7;
@@ -7162,7 +7244,6 @@ struct MeanderWidget : ModuleWidget
 
 							ledgerPos.y += 11.5;
 							snprintf(text, sizeof(text), "%s", staff1Line.c_str()); 
-						//	snprintf(text, sizeof(text), "%s", ledgerLine.c_str()); 
 							nvgText(args.vg, ledgerPos.x, ledgerPos.y, text, NULL);
 							for (int j=onLineNumberAboveStaves; j>1; --j)
 							{
@@ -7203,9 +7284,6 @@ struct MeanderWidget : ModuleWidget
 							else
 							if ((scale_note==4)&&(octave==3))                   //G5
 								onSpaceNumberAboveStaves=1;
-						//	else
-						//	if ((scale_note==0)&&(octave==2))  //C4
-						//		onSpaceNumberBetweenStaves=1;
 							else
 							if ((scale_note==3)&&(octave==0))                   //F2
 								onSpaceNumberBelowStaves=1;
@@ -7238,7 +7316,6 @@ struct MeanderWidget : ModuleWidget
 									ledgerPos.x += 0.25;
 
 								snprintf(text, sizeof(text), "%s", staff1Line.c_str()); 
-							//	snprintf(text, sizeof(text), "%s", ledgerLine.c_str()); 
 								for (int j=onSpaceNumberAboveStaves; j>=1; --j)
 								{
 									ledgerPos.y=55.5-(j*6.0);
@@ -7429,7 +7506,6 @@ struct MeanderWidget : ModuleWidget
 				{
 					if (module->played_notes_circular_buffer[i].noteType==NOTE_TYPE_ARP)  // display even if ended to avoid strobing display
 					{
-					//	if ((module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note>=0)&&(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note<128))
 						if ((module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note>0)&&(module->theMeanderState.theArpParms.last[module->theMeanderState.theArpParms.note_count].note<128))
 						{
 							pos=Vec(notesPlayingDisplayStartX+20+(5*37.5), notesPlayingDisplayNoteCenterY); 
@@ -7523,11 +7599,7 @@ struct MeanderWidget : ModuleWidget
 			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 			nvgText(args.vg, TextPosition.x, TextPosition.y, text, NULL);
 			
-
-			//
 			
-		//	drawGrid(args);  // here after all updates are completed so grid is on top
-	
 			if (module->theMeanderState.renderKeyboardEnabled)
 			{
 				drawKeyboard(args); // redraw full keyboard per frame. clears any key down states
@@ -7808,7 +7880,6 @@ struct MeanderWidget : ModuleWidget
 			addChild(MeanderRootKeySelectDisplay);
 
 			ScaleSelectLineDisplay *MeanderScaleSelectDisplay = new ScaleSelectLineDisplay();
-		//	MeanderScaleSelectDisplay->box.pos = Vec(30.,228.); 
 			MeanderScaleSelectDisplay->box.pos = Vec(1.,228.); 
 			MeanderScaleSelectDisplay->box.size = Vec(130, 22); 
 			MeanderScaleSelectDisplay->module=module;
@@ -8557,11 +8628,9 @@ struct MeanderWidget : ModuleWidget
 			paramWidgets[Meander::BUTTON_ENABLE_HARMONY_4VOICE_OCTAVES_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::BUTTON_ENABLE_HARMONY_4VOICE_OCTAVES_PARAM]->box.size.div(2.));
 			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_4VOICE_OCTAVES_PARAM]->box.pos=drawCenter.minus(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_4VOICE_OCTAVES_PARAM]->box.size.div(2.));
     			
-		//	drawCenter=drawCenter.plus(Vec(-85,22));	
 			drawCenter=drawCenter.plus(Vec(-85,22));	
 			paramWidgets[Meander::CONTROL_HARMONYPRESETS_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::CONTROL_HARMONYPRESETS_PARAM]->box.size.div(2.));
 
-			//	drawCenter=drawCenter.plus(Vec(95,0));	
 			drawCenter=drawCenter.plus(Vec(0,22));	
 			paramWidgets[Meander::BUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM]->box.pos=drawCenter.minus(paramWidgets[Meander::BUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM]->box.size.div(2.));
 			lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM]->box.pos=drawCenter.minus(lightWidgets[Meander::LIGHT_LEDBUTTON_ENABLE_HARMONY_TONIC_ON_CH1_PARAM]->box.size.div(2.));

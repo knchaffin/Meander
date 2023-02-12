@@ -281,6 +281,7 @@ struct MeanderState
 	int last_harmony_chord_bass_note=0;
 	int last_harmony_step=0;
 	int circleDegree=1;
+	int scaleDegree=1;
 	bool userControllingMelody=false;
 	bool renderKeyboardEnabled=true;
 	bool renderScoreEnabled=true;
