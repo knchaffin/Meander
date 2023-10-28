@@ -1,4 +1,4 @@
-## Meander Change Log <a id="meander-change-log"></a>
+## PurrSoftware Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
 ### V2.0.28 (Feb 2023)
