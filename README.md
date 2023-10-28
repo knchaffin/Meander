@@ -1,11 +1,11 @@
-## PurrSoftware Meander plugin module for VCV Rack V2. 
+## PurrSoftware plugin for VCV Rack V2. 
 
 ## Contents
-* [Manual](#manual) 
+* [Meander Module Manual](#meander-manual) 
 * [Meander Progression Presets](#meander-progression-presets)
 * [Meander Change Log](./CHANGELOG.md)
 
-## <a name="manual"></a>  Manual
+## <a name="meander-manual"></a>  Manual
 
 ![Meander](./res/Meander-light.png) 
 ![Meander](./res/Meander-dark.png) 
