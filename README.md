@@ -5,6 +5,8 @@
 * [Meander Progression Presets](#meander-progression-presets)
 * [Meander Change Log](./CHANGELOG.md)
 
+##
+
 * [ModeScaleQuant Module Manual](#modescalequant-manual) 
 
 ## <a name="meander-manual"></a>  Meander Manual
