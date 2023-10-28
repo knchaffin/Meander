@@ -4,8 +4,8 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-
-#include "math.hpp"
+ 
+#include "math.hpp" 
 
 //double InversePersistence=NoiseFactor.a;    // for fBms. Persistence indicates how the frequencies are scaled when adding.  Normally a value of 2.0 is used for InversePersistance so that scale goes as 1/pow(invpersistence,i) or 1/pow(2,i). if ip=1->equal low and high noise.  if ip<1,more high noise.
 //double Lacunarity=(INT)(NoiseFactor.b);     // for fBms. Lacunarity indicates how the frequency is changed for each iteration.  Normally a value of 2.0xxxx is used so frequency ~doubles at each iteration.  A value of 1 is the same as 1 octave since no harmonics.
@@ -1142,7 +1142,7 @@ double FastfBm4DNoise(double x,double y,double z,double w,int n_octaves, bool *N
       val = npnoise4(p);
       sum += val / scale;
       scale *= 2.;
-      p[0] *= 2.05654;   // to avoid artifacts avoid lacunarity of 2.0
+      p[0] *= 2.05654;   // to avoid artifacts avoid lacunarity of 2.0read
       p[1] *= 2.02384;
       p[2] *= 2.02378;
       p[3] *= 2.04532;

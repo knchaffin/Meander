@@ -7,7 +7,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Common-Noise.hpp" 
+#include "Common-Noise.hpp"  
 
 //*********************************************************Module Vars************************************************
 
@@ -27,6 +27,8 @@ struct inPortState inportStates[MAX_INPORTS];
 
 int time_sig_top = 4;
 int time_sig_bottom = 4;
+
+float last_poly_quant_value[16]={-999};
 
 struct CircleElement
 {
@@ -576,12 +578,12 @@ void init_module_vars()
 void init_notes()
 {
 	notes[0]=root_key;  
-	int nmn=mode_step_intervals[mode][0];  // number of mode notes
+	int nmn=Meander_mode_step_intervals[mode][0];  // number of mode notes
 	num_notes=0;                                                                
 	for (int i=1;i<127;++i)                                                         
 	{     
 		notes[i]=notes[i-1]+                                                    
-			mode_step_intervals[mode][((i-1)%nmn)+1];  
+			Meander_mode_step_intervals[mode][((i-1)%nmn)+1];  
 				    
 		++num_notes;                                                            
 		if (notes[i]>=127) break;                                               
@@ -594,13 +596,13 @@ void init_notes()
 		num_root_key_notes[j]=1;
 		
 
-		int num_mode_notes=10*mode_step_intervals[mode][0]; // the [0] entry is the notes per scale value, times 10 ocatves of midi
+		int num_mode_notes=10*Meander_mode_step_intervals[mode][0]; // the [0] entry is the notes per scale value, times 10 ocatves of midi
 
-		int nmn=mode_step_intervals[mode][0];  // number of mode notes
+		int nmn=Meander_mode_step_intervals[mode][0];  // number of mode notes
 		for (int i=1;i<num_mode_notes ;++i)
 		{
 			root_key_notes[j][i]=root_key_notes[j][i-1]+
-		   		mode_step_intervals[mode][((i-1)%nmn)+1];  
+		   		Meander_mode_step_intervals[mode][((i-1)%nmn)+1];  
 			++num_root_key_notes[j];
 		}
 			
@@ -608,7 +610,7 @@ void init_notes()
 
 	char  strng[128];
 	strcpy(strng,"");
-	for (int i=0;i<mode_step_intervals[mode][0];++i)
+	for (int i=0;i<Meander_mode_step_intervals[mode][0];++i)
 	{
 		strcat(strng,note_desig[notes[i]%MAX_NOTES]);
 	}
@@ -1971,7 +1973,7 @@ void ConfigureModuleVars()
     
 }
 
-
+char MeanderScaleText[128];
 
 
 
