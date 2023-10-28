@@ -5,7 +5,7 @@
 * [Meander Progression Presets](#meander-progression-presets)
 * [Meander Change Log](./CHANGELOG.md)
 
-## <a name="meander-manual"></a>  Manual
+## <a name="meander-manual"></a>  Meander Manual
 
 ![Meander](./res/Meander-light.png) 
 ![Meander](./res/Meander-dark.png) 
