@@ -1,6 +1,9 @@
 ## PurrSoftware Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.29 (Coming Nov 2023)
+- Adding ModeScaleQuant modal scale polyphonic quantizer module
+
 ### V2.0.28 (Feb 2023)
 - Redo of Octal Radix EXT DEGREE control of Harmony and Melody to allow more subtle note repeats.
 
