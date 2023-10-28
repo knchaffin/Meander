@@ -1,4 +1,4 @@
-## PS-PurrSoftware plugin for VCV Rack V2. 
+## PS-PurrSoftware plugin V2.0.29 (Nov 2023) for VCV Rack V2. 
 
 ## Contents
 * [Meander Module Manual](#meander-manual) 
