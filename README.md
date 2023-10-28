@@ -524,3 +524,6 @@ Note: for any of the following, you can select V7ths in Meander and it will almo
 
 
 ## <a name="modescalequant-manual"></a>  ModeScaleQuant Manual
+
+![Meander](./res/ModeScaleQuant-light.png)   
+![Meander](./res/ModeScaleQuant-dark.png)   
