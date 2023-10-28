@@ -5,6 +5,8 @@
 * [Meander Progression Presets](#meander-progression-presets)
 * [Meander Change Log](./CHANGELOG.md)
 
+* [ModeScaleQuant Module Manual](#modescalequant-manual) 
+
 ## <a name="meander-manual"></a>  Meander Manual
 
 ![Meander](./res/Meander-light.png) 
@@ -516,4 +518,7 @@ Note: for any of the following, you can select V7ths in Meander and it will almo
 - Progression #79: Degree steps= "I-VI-IV-II-VII-V-III-I-VI-IV-II-VII-V-III" 
 *	    
 - Progression #80: Description=  "14 bar I-VI by 5ths" 
-- Progression #80: Degree steps= "I-VI-V-III-II-VII-VI-IV-III-I-VII-V-IV-II" 
+- Progression #80: Degree steps= "I-VI-V-III-II-VII-VI-IV-III-I-VII-V-IV-II"
+
+
+## <a name="modescalequant-manual"></a>  ModeScaleQuant Manual
