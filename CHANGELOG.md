@@ -1,8 +1,9 @@
-## PurrSoftware Change Log <a id="meander-change-log"></a>
+## PurrSoftware Plugin Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
 ### V2.0.29 (Coming Nov 2023)
-- Adding ModeScaleQuant modal scale polyphonic quantizer module
+- Adding ModeScaleQuant modal scale polyphonic quantizer module.
+- Redo of Meander Mode and Root panel selection logic to match modern mode notation common practice of the modes defaulting to a specific root and the scale being white notes on the piano keyboard.  Root can be overridden after the mode is selected.
 
 ### V2.0.28 (Feb 2023)
 - Redo of Octal Radix EXT DEGREE control of Harmony and Melody to allow more subtle note repeats.
