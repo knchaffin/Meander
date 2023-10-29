@@ -5,7 +5,7 @@
 
 
 * [Meander Module Manual](#meander-manual) 
-* [ModeScaleQuant Module Manual](#modescalequant-manual) 
+* [ModeScaleQuant (MSQ) Module Manual](#modescalequant-manual) 
 
 ## <a name="meander-manual"></a>  Meander Manual
 
@@ -44,11 +44,26 @@ Whereas you can now have multiple instances of Meander in a patch now, that is a
 * The possibilities are near infinite but will require a deep understanding on how to synchronize the multiple Meander modules in some way that sounds musical or "interesting". You are probably on your own if you go in this direction.
 
 
-All Meander panel control parameters can be controlled by an external 0-10V CV via the input jack just to the left of each parameter knob or button.  No external control is necessary to use Meander.  The CV control is there to allow you to do (almost) anything you can dream up.  Just be aware that CV parameter control actuallly changes the value of the param knobs and buttons and the knobs and buttons will change value depending on the CV input.  These are like "motorized controls" available for some high end audio equipment.
+All Meander panel control parameters can be controlled by an external 0-10V CV via the input jack just to the left of each parameter knob or button.  No external control is necessary to use Meander.  The CV control is there to allow you to do (almost) anything you can dream up.  Just be aware that CV parameter control actually changes the value of the param knobs and buttons and the knobs and buttons will change value depending on the CV input.  These are like "motorized controls" available for some high end audio equipment.
 
 The mode and root are selected by the control knobs on the far left side of the panel.  The 7 modes occur in "modal brightness" order with the Lydian mode being the brightest and the Locrian mode being the darkest (with the most flatted scale notes). As you rotate these knobs, the circle of 5ths will rotate to show the chords that should be played for this mode and root. The root will always be at the I degree position and is also designated by a red light just inside of the inner circle. Only the colored segments should be played. Technically, this is a diatonic circle. Each colored segment is marked with the chord "degree", which are the Roman numerals I-VII.  The degrees are color coded as to whether the chord will be played as a major, minor or diminished chord.  Major chord degrees are designated with uppercase Roman numerals whereas minor chord degrees are designated with lower case Roman numerals. A diminished chord degree is designated with a lowercase Roman numeral and a superscript "degree" symbol.  All of this is done automatically by Meander, following music theory common practice. 
 
 With V2.0.24, there are now output ports for both mode and root.  This can be sent to another instance of Meander mode and root input ports for chaining purposes.  Meander detects this behavior and interprets the mode and and root CV values directly rather than via the normal CV input scaling.
+
+New to V2.0.29, Meander defaults to a root note that results in that mode representing scale of white notes only on the piano keyboard.  These are the 7 modes in their purest form. But, you can transpose each mode scale to any root semitone and the setting will persist in the patch until you change the mode again, at which time the root defaults to the standard, which can also then be overriden, etc.  
+
+The modern modes and their default roots are:
+Lydian  	F
+Ionian (major)	C
+Mixolydian 	G
+Dorian		D
+Aeolian (minor)	A
+Phrygian	E
+Locrian		B
+
+MSQ mode and root outputs can be connected to other instances of MSQ and/or Meander wuch that one master can set the mode and root for any number of Meander and MSQ instances.  CV can also be used in the mode and root input ports to set the mode and root.  If you want to use CV mode control, you can still have a persistent root override by using explicit CV control of the root also.
+
+Meander (and MSQ) also now have a piano keyboard scale display, which is useful for undertanding the theory behivd modes and roots and the scale signature inside the circle-of-5ths widget as to how the mode is notated with sharps and flats, if any.  Thus, the modal scale (mode with root) notes are displayed in 3 formats, as text below the Mode knob, as stave sharps and flats inside of the circle-of-5ths and as notes on the piano keyboard underneath the cirecl-of-5ths.
 
 Meander has 3 main music "parts" sub-panels: Harmony (chords), Melody and Bass. The harmony drives the melody and the bass parts.  The melody drives the arpeggiator (arp) sub-part.  The arpeggiator is a melodic arpeggiator rather than a harmonic arpeggiator.  Each of the parts can be enabled or disabled via the "Enable" buttons at the top of the subpanels.  If the part is not enabled, Meander still composes that part (so that the harmony part is always available to the bass generator) but does not play that part.
 
@@ -527,3 +542,24 @@ Note: for any of the following, you can select V7ths in Meander and it will almo
 
 ![Meander](./res/ModeScaleQuant-light.png)   
 ![Meander](./res/ModeScaleQuant-dark.png)   
+
+The ModeScaleQuant (MSQ) module, newly implemented in this plugin V2.0.29, is a simple polyphonic (up to 16 channels) V/oct  quantizer that also outputs polyphonic trigger outputs that trigger when a new note is quantized on that channel.  Whereas you can use this trigger as you want, including as an envelope generator trigger, a polyphonic trigger to gate convertor module such as BGA DGATE can be used to extend the trigger to longer gate signals.
+
+The MSQ module is based on the same 7 modern modal scales as Meander uses.  New to this version, both Meander and MSQ default to a root note that results in that mode representing scale of white notes only on the piano keyboard.  These are the 7 modes in their purest form. But, as with Meander in the past, you can transpose each mode scale to any root semitone and the setting will persist in the patch until you change the mode again, at which time the root defaults to the standard, which can also then be overriden, etc.  
+
+The modern modes and their default roots are:
+Lydian  	F
+Ionian (major)	C
+Mixolydian 	G
+Dorian		D
+Aeolian (minor)	A
+Phrygian	E
+Locrian		B
+
+MSQ mode and root outputs can be connected to other instances of MSQ and/or Meander wuch that one master can set the mode and root for any number of Meander and MSQ instances.  CV can also be used in the mode and root input ports to set the mode and root.  If you want to use CV mode control, you can still have a persistent root override by using explicit CV control of the root also.
+
+MSQ and Meander also now have a piano keyboard scale display, which is useful for undertanding the theory behivd modes and roots and the scale signature inside the circle-of-5ths widget as to how the mode is notated with sharps and flats, if any.  Thus, the modal scale (mode with root) notes are displayed in 3 formats, as text below the Mode knob, as stave sharps and flats inside of the circle-of-5ths and as notes on the piano keyboard underneath the cirecl-of-5ths.
+
+Like Meander, MSQ can output the scale in "poly external scale" format and fed to modules such as Grande Quant module (without the root sent via CV) quantizer. 
+
+You can also click on the circle-of-5ths degree buttons to play the corresponding mode and root scale major triad.  In this case, the chord is output polyphonically with mono gate out the "Manual Chord Out" ports.  This may be useful in some composition in a scale and also for better understancing how the mode and root scales work, from a music theory and common practice standpoint. 
