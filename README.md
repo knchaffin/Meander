@@ -1,18 +1,18 @@
 ## PS-PurrSoftware plugin V2.0.29 (Nov 2023) for VCV Rack V2. 
 
 ## Contents
+* [PS-PurrSoftware Change Log](./CHANGELOG.md)
+
+
 * [Meander Module Manual](#meander-manual) 
-* [Meander Progression Presets](#meander-progression-presets)
-* [Meander Change Log](./CHANGELOG.md)
-
-##
-
 * [ModeScaleQuant Module Manual](#modescalequant-manual) 
 
 ## <a name="meander-manual"></a>  Meander Manual
 
 ![Meander](./res/Meander-light.png)     
 ![Meander](./res/Meander-dark.png)     
+
+* [Meander Progression Presets](#meander-progression-presets)
 
 ## Caveat:
 Anything I say here about music theory and practice as well as how I have implemented that theory and practice in Meander is my own understanding, which is surely not absolutely correct and musicians might choose to debate with me on that.  There are also a lot of exceptions to the "rules" in music.  If fact, it is these exceptions that give composers and musicians their own distinctive sound.  In the end, it is all about what sounds good or entertaining or evokes certain feelings.  From my perspective, there are no absolute rules in music.  So, take what I say with a grain of salt. 
