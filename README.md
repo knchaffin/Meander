@@ -53,13 +53,13 @@ With V2.0.24, there are now output ports for both mode and root.  This can be se
 New to V2.0.29, Meander defaults to a root note that results in that mode representing scale of white notes only on the piano keyboard.  These are the 7 modes in their purest form. But, you can transpose each mode scale to any root semitone and the setting will persist in the patch until you change the mode again, at which time the root defaults to the standard, which can also then be overriden, etc.  
 
 The modern modes and their default roots are:
-Lydian  	F
-Ionian (major)	C
-Mixolydian 	G
-Dorian		D
-Aeolian (minor)	A
-Phrygian	E
-Locrian		B
+-Lydian  	 F,
+-Ionian (major)	 C,
+-Mixolydian 	 G,
+-Dorian		 D,
+-Aeolian (minor) A,
+-Phrygian	 E,
+-Locrian	 B
 
 MSQ mode and root outputs can be connected to other instances of MSQ and/or Meander wuch that one master can set the mode and root for any number of Meander and MSQ instances.  CV can also be used in the mode and root input ports to set the mode and root.  If you want to use CV mode control, you can still have a persistent root override by using explicit CV control of the root also.
 
@@ -548,13 +548,13 @@ The ModeScaleQuant (MSQ) module, newly implemented in this plugin V2.0.29, is a 
 The MSQ module is based on the same 7 modern modal scales as Meander uses.  New to this version, both Meander and MSQ default to a root note that results in that mode representing scale of white notes only on the piano keyboard.  These are the 7 modes in their purest form. But, as with Meander in the past, you can transpose each mode scale to any root semitone and the setting will persist in the patch until you change the mode again, at which time the root defaults to the standard, which can also then be overriden, etc.  
 
 The modern modes and their default roots are:
-Lydian  	F
-Ionian (major)	C
-Mixolydian 	G
-Dorian		D
-Aeolian (minor)	A
-Phrygian	E
-Locrian		B
+-Lydian  	 F,
+-Ionian (major)	 C,
+-Mixolydian 	 G,
+-Dorian		 D,
+-Aeolian (minor) A,
+-Phrygian	 E,
+-Locrian	 B,
 
 MSQ mode and root outputs can be connected to other instances of MSQ and/or Meander wuch that one master can set the mode and root for any number of Meander and MSQ instances.  CV can also be used in the mode and root input ports to set the mode and root.  If you want to use CV mode control, you can still have a persistent root override by using explicit CV control of the root also.
 
