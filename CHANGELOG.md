@@ -2,8 +2,11 @@
 ## Significant Version Changes (Changelog)
 
 ### V2.0.29 (Coming Nov 2023)
-- Adding ModeScaleQuant modal scale polyphonic quantizer module.
+- Adding ModeScaleQuant (MSQ) modal scale polyphonic quantizer module.
 - Redo of Meander Mode and Root panel selection logic to match modern mode notation common practice of the modes defaulting to a specific root and the scale being white notes on the piano keyboard.  Root can be overridden after the mode is selected.
+- Meander: Added piano keyboard scale display beneath the circle-of-5ths widget on the panel.
+- Added polyphonic trigger output to polyphonic quantizer.
+- Mode and Root outputs from Meander and MSQ can now go to other Meander and MSQ module instances Mode and Root CV inputs for full chaining.
 
 ### V2.0.28 (Feb 2023)
 - Redo of Octal Radix EXT DEGREE control of Harmony and Melody to allow more subtle note repeats.
