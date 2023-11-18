@@ -1,7 +1,11 @@
 ## PurrSoftware Plugin Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
-### V2.0.29 (Coming Nov 2023)
+### V2.0.30 (Coming late Nov/early Dec 2023)
+- Mostly cosmetic user experience improvements.  Inside of the circle-of-fifths, chord degree and name have been combined such that the playing chord is displayed in the form ivAm where lower case Roman numerals indicate minor chords if there is now superscript and diminished chords if there is a "'" superscript.  Upper case Roman numerals indicate major chords.  You can still play a chord manually by clicking on the circle of fifth annular ring buttons, but now only value degrees I-VII will sound and display.  Other positions outside of I-VII will not play, but may display a non-valid degreen.  This is true for Meander and ModeScaleQuant.
+- A new output was added inside of the circle-of-fifths for Meander and ModeScaleQuant, labelled "ChordType".  This can be used to control other modules usch as Aaron Static Diantonic CV, but will require other logic to map these 1:1.  I have used Stochastic Telepgraph BASICally to map these for my patches.  This is an advanced feature that you can ignore if you want.
+
+### V2.0.29 (Nov 2023)
 - Adding ModeScaleQuant (MSQ) modal scale polyphonic quantizer module.
 - Redo of Meander Mode and Root panel selection logic to match modern mode notation common practice of the modes defaulting to a specific root and the scale being white notes on the piano keyboard.  Root can be overridden after the mode is selected.
 - Meander: Added piano keyboard scale display beneath the circle-of-5ths widget on the panel.
