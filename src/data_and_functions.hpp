@@ -1,7 +1,7 @@
 // these are module scope vars
 
 
-/*  Copyright (C) 2019-2022 Ken Chaffin
+/*  Copyright (C) 2019-2024 Ken Chaffin
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -327,6 +327,7 @@ int    current_circle_position;
 int    last_circle_position;
 
 int    current_circle_degree=1;
+bool   valid_current_circle_degree=false;
 
 int  step_chord_notes[MAX_STEPS][MAX_NOTES_CANDIDATES];
 int  num_step_chord_notes[MAX_STEPS]={};
@@ -464,6 +465,7 @@ void init_module_vars()
 	circle_of_fifths[10]=10;
 	circle_of_fifths[11]=5;
 			
+	// modulo 12 notation		
 	strcpy(chord_type_name[0],"Major");
 	chord_type_num_notes[0]=3;
 	chord_type_intervals[0][0]=0;

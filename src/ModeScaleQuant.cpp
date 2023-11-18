@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2023 Ken Chaffin
+/*  Copyright (C) 2019-2024 Ken Chaffin
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -315,6 +315,8 @@ struct ModeScaleQuant : Module
 		if (octaveOffset>9)
 			octaveOffset=9;
 
+		valid_current_circle_degree=false;
+
 		for (int i=0; i<7; ++i) // melody and bass will use this to accompany 
 		{
 			if  (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].CircleIndex==circle_position)
@@ -322,6 +324,8 @@ struct ModeScaleQuant : Module
 				int theDegree=theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree;
 				if ((theDegree<1)||(theDegree>7))
 			     	  theDegree=1;  // force to a valid degree to avoid a crash
+				else
+				   valid_current_circle_degree=true;  // used in panel circle update
 				current_circle_degree = theDegree;
 				for (int j=0;j<MAX_STEPS;++j)
 				{
@@ -347,36 +351,35 @@ struct ModeScaleQuant : Module
 		int num_chord_members=chord_type_num_notes[circle_chord_type];
 		
 		outputs[OUT_HARMONY_CV_OUTPUT].setChannels(3);  // set polyphony
-					
-		for (int j=0;j<num_chord_members;++j) 
-		{
-			current_chord_note=(int)((int)root_key_note+(int)chord_type_intervals[circle_chord_type][j]);
-			int note_to_play=current_chord_note+(octaveOffset*12);
-			note_to_play=clamp(note_to_play, root_key, 108+root_key); // clamp to MIDI range root0 to (C8+root)
-			outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel) 
-					
-			if (j<4)
+
+		if (valid_current_circle_degree)
+		{	
+			for (int j=0;j<num_chord_members;++j) 
 			{
-				theModeScaleQuantState.theHarmonyParms.last[j].note=note_to_play;
-				theModeScaleQuantState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
-				theModeScaleQuantState.theHarmonyParms.last[j].length=theModeScaleQuantState.theHarmonyParms.note_length_divisor;  
-				theModeScaleQuantState.theHarmonyParms.last[j].time32s=barts_count;
-				theModeScaleQuantState.theHarmonyParms.last[j].countInBar=bar_note_count;
-				theModeScaleQuantState.theHarmonyParms.last[j].isPlaying=true;
-				if (bar_note_count<256)
-				played_notes_circular_buffer[bar_note_count++]=theModeScaleQuantState.theHarmonyParms.last[j];
+				current_chord_note=(int)((int)root_key_note+(int)chord_type_intervals[circle_chord_type][j]);
+				int note_to_play=current_chord_note+(octaveOffset*12);
+				note_to_play=clamp(note_to_play, root_key, 108+root_key); // clamp to MIDI range root0 to (C8+root)
+				outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel) 
+						
+				if (j<4)
+				{
+					theModeScaleQuantState.theHarmonyParms.last[j].note=note_to_play;
+					theModeScaleQuantState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
+					theModeScaleQuantState.theHarmonyParms.last[j].length=theModeScaleQuantState.theHarmonyParms.note_length_divisor;  
+					theModeScaleQuantState.theHarmonyParms.last[j].time32s=barts_count;
+					theModeScaleQuantState.theHarmonyParms.last[j].countInBar=bar_note_count;
+					theModeScaleQuantState.theHarmonyParms.last[j].isPlaying=true;
+					if (bar_note_count<256)
+					played_notes_circular_buffer[bar_note_count++]=theModeScaleQuantState.theHarmonyParms.last[j];
+				}
 			}
-            
 		}
-		float durationFactor=1.0;
-		if (theModeScaleQuantState.theHarmonyParms.enable_staccato)
-			durationFactor=0.5;
-		else
-			durationFactor=1.0;
 		
-		float note_duration=durationFactor*time_sig_top/(frequency*theModeScaleQuantState.theHarmonyParms.note_length_divisor);
-		harmonyGatePulse.reset();  // kill the pulse in case it is active
-		harmonyGatePulse.trigger(note_duration/8.0f);  // use a shorter gate so chord can be manually retriggerd quicker
+		if (valid_current_circle_degree)
+		{
+			harmonyGatePulse.reset();  // kill the pulse in case it is active
+	    	harmonyGatePulse.trigger(0.1);  // use a shorter gate so chord can be manually retriggerd quicker
+		}
 	}
 
 	
@@ -1328,7 +1331,7 @@ struct ModeScaleQuantWidget : ModuleWidget
 					if (i==6) // draw diminished
 					{
 						Vec TextPositionBdim=Vec(TextPosition.x+9, TextPosition.y-4);
-						sprintf(text, "o");
+						snprintf(text, sizeof(text), "o");
 						nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 						nvgFontSize(args.vg, 8);
 						nvgText(args.vg, TextPositionBdim.x, TextPositionBdim.y, text, NULL);
@@ -1944,7 +1947,8 @@ struct ModeScaleQuantWidget : ModuleWidget
 				float display_note_position=0; 
 				char noteText[128];
 		
-				if (module->moduleVarsInitialized)  // only initialized if Module!=NULL
+		        
+				if ((module->moduleVarsInitialized)&&(module->valid_current_circle_degree))  // only initialized if Module!=NULL
 				{
 					nvgFontSize(args.vg, 90);
 					if (musicfont)
@@ -2268,8 +2272,8 @@ struct ModeScaleQuantWidget : ModuleWidget
 				nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 			}
 		
-			pos=Vec(344, 240); 
-			nvgFontSize(args.vg, 30);
+			pos=Vec(344, 235); 
+			nvgFontSize(args.vg, 25);
 			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 
 			nvgFillColor(args.vg, MSQ_panelHarmonyPartColor); 
@@ -2298,25 +2302,31 @@ struct ModeScaleQuantWidget : ModuleWidget
 			else
 			if (module->theModeScaleQuantState.theHarmonyParms.last_chord_type==6)
 				strcpy(chord_type_desc, "dim");
-
-		    snprintf(text, sizeof(text), "%s%s", module->note_desig[last_chord_root], chord_type_desc);
-		
+    						   
+			if ((module->theModeScaleQuantState.theHarmonyParms.last_chord_type==0)||(module->theModeScaleQuantState.theHarmonyParms.last_chord_type==2)||(module->theModeScaleQuantState.theHarmonyParms.last_chord_type==3))  // major
+			{
+				if (module->valid_current_circle_degree)
+				  snprintf(text, sizeof(text), "%s-%s%s", MSQ_circle_of_fifths_arabic_degrees[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc);
+			    else
+				  snprintf(text, sizeof(text), "%s%s",  module->note_desig[last_chord_root], chord_type_desc);
+			}
+			else
+			if ((module->theModeScaleQuantState.theHarmonyParms.last_chord_type==5)||(module->theModeScaleQuantState.theHarmonyParms.last_chord_type==6)) // diminished
+			{
+				if (module->valid_current_circle_degree)
+				  snprintf(text, sizeof(text), "%s'-%s%s", MSQ_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc);
+				else
+				  snprintf(text, sizeof(text), "%s%s",  module->note_desig[last_chord_root], chord_type_desc);
+			}
+			else  // minor
+			{
+				if (module->valid_current_circle_degree)
+				  snprintf(text, sizeof(text), "%s-%s%s", MSQ_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc);
+				else
+				   snprintf(text, sizeof(text), "%s%s",  module->note_desig[last_chord_root], chord_type_desc);
+			}
+								
 			nvgText(args.vg, pos.x, pos.y, text, NULL);  
-
-			// display chord circle degree above chord name
-
-			// draw text
-			nvgFontSize(args.vg, 15);
-			if (textfont)
-			nvgFontFaceId(args.vg, textfont->handle);	
-			nvgTextLetterSpacing(args.vg, -1); // as close as possible
-			nvgFillColor(args.vg, MSQ_panelHarmonyPartColor); 
-			
-			snprintf(text, sizeof(text), "%s", MSQ_circle_of_fifths_arabic_degrees[module->current_circle_degree]);
-			Vec TextPosition=module->theCircleOf5ths.CircleCenter.plus(Vec(0,+20));
-			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-			nvgText(args.vg, TextPosition.x, TextPosition.y, text, NULL);
-			
 				
 			if (true)
 			{ 

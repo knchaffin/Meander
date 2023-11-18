@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2022 Ken Chaffinayed
+/*  Copyright (C) 2019-2024 Ken Chaffinayed
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -96,6 +96,10 @@ static const char Meander_circle_of_fifths_degrees[][MAXSHORTSTRLEN]= {
 
 static const char Meander_circle_of_fifths_arabic_degrees[][MAXSHORTSTRLEN]= {
 	"", "I", "II", "III", "IV", "V", "VI", "VII"
+};
+
+static const char Meander_circle_of_fifths_arabic_degrees_LC[][MAXSHORTSTRLEN]= {
+	"", "i", "ii", "iii", "iv", "v", "vi", "vii"
 };
 
 static const char Meander_circle_of_fifths_degrees_UC[][MAXSHORTSTRLEN]= {

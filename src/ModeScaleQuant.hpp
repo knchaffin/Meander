@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2022 Ken Chaffin
+/*  Copyright (C) 2019-2024 Ken Chaffin
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTYMeanderDegreeOutRangeItem without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -92,6 +92,10 @@ static const char* MSQ_CircleNoteNames[MAX_NOTES] = {"C","G","D","A","E","B","F#
 
 static const char MSQ_circle_of_fifths_degrees[][MAXSHORTSTRLEN]= {
 	"I", "V", "II", "vi", "iii", "vii", "IV"
+};
+
+static const char MSQ_circle_of_fifths_arabic_degrees_LC[][MAXSHORTSTRLEN]= {
+	"", "i", "ii", "iii", "iv", "v", "vi", "vii"
 };
 
 static const char MSQ_circle_of_fifths_arabic_degrees[][MAXSHORTSTRLEN]= {

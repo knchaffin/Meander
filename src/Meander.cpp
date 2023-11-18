@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2022 Ken ChaffintheArpParms
+/*  Copyright (C) 2019-2024 Ken ChaffintheArpParms
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -424,6 +424,7 @@ struct Meander : Module
 		OUT_EXT_SCALE_OUTPUT,
 		OUT_EXT_HARMONIC_DEGREE_OUTPUT,
 		OUT_EXT_POLY_QUANT_TRIGGER_OUTPUT,
+		OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT,
 			
 		NUM_OUTPUTS
 	};
@@ -574,15 +575,19 @@ struct Meander : Module
 		theMeanderState.last_harmony_chord_root_note=circle_of_fifths[circle_position];
 
 		if (octaveOffset>9)
-			octaveOffset=9;
+			octaveOffset=9; 
 
+        valid_current_circle_degree=false;
 		for (int i=0; i<7; ++i) // melody and bass will use this to accompany 
 		{
 			if  (theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].CircleIndex==circle_position)
 			{
 				int theDegree=theCircleOf5ths.theDegreeSemiCircle.degreeElements[i].Degree;
 				if ((theDegree<1)||(theDegree>7))
-			     	  theDegree=1;  // force to a valid degree to avoid a crash
+				  theDegree=1;  // force to a valid degree to avoid a crash
+				else
+				   valid_current_circle_degree=true;  // used in panel circle update
+								
 				current_circle_degree = theDegree;
 				for (int j=0;j<MAX_STEPS;++j)
 				{
@@ -607,13 +612,14 @@ struct Meander : Module
 		theMeanderState.theHarmonyParms.last_chord_type=circle_chord_type;
 		int num_chord_members=chord_type_num_notes[circle_chord_type];
 
+   
 		if (theMeanderState.theHarmonyParms.enable_4voice_octaves)
 		{
 			outputs[OUT_HARMONY_CV_OUTPUT].setChannels(4);  // set polyphony
-		}
+		} 
 		else
 		if ((theMeanderState.theHarmonyParms.enable_all_7ths)||(theMeanderState.theHarmonyParms.enable_V_7ths))
-	    {			
+		{			
 			if ((circle_chord_type==2)
 			||  (circle_chord_type==3)
 			||  (circle_chord_type==4)
@@ -627,40 +633,44 @@ struct Meander : Module
 			outputs[OUT_HARMONY_CV_OUTPUT].setChannels(3);  // set polyphony
 		}
 
-		if (harmonic_degree_out_mode == RANGE_1to7)
-			outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setVoltage(theMeanderState.circleDegree);  // for degree= 1-7
-		else
-			outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setVoltage(theMeanderState.circleDegree-1.0);  // for degree= 0-6
-		
-		for (int j=0;j<num_chord_members;++j) 
-		{
-			current_chord_note=(int)((int)root_key_note+(int)chord_type_intervals[circle_chord_type][j]);
-			int note_to_play=current_chord_note+(octaveOffset*12);
-			note_to_play=clamp(note_to_play, root_key, 108+root_key); // clamp to MIDI range root0 to (C8+root)
-			outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel) 
-					
-			if (j<4)
-			{
-				theMeanderState.theHarmonyParms.last[j].note=note_to_play;
-				theMeanderState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
-				theMeanderState.theHarmonyParms.last[j].length=theMeanderState.theHarmonyParms.note_length_divisor;  
-				theMeanderState.theHarmonyParms.last[j].time32s=barts_count;
-				theMeanderState.theHarmonyParms.last[j].countInBar=bar_note_count;
-				theMeanderState.theHarmonyParms.last[j].isPlaying=true;
-				if (bar_note_count<256)
-				played_notes_circular_buffer[bar_note_count++]=theMeanderState.theHarmonyParms.last[j];
-			}
-            
+		if (valid_current_circle_degree)
+	    {
+			if (harmonic_degree_out_mode == RANGE_1to7)
+				outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setVoltage(theMeanderState.circleDegree);  // for degree= 1-7
+			else
+				outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setVoltage(theMeanderState.circleDegree-1.0);  // for degree= 0-6
+
+			outputs[OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT].setVoltage(circle_chord_type);  // chord type for circle scale degree
 		}
-		float durationFactor=1.0;
-		if (theMeanderState.theHarmonyParms.enable_staccato)
-			durationFactor=0.5;
-		else
-			durationFactor=1.0;
-		
-		float note_duration=durationFactor*time_sig_top/(frequency*theMeanderState.theHarmonyParms.note_length_divisor);
-		harmonyGatePulse.reset();  // kill the pulse in case it is active
-		harmonyGatePulse.trigger(note_duration);  
+
+        if (valid_current_circle_degree)
+		{
+			for (int j=0;j<num_chord_members;++j) 
+			{
+				current_chord_note=(int)((int)root_key_note+(int)chord_type_intervals[circle_chord_type][j]);
+				int note_to_play=current_chord_note+(octaveOffset*12);
+				note_to_play=clamp(note_to_play, root_key, 108+root_key); // clamp to MIDI range root0 to (C8+root)
+				outputs[OUT_HARMONY_CV_OUTPUT].setVoltage((note_to_play/12.0)-4.0,j);  // (note, channel) 
+				if (j<4)
+				{
+					theMeanderState.theHarmonyParms.last[j].note=note_to_play;
+					theMeanderState.theHarmonyParms.last[j].noteType=NOTE_TYPE_CHORD;
+					theMeanderState.theHarmonyParms.last[j].length=theMeanderState.theHarmonyParms.note_length_divisor;  
+					theMeanderState.theHarmonyParms.last[j].time32s=barts_count;
+					theMeanderState.theHarmonyParms.last[j].countInBar=bar_note_count;
+					theMeanderState.theHarmonyParms.last[j].isPlaying=true;
+					if (bar_note_count<256)
+					played_notes_circular_buffer[bar_note_count++]=theMeanderState.theHarmonyParms.last[j];
+				}
+			}
+		}
+	
+	    if (valid_current_circle_degree)
+		{
+		  harmonyGatePulse.reset();  // kill the pulse in case it is active
+		  harmonyGatePulse.trigger(.1);    // keep it short so re-trigger works quickly
+		}
+
 	}
 
 	void doHarmony(int barChordNumber=1, bool playFlag=false)
@@ -819,6 +829,8 @@ struct Meander : Module
 				break;
 			}
 		}
+
+		int circle_chord_type= theCircleOf5ths.Circle5ths[current_circle_position].chordType;
 				
 		lights[LIGHT_LEDBUTTON_CIRCLESETSTEP_1+step].setBrightness(1.0f);
 		lights[LIGHT_LEDBUTTON_CIRCLESTEP_1+ (current_circle_position)%12].setBrightness(1.0f);
@@ -842,6 +854,8 @@ struct Meander : Module
 			outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setVoltage(theMeanderState.circleDegree);  // for degree= 1-7
 		else
 			outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setVoltage(theMeanderState.circleDegree-1.0);  // for degree= 0-6
+
+		outputs[OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT].setVoltage(circle_chord_type);  // chord type for circle scale degree
 
 		if (theMeanderState.theHarmonyParms.enable_4voice_octaves)
 		{
@@ -936,6 +950,8 @@ struct Meander : Module
 			// output some fBm noise
 			outputs[OUT_FBM_HARMONY_OUTPUT].setChannels(1);  // set polyphony  
 			outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setChannels(1);  // set polyphony  
+
+			outputs[OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT].setChannels(1);  // chord type for circle scale degree
 				
 			float durationFactor=1.0;
 			if (theMeanderState.theHarmonyParms.enable_staccato)
@@ -2838,6 +2854,10 @@ struct Meander : Module
 								outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setVoltage(theMeanderState.circleDegree);  // for degree= 1-7
 							else
 								outputs[OUT_EXT_HARMONIC_DEGREE_OUTPUT].setVoltage(theMeanderState.circleDegree-1.0);  // for degree= 0-6
+
+							int circle_chord_type= theCircleOf5ths.Circle5ths[current_circle_position].chordType;
+
+							outputs[OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT].setVoltage(circle_chord_type);  // chord type for circle scale degree
 
 							if (theMeanderState.theHarmonyParms.pending_step_edit)
 							{
@@ -4994,6 +5014,8 @@ struct Meander : Module
 		configOutput(OUT_EXT_ROOT_OUTPUT, "Mono Scale Root Note Out: v/oct :");
 	    configOutput(OUT_EXT_HARMONIC_DEGREE_OUTPUT, "Mono Circle Degree Out: CV 1-7 V");
 		configOutput(OUT_EXT_POLY_QUANT_TRIGGER_OUTPUT, "Poly quantized out :");
+		configOutput(OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT, "Chord Type:");
+
 
 //**************** 
 								
@@ -5587,7 +5609,7 @@ struct MeanderWidget : ModuleWidget
 					if (i==6) // draw diminished
 					{
 						Vec TextPositionBdim=Vec(TextPosition.x+9, TextPosition.y-4);
-						sprintf(text, "o");
+						snprintf(text, sizeof(text), "o");
 						nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 						nvgFontSize(args.vg, 8);
 						nvgText(args.vg, TextPositionBdim.x, TextPositionBdim.y, text, NULL);
@@ -5792,13 +5814,14 @@ struct MeanderWidget : ModuleWidget
 			nvgText(args.vg, rect.pos.x-rect.size.x-2+xoffset, rect.pos.y+rect.size.y/2., label, NULL);
 		}
 
-		void drawLabelOffset(const DrawArgs &args, Rect rect, const char* label, float xoffset, float yoffset)  
+		void drawLabelOffset(const DrawArgs &args, Rect rect, const char* label, float xoffset, float yoffset, int fontsize=14)  
 		{
 			std::shared_ptr<Font> textfont = APP->window->loadFont(asset::plugin(pluginInstance, "res/Ubuntu Condensed 400.ttf"));
 								    	
 			nvgBeginPath(args.vg);
 			nvgFillColor(args.vg, Meander_panelTextColor);
-			nvgFontSize(args.vg, 14);
+		//	nvgFontSize(args.vg, 14);
+			nvgFontSize(args.vg, fontsize);
 			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
 			nvgTextLetterSpacing(args.vg, -1);
@@ -6428,10 +6451,10 @@ struct MeanderWidget : ModuleWidget
 				{
 					if (i==0)
 					{
-						sprintf(labeltext, "Set Step");
+						snprintf(labeltext, sizeof(labeltext), "Set Step");
 						drawLabelAbove(args, ParameterRectLocal[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext, 15.);  
 					}
-					sprintf(labeltext, "%d", i+1);
+					snprintf(labeltext, sizeof(labeltext), "%d", i+1);
 					drawLabelLeft(args,ParameterRectLocal[Meander::BUTTON_HARMONY_SETSTEP_1_PARAM+i], labeltext, 0.);  
 				}
 
@@ -6486,11 +6509,7 @@ struct MeanderWidget : ModuleWidget
 
 				snprintf(labeltext, sizeof(labeltext), "%s", "Progression Presets");
 				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::CONTROL_HARMONYPRESETS_PARAM].pos, labeltext, 0, -1, Meander_panelTextColor);
-				
-				snprintf(labeltext, sizeof(labeltext), "%s", "--STEP");
 			
-				drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_PROG_STEP_PARAM].pos.plus(Vec(0,-2)), labeltext, 0, -1, Meander_panelTextColor);
- 
 				//  do the progression displays
 				pos =ParameterRectLocal[Meander::CONTROL_HARMONYPRESETS_PARAM].pos.plus(Vec(-20,45));
 							
@@ -6870,7 +6889,7 @@ struct MeanderWidget : ModuleWidget
 				snprintf(labeltext, sizeof(labeltext), "%s", "Melody");
 				drawOutport(args, OutportRectLocal[Meander::OUT_FBM_MELODY_OUTPUT].pos, labeltext, 0, 1);
 
-				sprintf(labeltext, "%s", "Outputs are 0-10V fBm noise");
+				snprintf(labeltext, sizeof(labeltext), "%s", "Outputs are 0-10V fBm noise");
 				nvgFillColor(args.vg, Meander_panelTextColor);
 				nvgFontSize(args.vg, 17);
 				if (textfont)
@@ -6933,10 +6952,7 @@ struct MeanderWidget : ModuleWidget
 						
 				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
 				drawOutport(args, OutportRectLocal[Meander::OUT_EXT_SCALE_OUTPUT].pos, labeltext, 0, 1);
-
-				snprintf(labeltext, sizeof(labeltext), "%s", "Out");
-				drawOutport(args, OutportRectLocal[Meander::OUT_EXT_HARMONIC_DEGREE_OUTPUT].pos, labeltext, 0, 1, 0.8);  // scale height by 0.8x);
-				
+           
 			}
 
 			
@@ -7028,7 +7044,8 @@ struct MeanderWidget : ModuleWidget
 			  }	
 			}
 
-			nvgFontSize(args.vg, 12);
+		
+			nvgFontSize(args.vg, 8);
 			
 			if (textfont)
 			nvgFontFaceId(args.vg, textfont->handle);
@@ -7043,19 +7060,30 @@ struct MeanderWidget : ModuleWidget
 			snprintf(text, sizeof(text), "%s", "In--");
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 
-			pos=Vec(beginEdge+53, beginTop+95);  
+			pos=Vec(beginEdge+46, beginTop+95);   
 
-			nvgFontSize(args.vg, 10);  // make it a bit smaller to fit and scale best
+			nvgFontSize(args.vg, 8);  // make it a bit smaller to fit and scale best
 		
 		    if (module->harmonic_degree_out_mode == module->RANGE_1to7)
-				snprintf(text, sizeof(text), "%s", "(1-7) 1V/DEG (1-7)");
+				snprintf(text, sizeof(text), "%s", "(1-7)  1V/Deg  (1-7)");
 			else
-				snprintf(text, sizeof(text), "%s", "(1-7) 1V/DEG (0-6)");
+				snprintf(text, sizeof(text), "%s", "(1-7)  1V/Deg  (0-6)");
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
 			
-			pos=Vec(beginEdge+35, beginTop+115);  
-			snprintf(text, sizeof(text), "%s", "--GATE");
+			pos=Vec(beginEdge+30, beginTop+115);  
+			snprintf(text, sizeof(text), "%s", "--Gate");
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
+
+			snprintf(text, sizeof(text), "%s", "Out");
+			drawOutport(args, OutportRectLocal[Meander::OUT_EXT_HARMONIC_DEGREE_OUTPUT].pos, text, 0, 1, 0.8);  // scale height by 0.8x);
+
+			snprintf(text, sizeof(text), "%s", "Chord Type--");
+			drawLabelOffset(args, OutportRectLocal[Meander::OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT], text, -31., +12.0, 8); 
+			snprintf(text, sizeof(text), "%s", "");
+			drawOutport(args, OutportRectLocal[Meander::OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT].pos, text, 0, 1, 0.8);  // scale height by 0.8x);
+
+			snprintf(text, sizeof(text), "%s", "--Step");
+			drawHarmonyControlParamLine(args,ParameterRectLocal[Meander::BUTTON_PROG_STEP_PARAM].pos.plus(Vec(0,-2)), text, 0, -1, Meander_panelTextColor, 8);
 
 			nvgFontSize(args.vg, 12);
 			
@@ -7933,8 +7961,8 @@ struct MeanderWidget : ModuleWidget
 
 			int last_chord_root=module->theMeanderState.last_harmony_chord_root_note%12;
 			int last_chord_bass_note=module->theMeanderState.theHarmonyParms.last[0].note%12;
-			pos=convertSVGtoNVG(110, 62, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
-			nvgFontSize(args.vg, 30);
+			pos=convertSVGtoNVG(107, 61.25, 12.1, 6.5);  // X,Y,W,H in Inkscape mm units
+			nvgFontSize(args.vg, 20);
 			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 
 			nvgFillColor(args.vg, Meander_panelHarmonyPartColor); 
@@ -7961,29 +7989,58 @@ struct MeanderWidget : ModuleWidget
 			if (module->theMeanderState.theHarmonyParms.last_chord_type==6)
 				strcpy(chord_type_desc, "dim");
 
-			if (last_chord_bass_note!=last_chord_root) 
-				snprintf(text, sizeof(text), "%s%s/%s", module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
-			else
-				snprintf(text, sizeof(text), "%s%s", module->note_desig[last_chord_root], chord_type_desc);
-
+			if (last_chord_bass_note!=last_chord_root) // display inversions
+			{
+			    if ((module->theMeanderState.theHarmonyParms.last_chord_type==0)||(module->theMeanderState.theHarmonyParms.last_chord_type==2)||(module->theMeanderState.theHarmonyParms.last_chord_type==3))  // major
+				{
+				    snprintf(text, sizeof(text), "%s-%s%s/%s", Meander_circle_of_fifths_arabic_degrees[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+				}
+				else
+				if ((module->theMeanderState.theHarmonyParms.last_chord_type==5)||(module->theMeanderState.theHarmonyParms.last_chord_type==6)) // diminished
+				{
+            	     snprintf(text, sizeof(text), "%s'-%s%s/%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+				}
+				else  // minor
+				{
+				    snprintf(text, sizeof(text), "%s-%s%s/%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+				}
+			}
+			else  // do not display inversions as there is none
+			{
+			    if ((module->theMeanderState.theHarmonyParms.last_chord_type==0)||(module->theMeanderState.theHarmonyParms.last_chord_type==2)||(module->theMeanderState.theHarmonyParms.last_chord_type==3))  // major
+				{ 
+				   if (module->valid_current_circle_degree)
+			         snprintf(text, sizeof(text), "%s-%s%s", Meander_circle_of_fifths_arabic_degrees[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc);
+				   else
+				     snprintf(text, sizeof(text), "%s%s",  module->note_desig[last_chord_root], chord_type_desc);
+				}
+				else
+				if ((module->theMeanderState.theHarmonyParms.last_chord_type==0)||(module->theMeanderState.theHarmonyParms.last_chord_type==5)||(module->theMeanderState.theHarmonyParms.last_chord_type==6))  // diminished
+				{
+					if (module->valid_current_circle_degree)
+			          snprintf(text, sizeof(text), "%s'-%s%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc);
+					else
+					  snprintf(text, sizeof(text), "%s%s",  module->note_desig[last_chord_root], chord_type_desc);
+				}
+				else  // minor
+				{
+					if (module->valid_current_circle_degree)
+				      snprintf(text, sizeof(text), "%s-%s%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc); 
+					else
+					  snprintf(text, sizeof(text), "%s%s",  module->note_desig[last_chord_root], chord_type_desc); 
+				}
+			}
 			nvgText(args.vg, pos.x, pos.y, text, NULL);
+		
 
-
-			// display chord circle degree in circle above staves
-
+			
 			// draw text
 			nvgFontSize(args.vg, 15);
 			if (textfont)
-			nvgFontFaceId(args.vg, textfont->handle);	
+			nvgFontFaceId(args.vg, textfont->handle);	 
 			nvgTextLetterSpacing(args.vg, -1); // as close as possible
 			nvgFillColor(args.vg, Meander_panelHarmonyPartColor); 
-			
-			snprintf(text, sizeof(text), "%s", Meander_circle_of_fifths_arabic_degrees[module->current_circle_degree]);
-			Vec TextPosition=module->theCircleOf5ths.CircleCenter.plus(Vec(0,-60));
-			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-			nvgText(args.vg, TextPosition.x, TextPosition.y, text, NULL);
-			
-			
+								
 			if (module->theMeanderState.renderKeyboardEnabled)
 			{
 				drawKeyboard(args); // redraw full keyboard per frame. clears any key down states
@@ -8970,6 +9027,9 @@ struct MeanderWidget : ModuleWidget
 			outPortWidgets[Meander::OUT_EXT_POLY_QUANT_TRIGGER_OUTPUT]=createOutputCentered<PJ301MPort>(Vec(250.98, 1018.70), module, Meander::OUT_EXT_POLY_QUANT_TRIGGER_OUTPUT);
 			addOutput(outPortWidgets[Meander::OUT_EXT_POLY_QUANT_TRIGGER_OUTPUT]);
 
+			outPortWidgets[Meander::OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT]=createOutputCentered<PJ301MPort>(mm2px(Vec(380.0, 140.)), module, Meander::OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT);
+			addOutput(outPortWidgets[Meander::OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT]);
+
 									
 			//**********************************
 
@@ -9369,8 +9429,12 @@ struct MeanderWidget : ModuleWidget
 			outPortWidgets[Meander::OUT_EXT_SCALE_OUTPUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_EXT_SCALE_OUTPUT]->box.size.div(2.));
 			drawCenter=drawCenter.plus(Vec(40,0));
 
-			drawCenter=Vec( 393., 211.);
+			drawCenter=Vec( 383., 211.);
 			outPortWidgets[Meander::OUT_EXT_HARMONIC_DEGREE_OUTPUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_EXT_HARMONIC_DEGREE_OUTPUT]->box.size.div(2.));
+			drawCenter=drawCenter.plus(Vec(40,0));
+			
+			drawCenter=Vec( 383., 230.);
+			outPortWidgets[Meander::OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT]->box.pos=drawCenter.minus(outPortWidgets[Meander::OUT_EXT_HARMONIC_DEGREE_CHORD_TYPE_OUTPUT]->box.size.div(2.));
 			drawCenter=drawCenter.plus(Vec(40,0));
 
 			//********************
