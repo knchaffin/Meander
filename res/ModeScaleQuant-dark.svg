@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="166.60001mm"
+   width="167.64001mm"
    height="128.5mm"
-   viewBox="0 0 166.60001 128.5"
+   viewBox="0 0 167.64002 128.5"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.93229165"
-     inkscape:cx="71.588911"
-     inkscape:cy="240.61224"
+     inkscape:cx="314.34733"
+     inkscape:cy="243.64971"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -36,7 +36,11 @@
      inkscape:window-x="-8"
      inkscape:window-y="31"
      inkscape:window-maximized="1"
-     showguides="false" />
+     showguides="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -53,10 +57,11 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="Layer 1"
-     style="display:inline">
+     style="display:inline"
+     transform="translate(-0.2105066,-0.80366127)">
     <path
-       style="display:inline;opacity:1;fill:#282828;fill-opacity:1;stroke:#000000;stroke-width:0.8777892;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 0.64940121,0.81125695 H 166.37161 V 128.86477 H 0.64940121 Z"
+       style="display:inline;opacity:1;fill:#282828;fill-opacity:1;stroke:#000000;stroke-width:0.87904745;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 0.65003033,1.243185 H 167.41099 V 128.86414 H 0.65003033 Z"
        id="rect13"
        inkscape:connector-curvature="0">
       <title
@@ -184,10 +189,12 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="widgets"
-     style="display:none" />
+     style="display:none"
+     transform="translate(-0.2105066,-0.80366127)" />
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="components"
-     style="display:inline" />
+     style="display:inline"
+     transform="translate(-0.2105066,-0.80366127)" />
 </svg>
