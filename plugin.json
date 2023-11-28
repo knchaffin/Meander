@@ -1,7 +1,7 @@
 {
   "slug": "PS-PurrSoftware",   
   "name": "PS-PurrSoftware",
-  "version": "2.0.31",
+  "version": "2.0.32",
   "license": "GPL-3.0-or-later",
   "brand": "PurrSoftware",
   "author": "Ken Chaffin",
@@ -24,7 +24,13 @@
       "name": "ModeScaleQuant",
       "description": "Mode Scale Quantizer",
       "tags": ["Quantizer", "Polyphonic"]
-    }  
+    },
+    { 
+      "slug": "ModeScaleProgressions",
+      "name": "ModeScaleProgressions",
+      "description": "Mode Scale Progressions",
+      "tags": ["Sequencer", "Polyphonic"]
+    }    
   ]
  }
 
