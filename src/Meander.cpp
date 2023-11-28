@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2024 Ken ChaffintheArpParms
+/*  Copyright (C) 2019-2024 Ken ChaffintheArpParms    
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -813,8 +813,11 @@ struct Meander : Module
     			
 
 		int degreeStep=(theActiveHarmonyType.harmony_steps[step])%8; 
+		valid_current_circle_degree=false;
 		if ((degreeStep<1)||(degreeStep>7))
 		  degreeStep=1;  // force to a valid degree to avoid a crash
+		else
+		  valid_current_circle_degree=true;
 		current_circle_degree = degreeStep;
 		theMeanderState.circleDegree=(int)current_circle_degree;  
 			
@@ -7965,7 +7968,10 @@ struct MeanderWidget : ModuleWidget
 			nvgFontSize(args.vg, 20);
 			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 
-			nvgFillColor(args.vg, Meander_panelHarmonyPartColor); 
+            if (module->valid_current_circle_degree)
+			  nvgFillColor(args.vg, Meander_panelHarmonyPartColor); 
+			else
+			  nvgFillColor(args.vg, Meander_panelTextColor); 
 
 			char chord_type_desc[16];
 			if (module->theMeanderState.theHarmonyParms.last_chord_type==0)
@@ -7993,16 +7999,25 @@ struct MeanderWidget : ModuleWidget
 			{
 			    if ((module->theMeanderState.theHarmonyParms.last_chord_type==0)||(module->theMeanderState.theHarmonyParms.last_chord_type==2)||(module->theMeanderState.theHarmonyParms.last_chord_type==3))  // major
 				{
-				    snprintf(text, sizeof(text), "%s-%s%s/%s", Meander_circle_of_fifths_arabic_degrees[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					if (module->valid_current_circle_degree)
+				       snprintf(text, sizeof(text), "%s-%s%s/%s", Meander_circle_of_fifths_arabic_degrees[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					 else
+					   snprintf(text, sizeof(text), "%s%s/%s",  module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
 				}
 				else
 				if ((module->theMeanderState.theHarmonyParms.last_chord_type==5)||(module->theMeanderState.theHarmonyParms.last_chord_type==6)) // diminished
 				{
-            	     snprintf(text, sizeof(text), "%s'-%s%s/%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					if (module->valid_current_circle_degree)
+            	       snprintf(text, sizeof(text), "%s'-%s%s/%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					else
+					   snprintf(text, sizeof(text), "%s%s/%s", module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
 				}
 				else  // minor
 				{
-				    snprintf(text, sizeof(text), "%s-%s%s/%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					if (module->valid_current_circle_degree)
+				       snprintf(text, sizeof(text), "%s-%s%s/%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					else
+					   snprintf(text, sizeof(text), "%s%s/%s",  module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
 				}
 			}
 			else  // do not display inversions as there is none
@@ -9740,10 +9755,11 @@ struct MeanderWidget : ModuleWidget
 						plugin::Model *outputmodel = outputModule->getModel(); 
 						if (outputmodel)
 						{
-							if ((outputmodel->slug.substr(0, 7) == std::string("Meander")) || 
-							    (outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")))  
+						    if ((outputmodel->slug.substr(0, 21) == std::string("ModeScaleProgressions")) || 
+							    (outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) ||
+							    (outputmodel->slug.substr(0, 7) == std::string("Meander")))
 							{
-							    if ((outputId==4)||(outputId==26))  // "cable outputID is OUT_EXT_ROOT_OUTPUT" kludge out of scope ModeScaleQuant variable access
+								if ((outputId==4)||(outputId==26)||(outputId==15))  // "cable outputID is OUT_EXT_ROOT_OUTPUT" kludge out of scope ModeScaleQuant variable access
 								{
 									module->theMeanderState.RootInputSuppliedByRootOutput=true;  // but may be made false based on cable input
 								}
@@ -9771,8 +9787,9 @@ struct MeanderWidget : ModuleWidget
 							plugin::Model *inputmodel = inputModule->getModel(); 	
 							if (inputmodel)
 							{
-								if ((inputmodel->slug.substr(0, 7) == std::string("Meander"))|| 
-								    (inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant"))) 
+								if ((inputmodel->slug.substr(0, 21) == std::string("ModeScaleProgressions")) || 
+							        (inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) ||
+							        (inputmodel->slug.substr(0, 7) == std::string("Meander")))    
 								{
 									if (inputId==Meander::IN_ROOT_KEY_EXT_CV)  // "cable inputID is  IN_ROOT_KEY_EXT_CV"
 									{
@@ -9834,10 +9851,11 @@ struct MeanderWidget : ModuleWidget
 						plugin::Model *outputmodel = outputModule->getModel(); 
 						if (outputmodel)
 						{         
-						    if ((outputmodel->slug.substr(0, 7) == std::string("Meander"))||  
-							    (outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")))  
+						    if ((outputmodel->slug.substr(0, 21) == std::string("ModeScaleProgressions")) || 
+							    (outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) ||
+							    (outputmodel->slug.substr(0, 7) == std::string("Meander")))  
 							{
-								if ((outputId==5)||(outputId==27))  // "cable outputID is OUT_EXT_SCALE_OUTPUT" kludge out of scope ModeScaleQuant variable access
+								if ((outputId==5)||(outputId==27)||(outputId==16))  // "cable outputID is OUT_EXT_SCALE_OUTPUT" kludge out of scope ModeScaleQuant variable access
 								{
 									module->theMeanderState.ModeInputSuppliedByModeOutput=true;  // but may be made false based on cable input
 								}
@@ -9865,8 +9883,9 @@ struct MeanderWidget : ModuleWidget
 							plugin::Model *inputmodel = inputModule->getModel(); 	
 							if (inputmodel)
 							{
-								if ((inputmodel->slug.substr(0, 7) == std::string("Meander"))||
-								    (inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant"))) 
+							    if ((inputmodel->slug.substr(0, 21) == std::string("ModeScaleProgressions")) || 
+							        (inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) ||
+							        (inputmodel->slug.substr(0, 7) == std::string("Meander")))  
 								{
 									if (inputId==Meander::IN_SCALE_EXT_CV)  // "cable inputID is  IN_SCALE_EXT_CV"
 									{

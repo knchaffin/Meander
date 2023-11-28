@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2024 Ken Chaffin
+/*  Copyright (C) 2019-2024 Ken Chaffin  
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -2276,7 +2276,11 @@ struct ModeScaleQuantWidget : ModuleWidget
 			nvgFontSize(args.vg, 25);
 			nvgTextAlign(args.vg,NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
 
-			nvgFillColor(args.vg, MSQ_panelHarmonyPartColor); 
+            if (module->valid_current_circle_degree)
+			  nvgFillColor(args.vg, MSQ_panelHarmonyPartColor); 
+			else
+			  nvgFillColor(args.vg, MSQ_panelTextColor); 
+
 
 			int last_chord_root=module->theModeScaleQuantState.last_harmony_chord_root_note%12;
 						
@@ -3126,10 +3130,14 @@ struct ModeScaleQuantWidget : ModuleWidget
 						plugin::Model *outputmodel = outputModule->getModel(); 
 						if (outputmodel)
 						{
-							if ((outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant"))|| 
+						//	if ((outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant"))|| 
+						//	    (outputmodel->slug.substr(0, 7) == std::string("Meander")))  
+						    if ((outputmodel->slug.substr(0, 21) == std::string("ModeScaleProgressions")) || 
+							    (outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) ||
 							    (outputmodel->slug.substr(0, 7) == std::string("Meander")))  
 							{
-								if ((outputId==4)||(outputId==26))  // "cable outputID is OUT_EXT_ROOT_OUTPUT" kludge out of scope ModeScaleQuant variable access
+							//	if ((outputId==4)||(outputId==26))  // "cable outputID is OUT_EXT_ROOT_OUTPUT" kludge out of scope ModeScaleQuant variable access
+								if ((outputId==4)||(outputId==26)||(outputId==15))  // "cable outputID is OUT_EXT_ROOT_OUTPUT" kludge out of scope ModeScaleQuant variable access
 								{
 									module->theModeScaleQuantState.RootInputSuppliedByRootOutput=true;  // but may be made false based on cable input
 								}
@@ -3157,8 +3165,11 @@ struct ModeScaleQuantWidget : ModuleWidget
 							plugin::Model *inputmodel = inputModule->getModel(); 	
 							if (inputmodel)
 							{
-								if ((inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant"))||  
-								    (inputmodel->slug.substr(0, 7) == std::string("Meander")))  
+							//	if ((inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant"))||  
+							//	    (inputmodel->slug.substr(0, 7) == std::string("Meander")))  
+							    if ((inputmodel->slug.substr(0, 21) == std::string("ModeScaleProgressions")) || 
+							       (inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) ||
+							       (inputmodel->slug.substr(0, 7) == std::string("Meander")))  
 								{
 									if (inputId==ModeScaleQuant::IN_ROOT_KEY_EXT_CV)  // "cable inputID is  IN_ROOT_KEY_EXT_CV"
 									{
@@ -3220,10 +3231,11 @@ struct ModeScaleQuantWidget : ModuleWidget
 						plugin::Model *outputmodel = outputModule->getModel(); 
 						if (outputmodel)
 						{
-                           	if ((outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) || 
+                       	    if ((outputmodel->slug.substr(0, 21) == std::string("ModeScaleProgressions")) || 
+							    (outputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) ||
 							    (outputmodel->slug.substr(0, 7) == std::string("Meander")))  
 							{
-								if ((outputId==27)||(outputId==5) )  // "cable outputID is OUT_EXT_SCALE_OUTPUT"  kludge reference to out of scope variable
+								if ((outputId==5)||(outputId==27)||(outputId==16))  // "cable outputID is OUT_EXT_SCALE_OUTPUT" kludge out of scope ModeScaleQuant variable access
 								{
 									module->theModeScaleQuantState.ModeInputSuppliedByModeOutput=true;  // but may be made false based on cable input
 								}
@@ -3251,8 +3263,9 @@ struct ModeScaleQuantWidget : ModuleWidget
 							plugin::Model *inputmodel = inputModule->getModel(); 	
 							if (inputmodel)
 							{
-								if ((inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant"))||  
-								    (inputmodel->slug.substr(0, 7) == std::string("Meander")))  
+							    if ((inputmodel->slug.substr(0, 21) == std::string("ModeScaleProgressions")) || 
+							       (inputmodel->slug.substr(0, 14) == std::string("ModeScaleQuant")) ||
+							       (inputmodel->slug.substr(0, 7) == std::string("Meander")))  
 								{
 									if (inputId==ModeScaleQuant::IN_SCALE_EXT_CV)  // "cable inputID is  IN_SCALE_EXT_CV"
 									{
