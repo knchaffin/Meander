@@ -1,12 +1,19 @@
 ## PurrSoftware Plugin Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
-### V2.0.31 (Coming late Nov/early Dec 2023)
+### V2.0.32 (Coming ~Dec 2024)
+- Adds new module ModeScaleProgressions (MSP) which is the same as the left harmony side of the Meander panel.  This module acts functionally like the Meander left and harmony side of the panel.  It is a snaller module than Meander and is for those who want to do modal scale harmonic progressions without the melody and bass parts of Meander.  
+- Improved the inner circle-of-fifths circle on the panel such that each will display the current chord with Roman numeral degree and Arabic number root note and chord type.  Degree is upper-case for major, lower case for minor and lower case plus a "'" superscript for diminished.
+- If a valid circle degree is "played" the chord degree and name will be displayed inside the circle in red and will be sent out the harmony poly 1v/oct and mono gate ports.  If an invalid chord degree is played manually, the chord name will be displayed in black, without degree Roman numerals and will not be sent out the harmony chord ports.
+- The panel size for each of the 3 PurrSoftware modules now follow the VCV panel width even multiples of 1HP standard.
+- Each of the 3 modules' panel PNG images were recaptured so that they appear correct in the patch browser.
+
+### V2.0.31 (late Nov 2023)
 - This is a cosmetic panel appearance fix only.
 
 ### V2.0.30 (Nov 2023)
 - Mostly cosmetic user experience improvements.  Inside of the circle-of-fifths, chord degree and name have been combined such that the playing chord is displayed in the form ivAm where lower case Roman numerals indicate minor chords if there is now superscript and diminished chords if there is a "'" superscript.  Upper case Roman numerals indicate major chords.  You can still play a chord manually by clicking on the circle of fifth annular ring buttons, but now only value degrees I-VII will sound and display.  Other positions outside of I-VII will not play, but may display a non-valid degreen.  This is true for Meander and ModeScaleQuant.
-- A new output was added inside of the circle-of-fifths for Meander and ModeScaleQuant, labelled "ChordType".  This can be used to control other modules usch as Aaron Static Diantonic CV, but will require other logic to map these 1:1.  I have used Stochastic Telepgraph BASICally to map these for my patches.  This is an advanced feature that you can ignore if you want.
+- A new output was added inside of the circle-of-fifths for Meander, labelled "ChordType".  This can be used to control other modules usch as Aaron Static Diantonic CV, but will require other logic to map these 1:1.  I have used Stochastic Telepgraph BASICally to map these for my patches.  This is an advanced feature that you can ignore if you want.
 
 ### V2.0.29 (Nov 2023)
 - Adding ModeScaleQuant (MSQ) modal scale polyphonic quantizer module.
