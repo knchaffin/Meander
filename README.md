@@ -1,11 +1,12 @@
-## PS-PurrSoftware plugin V2.0.29 (Nov 2023) for VCV Rack V2. 
+## PS-PurrSoftware plugin V2.0.32 (Dec 2023) for VCV Rack V2. 
 
 ## Contents
 * [PS-PurrSoftware Change Log](./CHANGELOG.md)
 
 
 * [Meander Module Manual](#meander-manual) 
-* [ModeScaleQuant (MSQ) Module Manual](#modescalequant-manual) 
+* [ModeScaleQuant (MSQ) Module Manual](#modescalequant-manual)
+* [ModeScaleProgressions (MSP) Module Manual](#modescaleProgressions-manual) 
 
 ## <a name="meander-manual"></a>  Meander Manual
 
@@ -563,3 +564,10 @@ MSQ and Meander also now have a piano keyboard scale display, which is useful fo
 Like Meander, MSQ can output the scale in "poly external scale" format and fed to modules such as Grande Quant module (without the root sent via CV) quantizer. 
 
 You can also click on the circle-of-5ths degree buttons to play the corresponding mode and root scale major triad.  In this case, the chord is output polyphonically with mono gate out the "Manual Chord Out" ports.  This may be useful in some composition in a scale and also for better understancing how the mode and root scales work, from a music theory and common practice standpoint. 
+
+## <a name="modescaleprogressions-manual"></a>  ModeScaleProgressions Manual
+
+![Meander](./res/ModeScaleProgressions-light.png)   
+![Meander](./res/ModeScaleProgressions-dark.png)   
+
+The ModeScaleProgressions (MSP) module, newly added in ths plugin V2.0.32, is simply the left side of the Meander module, including all panel functionality of Meander with the exception of melody, bass and fBm outputs.  Please refer to the Meander module for descriptions on this module's functionality and usa. 
