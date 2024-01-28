@@ -8002,7 +8002,7 @@ struct MeanderWidget : ModuleWidget
 					if (module->valid_current_circle_degree)
 				       snprintf(text, sizeof(text), "%s-%s%s/%s", Meander_circle_of_fifths_arabic_degrees[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
 					 else
-					   snprintf(text, sizeof(text), "%s%s/%s",  module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					   snprintf(text, sizeof(text), "%s%s",  module->note_desig[last_chord_root], chord_type_desc);
 				}
 				else
 				if ((module->theMeanderState.theHarmonyParms.last_chord_type==5)||(module->theMeanderState.theHarmonyParms.last_chord_type==6)) // diminished
@@ -8010,14 +8010,14 @@ struct MeanderWidget : ModuleWidget
 					if (module->valid_current_circle_degree)
             	       snprintf(text, sizeof(text), "%s'-%s%s/%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
 					else
-					   snprintf(text, sizeof(text), "%s%s/%s", module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					   snprintf(text, sizeof(text), "%s%s", module->note_desig[last_chord_root], chord_type_desc);
 				}
 				else  // minor
 				{
 					if (module->valid_current_circle_degree)
 				       snprintf(text, sizeof(text), "%s-%s%s/%s", Meander_circle_of_fifths_arabic_degrees_LC[module->current_circle_degree], module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
 					else
-					   snprintf(text, sizeof(text), "%s%s/%s",  module->note_desig[last_chord_root], chord_type_desc, module->note_desig[last_chord_bass_note]);
+					   snprintf(text, sizeof(text), "%s%s",  module->note_desig[last_chord_root], chord_type_desc);
 				}
 			}
 			else  // do not display inversions as there is none
