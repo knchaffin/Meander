@@ -1,7 +1,10 @@
 ## PurrSoftware Plugin Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
-### V2.0.32 (Coming ~Dec 2023)
+### V2.0.33 (Jan 2024)
+- This is a cosmetic update only for Meander, ModeScaleProgressions and ModeScaleQuant that corrects how circle of 5th manual triggering from within the circle for circle positions that are not in the range I-VII are displayed on panel text.  Previously they were inappropriately designating the chords as inversions.  Regardless of the display, these circle positions do not result in sound when triggered manually.
+
+### V2.0.32 (Dec 2023)
 - Adds new module ModeScaleProgressions (MSP) which is the same as the left harmony side of the Meander panel.  This module acts functionally like the Meander left and harmony side of the panel.  It is a snaller module than Meander and is for those who want to do modal scale harmonic progressions without the melody and bass parts of Meander.  
 - Improved the inner circle-of-fifths circle on the panel such that each will display the current chord with Roman numeral degree and Arabic number root note and chord type.  Degree is upper-case for major, lower case for minor and lower case plus a "'" superscript for diminished.
 - If a valid circle degree is "played" the chord degree and name will be displayed inside the circle in red and will be sent out the harmony poly 1v/oct and mono gate ports.  If an invalid chord degree is played manually, the chord name will be displayed in black, without degree Roman numerals and will not be sent out the harmony chord ports.
