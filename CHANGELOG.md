@@ -1,6 +1,9 @@
 ## PurrSoftware Plugin Change Log <a id="meander-change-log"></a>
 ## Significant Version Changes (Changelog)
 
+### V2.0.35 (Jun 2025)
+- This is a minor user requested fix including one object initialization issue and one resource font license text.
+
 ### V2.0.34 (Apr 2024)
 - This is a major bug fix for my modules that was causing performance problems for users in the browser.
 
