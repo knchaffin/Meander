@@ -1,4 +1,4 @@
-## PS-PurrSoftware plugin V2.0.32 (Dec 2023) for VCV Rack V2. 
+## PS-PurrSoftware plugin V2.0.35 (June 2025) for VCV Rack V2. 
 
 ## Contents
 * [PS-PurrSoftware Change Log](./CHANGELOG.md)
