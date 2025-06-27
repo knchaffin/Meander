@@ -293,7 +293,7 @@ struct HarmonyType
 	int    harmony_step_chord_type[MAX_STEPS];
 	int    harmony_steps[MAX_STEPS]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};  // initialize to a valid step degree
 };
-struct HarmonyType theHarmonyTypes[MAX_HARMONY_TYPES];
+struct HarmonyType theHarmonyTypes[MAX_HARMONY_TYPES] = {};
 
 struct HarmonyType theActiveHarmonyType;
 

@@ -7,7 +7,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Common-Noise.hpp"  
+#include "Common-Noise.hpp"    
 
 //*********************************************************Module Vars************************************************
 
@@ -316,7 +316,7 @@ struct HarmonyType
 	int    harmony_step_chord_type[MAX_STEPS];
 	int    harmony_steps[MAX_STEPS]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};  // initialize to a valid step degree
 };
-struct HarmonyType theHarmonyTypes[MAX_HARMONY_TYPES];
+struct HarmonyType theHarmonyTypes[MAX_HARMONY_TYPES] = {};   
 
 struct HarmonyType theActiveHarmonyType;
 
